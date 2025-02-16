@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/RetroEMI_1.7.10.iml" filepath="$PROJECT_DIR$/RetroEMI_1.7.10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.api.iml" filepath="$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.ideVirtualMain.iml" filepath="$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.ideVirtualMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.main.iml" filepath="$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.patchedMc.iml" filepath="$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.patchedMc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.test.iml" filepath="$PROJECT_DIR$/.idea/modules/RetroEMI_1.7.10.test.iml" />
+    </modules>
+  </component>
+</project>

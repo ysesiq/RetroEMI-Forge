@@ -1,0 +1,466 @@
+# EMI
+
+key.keyboard.control=Ctrl
+key.keyboard.alt=Alt
+key.keyboard.shift=Shift
+
+key.emi.toggle_visibility=Toggle Visibility
+key.emi.focus_search=Focus Search
+key.emi.clear_search=Clear Search
+key.emi.view_recipes=View Recipes
+key.emi.view_uses=View Uses
+key.emi.favorite=Favorite
+key.emi.set_default=Set Default
+key.emi.default_stack=Default Stack
+key.emi.view_stack_tree=View Stack Tree
+key.emi.view_tree=View Tree
+key.emi.back=Back
+key.emi.craft_one=Craft One
+key.emi.craft_all=Craft All
+key.emi.craft_one_to_inventory=Craft One to Inventory
+key.emi.craft_all_to_inventory=Craft All to Inventory
+key.emi.craft_one_to_cursor=Craft One to Cursor
+key.emi.show_craft=Show Craft
+key.emi.cheat_one_to_inventory=Cheat One to Inventory
+key.emi.cheat_stack_to_inventory=Cheat Stack to Inventory
+key.emi.cheat_one_to_cursor=Cheat One to Cursor
+key.emi.cheat_stack_to_cursor=Cheat Stack to Cursor
+key.emi.delete_cursor_stack=Delete Cursor Stack
+key.emi.hide_stack=Hide Stack
+key.emi.hide_stack_by_id=Hide Stack by ID
+
+emi.help_level.verbose=Verbose
+emi.help_level.normal=Normal
+emi.help_level.none=None
+emi.align.horizontal.left=Left
+emi.align.horizontal.center=Center
+emi.align.horizontal.right=Right
+emi.align.vertical.top=Top
+emi.align.vertical.center=Center
+emi.align.vertical.bottom=Bottom
+emi.sidebar.type.none=None
+emi.sidebar.type.index=Index
+emi.sidebar.type.craftables=Craftables
+emi.sidebar.type.favorites=Favorites
+emi.sidebar.type.lookup_history=Lookup History
+emi.sidebar.type.craft_history=Crafting History
+emi.sidebar.type.chess=Chess
+emi.sidebar.theme.transparent=Transparent
+emi.sidebar.theme.vanilla=Vanilla
+emi.sidebar.theme.modern=Modern
+emi.header.visible=Visible
+emi.header.invisible=Invisible
+emi.sidebar.size.columns=Columns
+emi.sidebar.size.rows=Rows
+emi.sidebar.margins.top=Top
+emi.sidebar.margins.right=Right
+emi.sidebar.margins.bottom=Bottom
+emi.sidebar.margins.left=Left
+emi.sidebar.none=None
+emi.sidebar.left=Left
+emi.sidebar.right=Right
+emi.sidebar.top=Top
+emi.sidebar.bottom=Bottom
+emi.effect_location.top=Top
+emi.effect_location.left_compressed=Left (Compressed)
+emi.effect_location.right_compressed=Right (Compressed)
+emi.effect_location.left=Left
+emi.effect_location.right=Right
+emi.recipe_book_action.default=Default
+emi.recipe_book_action.toggle_craftables=Toggle Craftables
+emi.recipe_book_action.toggle_visibility=Toggle Visibility
+emi.button_visibility.auto=Auto
+emi.button_visibility.shown=Shown
+emi.button_visibility.hidden=Hidden
+
+config.emi.group.general=General
+config.emi.group.general.search=Search
+config.emi.group.ui=UI
+config.emi.group.ui.mod_id=Mod ID
+config.emi.group.ui.recipe_screen=Recipe Screen
+config.emi.group.ui.recipe_buttons=Recipe Buttons
+config.emi.group.ui.left_sidebar=Left Sidebar
+config.emi.group.ui.right_sidebar=Right Sidebar
+config.emi.group.ui.top_sidebar=Top Sidebar
+config.emi.group.ui.bottom_sidebar=Bottom Sidebar
+config.emi.group.binds=Binds
+config.emi.group.dev=Dev
+config.emi.group.addon=Addon
+config.emi.group.addon.distraction=Distraction Free Recipe
+
+config.emi.group.binds.crafts=Crafts
+config.emi.group.binds.cheats=Cheats
+
+config.emi.general.enabled=Enabled
+config.emi.general.cheat_mode=Cheat Mode
+config.emi.general.help_level=Help Level
+config.emi.general.search_sidebar=Search Sidebar
+config.emi.general.search_tooltip_by_default=Search Tooltip by Default
+config.emi.general.search_mod_name_by_default=Search Mod Name by Default
+config.emi.general.search_tags_by_default=Search Tags by Default
+config.emi.general.search_id_by_default=Search ID by Default
+config.emi.general.search_name_by_pinyin=Search Pinyin by Default
+config.emi.addon.distraction.enable_distraction_free_mode=Enable Distraction-Free Mode
+config.emi.addon.distraction.lower_opacity=Lower Opacity ?
+config.emi.general.simulate_nei_lag=[retroEMI] Simulate NEI Lag
+
+config.emi.ui.effect_location=Effect Location
+config.emi.ui.center_search_bar=Center Search Bar
+config.emi.ui.show_hover_overlay=Show Hover Overlay
+config.emi.ui.append_mod_id=Append Mod ID
+config.emi.ui.append_item_mod_id=Append Item Mod ID
+config.emi.ui.recipe_book_action=Recipe Book Action
+config.emi.ui.search_sidebar_focus=Search Sidebar Focus
+config.emi.ui.empty_search_sidebar_focus=Empty Search Sidebar Focus
+
+config.emi.ui.left_sidebar_pages=Pages
+config.emi.ui.left_sidebar_subpanels=Subpanels
+config.emi.ui.left_sidebar_size=Size
+config.emi.ui.left_sidebar_margins=Margins
+config.emi.ui.left_sidebar_align=Align
+config.emi.ui.left_sidebar_header=Header
+config.emi.ui.left_sidebar_theme=Theme
+
+config.emi.ui.right_sidebar_pages=Pages
+config.emi.ui.right_sidebar_subpanels=Subpanels
+config.emi.ui.right_sidebar_size=Size
+config.emi.ui.right_sidebar_margins=Margins
+config.emi.ui.right_sidebar_align=Align
+config.emi.ui.right_sidebar_header=Header
+config.emi.ui.right_sidebar_theme=Theme
+
+config.emi.ui.top_sidebar_pages=Pages
+config.emi.ui.top_sidebar_subpanels=Subpanels
+config.emi.ui.top_sidebar_size=Size
+config.emi.ui.top_sidebar_margins=Margins
+config.emi.ui.top_sidebar_align=Align
+config.emi.ui.top_sidebar_header=Header
+config.emi.ui.top_sidebar_theme=Theme
+
+config.emi.ui.bottom_sidebar_pages=Pages
+config.emi.ui.bottom_sidebar_subpanels=Subpanels
+config.emi.ui.bottom_sidebar_size=Size
+config.emi.ui.bottom_sidebar_margins=Margins
+config.emi.ui.bottom_sidebar_align=Align
+config.emi.ui.bottom_sidebar_header=Header
+config.emi.ui.bottom_sidebar_theme=Theme
+
+config.emi.ui.vertical_margin=Vertical Margin
+config.emi.ui.minimum_recipe_screen_width=Minimum Recipe Screen Width
+config.emi.ui.workstation_location=Workstation Location
+config.emi.ui.miscraft_prevention=Miscraft Prevention
+config.emi.ui.fluid_unit=Fluid Unit
+config.emi.ui.show_cost_per_batch=Show Cost Per Batch
+config.emi.ui.emi_config_button_visibility=EMI Config Button Visibility
+config.emi.tooltip.ui.emi_config_button_visibility=Whether the EMI config button should be visible.
+config.emi.ui.recipe_tree_button_visibility=Recipe Tree Button Visibility
+config.emi.tooltip.ui.recipe_tree_button_visibility=Whether the recipe tree button should be visible.
+config.emi.ui.recipe_default_button=Recipe Default Button
+config.emi.ui.recipe_tree_button=Recipe Tree Button
+config.emi.ui.recipe_fill_button=Recipe Fill Button
+config.emi.ui.recipe_screenshot_button=Recipe Screenshot Button
+config.emi.ui.recipe_screenshot_scale=Recipe Screenshot Scale
+config.emi.ui.use_batched_renderer=Use Batched Renderer
+
+config.emi.dev.dev_mode=Dev Mode
+config.emi.dev.edit_mode=Edit Mode
+config.emi.dev.log_untranslated_tags=Log Untranslated Tags
+config.emi.dev.log_non_tag_ingredients=Log Non-Tag Ingredients
+config.emi.dev.show_recipe_ids=Show Recipe IDs
+config.emi.dev.highlight_defaulted=Highlight Defaulted
+config.emi.dev.highlight_exclusion_areas=Highlight Exclusion Areas
+
+config.emi.presets.sidebars=Sidebars
+config.emi.presets.binds=Binds
+config.emi.presets.restore=Restore
+
+config.emi.presets.empty_search_craftable=Empty Search Craftable
+config.emi.presets.recipe_book_plus=Recipe Book Plus
+
+config.emi.presets.author_binds=Author Binds
+
+config.emi.presets.backup=Restore Backup
+config.emi.presets.defaults=Restore Defaults
+
+emi.unit.liters=Liters
+emi.unit.millibuckets=Millibuckets
+emi.unit.droplets=Droplets
+emi.fluid.amount.liters=%s L
+emi.fluid.amount.millibuckets=%smB
+emi.fluid.amount.droplets=%s d
+
+emi.disabled=EMI disabled! Toggle with
+emi.reloading=EMI Reloading...
+emi.reloading.waiting=EMI waiting for recipe data from server...
+emi.reloading.error=§cEMI experienced a critical exception while reloading check log
+emi.reloading.worry=§cExperiencing delay is everything alright?
+emi.reloading.still_baking_recipes=§dBaking recipes...
+emi.search=Search EMI...
+emi.search_config=Search config...
+emi.delete_stack=§cDelete held stack
+emi.inapplicable=Current workstation does not support recipe
+emi.not_enough_ingredients=Not enough ingredients to craft
+emi.too_small=Crafting grid too small to fit ingredients
+emi.favorite_recipe=Press %s to favorite recipe
+emi.resolve.resolve=Press %s to use for this recipe tree
+emi.resolve.default=Press %s to default for all trees
+emi.page=Page %s of %s
+emi.page.short=%s/%s
+emi.total_cost=Total Cost
+emi.cost_per=Cost per batch:
+emi.leftovers=Leftovers
+emi.view_all_recipes=Click to view all recipes
+emi.tree_welcome=Welcome to %s
+emi.no_tree=You haven't set a recipe tree to view yet...
+emi.random_tree=Perhaps you'd like to see a random one?
+emi.random_tree_input=Press §6[ctrl + r]
+emi.edit_mode.hide_one=Press %s to hide stack
+emi.edit_mode.hide_all=Press %s to hide stacks by ID
+emi.craft_level=Craft Level
+tooltip.emi.chance.consume=Consumption chance: %s%%
+tooltip.emi.chance.produce=Production chance: %s%%
+tooltip.emi.accepts=Accepts:
+tooltip.emi.fill_recipe=Fill Recipe
+tooltip.emi.fill_recipe_no_server=Cannot Fill Recipe without EMI on server
+tooltip.emi.set_default=Set as default recipe
+tooltip.emi.current_defaults=Currently the default recipe for:
+tooltip.emi.unset_default=Remove as default recipe
+tooltip.emi.set_default_stack=Press %s on an output to set default recipe for that stack
+tooltip.emi.view_tree=View Recipe Tree
+tooltip.emi.recipe_screenshot=Take Recipe Screenshot
+tooltip.emi.resolution=Resolving recipe tree for ingredient
+tooltip.emi.select_resolution=Click a §6recipe's output§r to assign for §dthis§r recipe tree
+tooltip.emi.default_resolution=Click the §6recipe default button§r to assign for §aall§r recipe trees
+tooltip.emi.clear_resolution=Click §6here§r to §cclear§r resolution
+
+tooltip.emi.config=%s Config
+tooltip.emi.recipe_tree=Recipe Tree
+
+
+tooltip.emi.config.global=Toggle using a global EMI config between all game instances instead of a separate config per game instance.\n§cNot Yet Implemented§r
+
+tooltip.emi.synfav.uncraftable=Unable to craft §cany§r batches
+tooltip.emi.synfav.partially_craftable=Able to craft §dsome§r batches
+tooltip.emi.synfav.fully_craftable=Able to craft §aall %s§r batches
+tooltip.emi.synfav.craft_some=Press %s to craft as many as possible
+tooltip.emi.synfav.craft_all=Press %s to craft all §9%s§r batches
+
+tooltip.emi.recipe_remainder=Additionally gives:
+
+tooltip.emi.bom.batch_size=Batch size: %s/nScroll to adjust/nHold §6[shift]§r to adjust by 16
+tooltip.emi.bom.batch_size.ideal=Press %s to get minimal leftovers
+tooltip.emi.bom.mode.view=§6Viewing§r recipe tree
+tooltip.emi.bom.mode.craft=§6Crafting§r recipe tree/nProgress will be shown in recipe tree/n§bSynthetic favorites§r added to sidebar
+tooltip.emi.bom.help=The recipe tree shows the process and base cost of a recipe/nThe display can be panned and zoomed/n/nLeft click a node to choose a recipe to assign to it/nHold §6[shift]§r to automatically pick based on your inventory/n/nRight click a recipe node to fold it temporarily/nHold §6[shift]§r to clear the recipe/n/nThe initial tree state is controlled by default recipes/nA button next to recipes can set default recipe preferences/n/nThe toggle by total cost can be used to help craft a recipe tree/nWhile crafting materials that need to be collected will be displayed/n§bSynthetic favorites§r will be added to the favorites sidebar that/nwill show incomplete steps and can be used to craft
+
+screen.emi.recipe=Recipe
+screen.emi.config=Config
+screen.emi.presets=Config Presets
+
+screen.emi.config.reset=Revert %s change(s)
+
+emi.error.recipe.initialize=Error Initializing
+emi.error.recipe.render=Error Rendering
+
+# EMI Chess
+
+emi.chess.piece.white_pawn=White Pawn
+emi.chess.piece.white_rook=White Rook
+emi.chess.piece.white_knight=White Knight
+emi.chess.piece.white_bishop=White Bishop
+emi.chess.piece.white_queen=White Queen
+emi.chess.piece.white_king=White King
+emi.chess.piece.black_pawn=Black Pawn
+emi.chess.piece.black_rook=Black Rook
+emi.chess.piece.black_knight=Black Knight
+emi.chess.piece.black_bishop=Black Bishop
+emi.chess.piece.black_queen=Black Queen
+emi.chess.piece.black_king=Black King
+emi.chess.tooltip.invite=Invite the player in your search bar to play chess
+emi.chess.tooltip.accept=Accept %s's chess invitation
+emi.chess.tooltip.decline=Right click to decline %s's chess invitation
+emi.chess.tooltip.restart=Right click to restart
+emi.chess.multiplayer.invited=%s invited you to play chess
+emi.chess.multiplayer.accepted=%s accepted your chess invitation
+emi.chess.multiplayer.cancelled=%s cancelled the chess game
+emi.chess.multiplayer.unavailable=%s can't play chess
+
+emi.cooking.time=%s Seconds
+emi.cooking.experience=%s XP
+emi.fuel_time.items=Burns for %s
+emi.fuel_number.items=Burns for %s items
+emi.fuel_heat.items=Heat level %s
+emi.craft_difficult.items=%s Difficulty
+emi.craft_time.items=%s S
+emi.exp_cost.items=%s XP
+
+emi.trade.BlacksmithVillagerEntity=Requires Rank %d Blacksmith
+emi.trade.PriestVillagerEntity=Requires Rank %d Priest
+emi.trade.LibrarianVillagerEntity=Requires Rank %d Librarian
+emi.trade.FarmerVillagerEntity=Requires Rank %d Farmer
+emi.trade.ButcherVillagerEntity=Requires Rank %d Butcher
+emi.trade.level_up=Upgrades from rank %d to %d
+emi.trade.enchanted=Has Random Enchantments
+
+# EMI Commands
+
+commands.emi.usage=Allows viewing recipes, the recipe tree, adding a tree goal, and adding a tree resolution. Not yet implemented.
+commands.emi.nyi=This command is not yet implemented
+commands.emi.id=Requires a recipe ID.
+
+# EMI Categories
+
+emi.category.minecraft.crafting=Crafting
+emi.category.minecraft.brewing=Brewing
+emi.category.minecraft.smelting=Smelting
+emi.category.emi.anvil_repairing=Anvil Repairing
+emi.category.emi.world_interaction=World Interaction
+emi.category.emi.fuel=Fuel
+emi.category.emi.info=Info
+emi.category.emi.tag=Tags
+emi.category.emi.ingredient=Ingredients
+
+emi.category.mite.food=Foods
+emi.category.mite.trading=Trading
+emi.category.mite.enchant=Enchant
+
+alias.emi.workbench=Workbench
+alias.emi.crafting_table=Crafting Table
+alias.emi.stick=Stick
+alias.emi.tnt=TNT
+
+#EMI config tips
+
+emi.config.tooltip.general.enabled=Whether EMI is enabled and visible.
+emi.config.tooltip.general.cheat-mode=Whether cheating in items is enabled.
+emi.config.tooltip.general.help-level=How much EMI should use tooltips and popups to show controls and information.
+emi.config.tooltip.general.search-sidebar=Which sidebar should be searched using the search bar.
+emi.config.tooltip.general.search-tooltip-by-default=Which sidebar should be searched using the search bar.
+emi.config.tooltip.general.search-mod-name-by-default=Whether normal search queries should include the mod name.
+emi.config.tooltip.general.search-tags-by-default=Whether normal search queries should include the stack's tags.
+emi.config.tooltip.general.search-id-by-default=Whether normal search queries should include the stack's item ID.
+emi.config.tooltip.general.search-name-by-pinyin=Whether normal search queries should include the pinyin, need Pinin-Lib Mod.
+emi.config.tooltip.addon.distraction.enable-distraction-free-mode=Turns the mod's effects on/off.
+emi.config.tooltip.addon.distraction.lower_opacity=Lowers the opacity of the search bar to make it blend in more.
+emi.config.tooltip.ui.effect-location=Where to display status effects in the inventory.
+emi.config.tooltip.ui.show-hover-overlay=Whether to display a gray overlay when hovering over a stack.
+emi.config.tooltip.ui.append-mod-id=Whether to add mod name to tooltips.
+emi.config.tooltip.ui.append-item-mod-id=Whether to add mod name to item tooltips, in case another mod provides behavior.
+emi.config.tooltip.ui.miscraft-prevention=Prevents recipes being quick crafted from shifting around under the cursor.
+emi.config.tooltip.ui.fluid-unit=The unit to display fluids as.
+emi.config.tooltip.ui.center-search-bar=Whether to have the search bar in the center of the screen, instead of to the side.
+emi.config.tooltip.ui.search-sidebar-focus=Which sidebar type to switch to when searching.
+emi.config.tooltip.ui.empty-search-sidebar-focus=Which sidebar type to focus when the search is empty.
+emi.config.tooltip.ui.vertical-margin=The amount of vertical margin to give in the recipe screen.
+emi.config.tooltip.ui.minimum-recipe-screen-width=The minimum width of the recipe screen in pixels. /nControls how many tabs there can be, and where the page switching buttons go. \nThe default is 176, the width of most screens.
+emi.config.tooltip.ui.workstation-location=Where to show workstations in the recipe screen
+emi.config.tooltip.ui.show-cost-per-batch=Display cost per batch when hovering a recipe output
+emi.config.tooltip.ui.recipe-default-button=Whether recipes should have a button to set as default.
+emi.config.tooltip.ui.recipe-tree-button=Whether recipes should have a button to show the recipe tree.
+emi.config.tooltip.ui.recipe-fill-button=Whether recipes should have a button to fill the ingredients in a handler.
+emi.config.tooltip.ui.recipe-screenshot-button=Whether recipes should have a button to take a screenshot of the recipe.
+emi.config.tooltip.ui.recipe-screenshot-scale=The GUI scale at which recipe screenshots are saved. Use 0 to use the current GUI scale.
+emi.config.tooltip.ui.left-sidebar-pages=The pages in the left sidebar
+emi.config.tooltip.ui.left-sidebar-subpanels=The subpanels in the left sidebar
+emi.config.tooltip.ui.left-sidebar-size=How many columns and rows of ingredients to limit the left sidebar to
+emi.config.tooltip.ui.left-sidebar-margins=How much space to maintain between the left sidebar and obstructions, in pixels
+emi.config.tooltip.ui.left-sidebar-align=Where to position the left sidebar
+emi.config.tooltip.ui.left-sidebar-header=Whether to render the header buttons and page count for the left sidebar
+emi.config.tooltip.ui.left-sidebar-theme=Which theme to use for the left sidebar
+emi.config.tooltip.ui.right-sidebar-pages=The pages in the right sidebar
+emi.config.tooltip.ui.right-sidebar-subpanels=The subpanels in the right sidebar
+emi.config.tooltip.ui.right-sidebar-size=How many columns and rows of ingredients to limit the right sidebar to
+emi.config.tooltip.ui.right-sidebar-margins=How much space to maintain between the right sidebar and obstructions, in pixels
+emi.config.tooltip.ui.right-sidebar-align=Where to position the right sidebar
+emi.config.tooltip.ui.right-sidebar-header=Whether to render the header buttons and page count for the right sidebar
+emi.config.tooltip.ui.right-sidebar-theme=Which theme to use for the right sidebar
+emi.config.tooltip.ui.top-sidebar-pages=The pages in the top sidebar
+emi.config.tooltip.ui.top-sidebar-subpanels=The subpanels in the top sidebar
+emi.config.tooltip.ui.top-sidebar-size=How many columns and rows of ingredients to limit the top sidebar to
+emi.config.tooltip.ui.top-sidebar-margins=How much space to maintain between the top sidebar and obstructions, in pixels
+emi.config.tooltip.ui.top-sidebar-align=Where to position the top sidebar
+emi.config.tooltip.ui.top-sidebar-header=Whether to render the header buttons and page count for the top sidebar
+emi.config.tooltip.ui.top-sidebar-theme=Which theme to use for the top sidebar
+emi.config.tooltip.ui.bottom-sidebar-pages=The pages in the bottom sidebar
+emi.config.tooltip.ui.bottom-sidebar-subpanels=The subpanels in the bottom sidebar
+emi.config.tooltip.ui.bottom-sidebar-size=How many columns and rows of ingredients to limit the bottom sidebar to
+emi.config.tooltip.ui.bottom-sidebar-margins=How much space to maintain between the bottom sidebar and obstructions, in pixels
+emi.config.tooltip.ui.bottom-sidebar-align=Where to position the bottom sidebar
+emi.config.tooltip.ui.bottom-sidebar-header=Whether to render the header buttons and page count for the bottom sidebar
+emi.config.tooltip.ui.bottom-sidebar-theme=Which theme to use for the bottom sidebar
+emi.config.tooltip.binds.toggle-visibility=Toggle the visibility of EMI.
+emi.config.tooltip.binds.focus-search=Focuse the search bar.
+emi.config.tooltip.binds.clear-search=Clears the search bar.
+emi.config.tooltip.binds.view-recipes=Display the recipes for creating a stack.
+emi.config.tooltip.binds.view-uses=Display the recipes that can be created using a stack.
+emi.config.tooltip.binds.favorite=Favorite the item to display on the side of the screen opposite of recipies for quick access.
+emi.config.tooltip.binds.default-stack=Set the default recipe for a given stack in the output of a recipe to that recipe.
+emi.config.tooltip.binds.view-stack-tree=Display the recipe tree for a given stack.
+emi.config.tooltip.binds.view-tree=Display the recipe tree.
+emi.config.tooltip.binds.back=Return to the previous page in EMI.
+emi.config.tooltip.binds.craft-one=When on a stack with an associated recipe: \nMove ingredients for a single result.
+emi.config.tooltip.binds.craft-all=When on a stack with an associated recipe: \nMove ingredients for as many results as possible.
+emi.config.tooltip.binds.craft-one-to-inventory=When on a stack with an associated recipe: \nMove ingredients for a single result and put in inventory if possible.
+emi.config.tooltip.binds.craft-all-to-inventory=When on a stack with an associated recipe: \nMove ingredients for as many results as possible and put in inventory if possible.
+emi.config.tooltip.binds.craft-one-to-cursor=When on a stack with an associated recipe: \nMove ingredients for a single result and put in cursor if possible.
+emi.config.tooltip.binds.show-craft=Display the recipe that will be used to craft on a stack with no recipe context.
+emi.config.tooltip.binds.cheat-one-to-inventory=Cheat in one of an item into the inventory.
+emi.config.tooltip.binds.cheat-stack-to-inventory=Cheat in a stack of an item into the inventory.
+emi.config.tooltip.binds.cheat-one-to-cursor=Cheat in one of an item into the cursor.
+emi.config.tooltip.binds.cheat-stack-to-cursor=Cheat in a stack of an item into the cursor.
+emi.config.tooltip.binds.delete-cursor-stack=Delete the stack in the cursor when hovering the index
+emi.config.tooltip.binds.hide-stack=In edit mode, hide the hovered stack
+emi.config.tooltip.binds.hide-stack-by-id=In edit mode, hide stacks with the hovered stack's id
+emi.config.tooltip.dev.dev-mode=Whether development functions should be enabled. Not recommended for general play.
+emi.config.tooltip.dev.edit-mode=Whether editing the index is enabled
+emi.config.tooltip.dev.log-untranslated-tags=Whether to log untranslated tags as warnings.
+emi.config.tooltip.dev.log-non-tag-ingredients=Whether to log ingredients that don't have a representative tag as warnings.
+emi.config.tooltip.dev.show-recipe-ids=Whether hovering the output of a recipe should show the recipe's EMI ID.
+emi.config.tooltip.dev.highlight-defaulted=Whether stacks in the index should display a highlight if they have a recipe default.
+emi.config.tooltip.dev.highlight-exclusion-areas=Whether to display exclusion areas
+
+# EMI Tags
+
+# EMI recipe info
+
+# EMI Item Info
+mite.gravel.info=When destroyed by a player, there is a 5/32 chance for r to drop 7 flint fragments. There is a 1/96 chance for r to drop 7 flint fragments. There is a 1/18 chance for r to drop Q copper particles. There is a 1/54 chance for r to drop W silver particles. There is a 1/162 chance for r to drop 6 gold particles. There is a 1/486 chance for r to drop I obsidian fragments. There is a 1/1458 chance for r to drop a. Emerald fragments. There is a 1/4374 chance for r to drop b. Diamond fragments. There is a 1/26244 chance to drop the U Edelman Grain
+enchanted_book.info.enchantment.protect.all=Protection\nCommon level, 10Enchantment difficulty\nIncreases general armor value\nMax Level IV\nCan be used for armor
+enchanted_book.info.enchantment.protect.fire=Fire Protection\nUncommon level, 10Enchantment difficulty\nIncreases Fire Armor\nMax Level IV\nCan be used for armor
+enchanted_book.info.enchantment.protect.fall=Fall Protection\nUncommon level, 10Enchantment difficulty\nIncreases fall armor value\nMax Level IV\nCan be used for armor
+enchanted_book.info.enchantment.protect.explosion=Explosion Protection\nUncommon level, 10Enchantment difficulty\nIncreases explosive armor value\nMax Level IV\nCan be used for armor
+enchanted_book.info.enchantment.protect.projectile=Projectile Protection\nUncommon level, 10Enchantment difficulty\nIncreases projectile armor\nMax Level IV\nCan be used for armor
+enchanted_book.info.enchantment.oxygen=Underwater Breathing\nRare Level, 10Enchantment Difficulty\nSlows Underwater Oxygen Consumption and Improves Underwater Vision\nMax Level III\nCan be used for helmets
+enchanted_book.info.enchantment.waterWorker=Underwater Digging Speed\nRare Level, 10Enchantment Difficulty\nIncreases Underwater Digging Speed\nHighest Level I\nCan be used for helmets
+enchanted_book.info.enchantment.thorns=Thorns\nRare level, 20Enchantment difficulty\nConsumes durability when attacked, dealing damage to the attacker\nMax level 3\nCan be used for armor
+enchanted_book.info.enchantment.damage.all=Sharp\nCommon level, 10Enchantment difficulty\nEach level increases by 1 Not affected by level amplification, enchantment on the scythe reduces the durability cost of the scythe's attack by half\nUp to level 5\nCan be used for swords, battle axes, and scythes
+enchanted_book.info.enchantment.damage.undead=Undead Slayer\nUncommon level, 10Enchantment difficulty\nEach level increases by 2 Undead mobs damage that is not subject to level amplification\nUp to level 5\nCan be used for Warhammer
+enchanted_book.info.enchantment.damage.arthropods=Arthropod Killer\nUncommon level, 10Enchantment difficulty\nEach level increases by 2 Damage to arthropods that are not subject to level amplification\nUp to level 5\nCan be used for swords
+enchanted_book.info.enchantment.knockback=Knockback\nUncommon level, 10Enchantment difficulty\nIncreases knockback distance\nMax Level II\nCan be used for sticks, short sticks, and warhammers
+enchanted_book.info.enchantment.fire=Fire Attached\nRare Level, 10 Enchantment Difficulty\nSets the target on fire after attacking\nHighest Level II\nCan be used for swords
+enchanted_book.info.enchantment.lootBonus=Looting\nUncommon level, 10Enchantment difficulty\nIncreases the chance of dropping mobs other than thread, meat, leather, bones, rotten flesh, spider eyes, and arrows shot by the player\nMax Level III\nCan be used for clubs, clubs, and swords
+enchanted_book.info.enchantment.digging=Efficiency\nCommon level, 10Enchantment difficulty\nIncrease Level +1 Mining speed\nMax Level V\nCan be used for pickaxes, axes, shovels, and hoes
+enchanted_book.info.enchantment.untouching=Precise Gathering\nRare level, 10Enchantment difficulty\nCauses some blocks to drop themselves after mining\nHighest level I\nCan be used for pickaxes, shovels, scissors, knives, and short swords
+enchanted_book.info.enchantment.durability=Durability\nUncommon level, 10Enchantment difficulty\nReduced per level 15% reduction in durability cost\nMax level V\nCan be used for armor, clubs, short clubs, pickaxes, shovels, hoes, axes, fishing rods, bows
+enchanted_book.info.enchantment.lootBonusDigger=Fortune\nRare level, 10Enchantment difficulty\nEnchantment with pickaxe increases by 10% per level Digging doubles the chance of blocks dropping\nEnchantment increases the chance of digging dirt blocks to drop bugs\nMax level 3\nCan be used for pickaxes and shovels
+enchanted_book.info.enchantment.arrowDamage=Strength\nCommon level, 10 enchantment difficulty, increased arrow damage\nmaximum level, V\nCan be used for bows
+enchanted_book.info.enchantment.arrowKnockback=Impact\nUncommon level, 10Enchantment difficulty\nIncreases arrow knockback distance\nMax Level II\nCan be used for bows
+enchanted_book.info.enchantment.arrowFire=Fire Bolt\nRare level, 20 enchantment difficulty\nmakes the arrow on fire when fired\nHighest level I\nCan be used for bows
+enchanted_book.info.enchantment.arrowInfinite=Infinite\nRemoved
+enchanted_book.info.enchantment.arrow_recovery=Recovery\nUncommon level, 10Enchantment difficulty\nIncreases the recovery rate of creatures hit by arrows\nMax level V\nCan be used for bows
+enchanted_book.info.enchantment.stun=Stun\nUncommon level, 15Enchantment difficulty\nEach level increases the slow effect of Attack Creature Particles Added (1+5*Stun Level)Duration (Stun Level *2.5)s\nMax Level V\nCan be used for sticks, short sticks, and warhammers
+enchanted_book.info.enchantment.fishing_fortune=Lure Fishing\nCommon Level, 10Enchantment Difficulty\nReduced Waiting Time When Fishing\nHighest Level V\nCan be used for fishing rods
+enchanted_book.info.enchantment.fertility=Fertile\nUncommon, 10Enchantment difficulty\nEnchantment to hoe or duckbill hoe makes farmland fertile\nEnchantment to sickle also makes farmland fertile when harvesting crops\nMax level V\nCan be used for hoes, duckbill hoes, and sickles
+enchanted_book.info.enchantment.tree_felling=砍树\nUncommon级,10附魔难度\n每等级额外砍伐上方一块原木\n最高等级V\n可用于斧、战斧
+enchanted_book.info.enchantment.vampiric=Vampiric\nEpic Level, 20Enchantment Difficulty\n5%~50% of the damage dealt by the attack Restores the attacker's health\nIncreases lifesteal chance by 10% per level\nCannot drain the health of undead creatures, iron golems, endermen, and snow golems\nMax LevelV\nCan be used for swords and scythels other than silver and mythril
+enchanted_book.info.enchantment.speed=Speed\nRare level, 10Enchantment difficulty\nIncreases movement speed by 5% per level. The highest grade V\n can be used for shoes
+enchanted_book.info.enchantment.regeneration=Regeneration\nRare level, 20 enchantment difficulty\nEach enchantment level provides an additional 50% health regeneration bonus\nmaximum level V\nCan be used in the Breastplate
+enchanted_book.info.enchantment.free_action=Flexible Movement\nUncommon Level, 10Enchantment Difficulty\nWeakening Slowness Effect and Spider Web Limiting Effect\nEach Enchantment Level Provides 20% Slowness Resistance\nMax Level IV\nCan be used for Leggings
+enchanted_book.info.enchantment.quickness=Agility\nUncommon level, 10Enchantment difficulty\ncan increase the speed at which the bow is drawed\nMax level V\nCan be used for bows
+enchanted_book.info.enchantment.true_flight=Precision\nCommon level, 10Enchantment difficulty\nIncreases the starting accuracy of arrows\nMax level V\nCan be used for bows
+enchanted_book.info.enchantment.poison=Poison\nRare level, 10Enchantment difficulty\nPoisons creatures hit by arrows\nMax level V\nCan be used for bows
+enchanted_book.info.enchantment.disarming=Disarm\nRare level, 10Enchantment difficulty\n20% increased per level Makes creature holdings drop\nMax level V\nCan be used for swords
+enchanted_book.info.enchantment.piercing=Piercing/Cleave\nRare level, 10Enchantment difficulty\nIgnores creatures per level when attacking: 1 Armor deals damage\nMax V\nCan be used for battle axes, pickaxes
+enchanted_book.info.enchantment.harvesting=Harvest\nUncommon level, 10Enchantment difficulty\nEnchantment with Scythe increases by 10% per level Harvesting Wheat Double Drop Chance Rate\nEnchantment increases the number of crops harvested except wheat when enchanted with hoes and duckbill hoes\nMax level V\nCan be used for sickles, hoes, and duckbills
+enchanted_book.info.enchantment.butchering=Slaughter\nUncommon level, 10Enchantment difficulty\nIncreases the chance of meat dropping when killing passive mobs\nMax Level III\nCan be used for short swords and knives
+enchanted_book.info.enchantment.endurance=Stamina\nUncommon level, 10Enchantment difficulty\nReduces hunger speed by 20% per level when destroying, placing blocks, attacking, throwing, farming, and drawing bows. The highest level IV can be used on the breastplate
