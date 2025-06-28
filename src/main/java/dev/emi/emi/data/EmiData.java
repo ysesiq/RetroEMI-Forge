@@ -92,6 +92,6 @@ public class EmiData {
 	public static void defaultCategoryOrder() {
 		EmiData.setCategoryOrder(-1000, VanillaEmiRecipeCategories.CRAFTING);
 		EmiData.setCategoryOrder(100, VanillaEmiRecipeCategories.FUEL); //Should fuel show time in oven?
-		EmiData.setCategoryOrder(120, MITEEmiRecipeCategories.FOOD);
+//		EmiData.setCategoryOrder(120, MITEEmiRecipeCategories.FOOD);
 	}
 }

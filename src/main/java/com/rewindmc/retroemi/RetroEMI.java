@@ -48,12 +48,11 @@ public class RetroEMI {
 	private static final List<Runnable> tickQueue = new ArrayList<>();
 
 	private RetroEMI() {
-		if (!MinecraftServer.getServer().isServerRunning()) {
+//		if (!MinecraftServer.getServer().isServerRunning()) {
 			itemRenderer = new RenderItem();
-		}
-		else {
-			itemRenderer = null;
-		}
+//		} else {
+//			itemRenderer = null;
+//		}
 	}
 
 	public static boolean isSideLit(ItemStack item) {

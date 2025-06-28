@@ -187,12 +187,13 @@ public class VanillaPlugin implements EmiPlugin {
 			return false;
 		};
 
-		// This is hardcoded in CraftingManager in 1.6
-		for (Item i : EmiRepairItemRecipe.TOOLS) {
-			if (!hiddenItems.contains(i)) {
-				addRecipeSafe(registry, () -> new EmiRepairItemRecipe(i, synthetic("crafting/repairing", EmiUtil.subId(i))));
-			}
-		}
+        //TODO
+//		for (Object o : EmiRepairItemRecipe.TOOLS) {
+//            Item i = (Item) o;
+//			if (!hiddenItems.contains(i)) {
+//				addRecipeSafe(registry, () -> new EmiRepairItemRecipe(i, synthetic("crafting/repairing", EmiUtil.subId(i))));
+//			}
+//		}
 
 		for (IRecipe recipe : (List<IRecipe>) registry.getRecipeManager().getRecipeList()) {
 			if (recipe instanceof RecipesMapExtending map) {
@@ -226,14 +227,15 @@ public class VanillaPlugin implements EmiPlugin {
 			}
 		}
 
-		for (var recipe : ((Map<Integer, ItemStack>) FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
-			int id = recipe.getKey();
-            ItemStack in = new ItemStack(Item.getItemById(id));
-            ItemStack out = recipe.getValue();
-			TileEntityFurnace furnace = new TileEntityFurnace();
-			int fuel = furnace.currentItemBurnTime;
-			addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("minecraft", "furnace/" + id), in, out, SMELTING, fuel, Objects.requireNonNull(out.getItem()).getSmeltingExperience(out)));
-		}
+        //TODO
+//		for (var recipe : ((Map<Integer, ItemStack>) FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
+//			int id = recipe.getKey();
+//            ItemStack in = new ItemStack(Item.getItemById(id));
+//            ItemStack out = recipe.getValue();
+//			TileEntityFurnace furnace = new TileEntityFurnace();
+//			int fuel = furnace.currentItemBurnTime;
+//			addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("minecraft", "furnace/" + id), in, out, SMELTING, fuel, Objects.requireNonNull(out.getItem()).getSmeltingExperience(out)));
+//		}
 
 		for (Object obj : Item.itemRegistry) {
             Item i = (Item) obj;

@@ -38,8 +38,7 @@ public class CreateItemC2SPacket implements EmiPacket {
 				if (mode == 1) {
 					player.inventory.setItemStack(null);
 				}
-			}
-			else {
+			} else {
 				EmiLog.info(player.getDisplayName() + " cheated in " + stack);
 				if (mode == 0) {
 					RetroEMI.offerOrDrop(player, stack);

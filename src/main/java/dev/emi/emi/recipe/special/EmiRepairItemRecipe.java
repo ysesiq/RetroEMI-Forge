@@ -6,6 +6,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 import net.xylose.emi.api.EMIItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,10 +16,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class EmiRepairItemRecipe extends EmiPatternCraftingRecipe {
-    public static final List<Item> TOOLS = Collections.singletonList((Item) Arrays.stream(Item.itemRegistry.getKeys().toArray())
-        .filter(i -> i != null && ((Item) i).isRepairable())
-        .collect(Collectors.toList()));
-	private final Item tool;
+    public static final List<Object> TOOLS =
+        Arrays.stream(Item.itemRegistry.getKeys().toArray()).filter(i -> i != null && ((Item)Item.itemRegistry.getObject(i)).isRepairable()).collect(Collectors.toList());
+    private final Item tool;
 
 	public EmiRepairItemRecipe(Item tool, ResourceLocation id) {
 		super(com.rewindmc.retroemi.shim.java.List.of(EmiStack.of(tool), EmiStack.of(tool)), EmiStack.of(tool), id);

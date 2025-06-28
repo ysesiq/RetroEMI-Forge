@@ -56,16 +56,17 @@ public class RecipeDefaultLoader implements EmiResourceReloadListener, IResource
 			defaults.add(id);
 		}
 		JsonObject resolutions = JsonHelper.getObject(json, "resolutions", new JsonObject());
-		for (String key : resolutions.keySet()) {
-			ResourceLocation id = new ResourceLocation(key);
-			if (JsonHelper.hasArray(resolutions, key)) {
-				defaults.add(id, JsonHelper.getArray(resolutions, key));
-			}
-		}
-		JsonObject addedTags = JsonHelper.getObject(json, "tags", new JsonObject());
-		for (String key : addedTags.keySet()) {
-			defaults.addTag(new JsonPrimitive(key), addedTags.get(key));
-		}
+        //TODO
+//		for (String key : resolutions.keySet()) {
+//			ResourceLocation id = new ResourceLocation(key);
+//			if (JsonHelper.hasArray(resolutions, key)) {
+//				defaults.add(id, JsonHelper.getArray(resolutions, key));
+//			}
+//		}
+//		JsonObject addedTags = JsonHelper.getObject(json, "tags", new JsonObject());
+//		for (String key : addedTags.keySet()) {
+//			defaults.addTag(new JsonPrimitive(key), addedTags.get(key));
+//		}
 	}
 
 	@Override

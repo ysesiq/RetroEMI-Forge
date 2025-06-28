@@ -174,7 +174,7 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
 //			String mod = EmiUtil.getModName(namespace);
 //			list.add(TooltipComponent.of(EmiLang.literal(mod, Formatting.BLUE, Formatting.ITALIC)));
             if (EmiConfig.appendModId || EmiConfig.appendItemModId)
-                list.add(TooltipComponent.of(Text.literal(GameData.findModOwner(GameData.itemRegistry.getNameForObject(stack.getItem())).getName()).formatted(Formatting.BLUE, Formatting.ITALIC)));
+                list.add(TooltipComponent.of(Text.literal(GameData.getItemRegistry().getNameForObject(stack.getItem())).formatted(Formatting.BLUE, Formatting.ITALIC)));
 			list.addAll(super.getTooltip());
 		}
 		return list;

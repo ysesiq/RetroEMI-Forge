@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.7.11",
-  "package": "net.xylose.emi.mixin.minecraft",
+  "package": "dev.emi.emi.mixin.minecraft",
   "refmap": "mixins.emi.refmap.json",
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
@@ -12,7 +12,11 @@
     "item.ItemStackMixin",
     "recipe.ShapedRecipesMixin",
     "recipe.ShapelessRecipesMixin",
-    "world.WorldMixin"
+    "world.WorldMixin",
+    "server.MinecraftServerMixin",
+    "server.ServerConfigurationManagerMixin",
+    "server.PlayerControllerMPMixin",
+    "packet.NetServerHandlerMixin"
   ],
   "client": [
     "client.SlotCraftingMixin",
@@ -28,12 +32,6 @@
     "client.GuiTextFieldMixin",
     "client.InventoryCraftingMixin",
     "packet.NetClientHandlerMixin"
-  ],
-  "server": [
-    "server.MinecraftServerMixin",
-    "server.PlayerControllerMPMixin",
-    "server.ServerConfigurationManagerMixin",
-    "packet.NetServerHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

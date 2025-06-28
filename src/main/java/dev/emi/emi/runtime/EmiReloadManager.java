@@ -159,7 +159,8 @@ public class EmiReloadManager {
 					if (restart) {
 						continue;
 					}
-					EmiData.defaultCategoryOrder();
+                    //TODO
+//					EmiData.defaultCategoryOrder();
 					step(EmiPort.literal("Baking index"));
 					EmiStackList.bake();
 					step(EmiPort.literal("Registering late recipes"), 10_000);

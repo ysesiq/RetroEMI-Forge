@@ -32,8 +32,7 @@ public class EMIPostInit {
 //			EmiAgnosForge.poke();
 //			if (!MinecraftServer.getServer().isServerRunning()) {
 				Client.init();
-//			}
-//			else {
+//			} else {
 //				Server.init();
 //			}
 			EmiMain.init();
