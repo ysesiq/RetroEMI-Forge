@@ -35,7 +35,7 @@ public class REMIEarlyMixins implements IFMLLoadingPlugin, IEarlyMixinLoader {
                 }
             }
         }
-        EmiLog.logger.info("Not loading the following EARLY mixins: {}");
+        EmiLog.LOG.info("Not loading the following EARLY mixins: {}");
 
         return mixins;
     }

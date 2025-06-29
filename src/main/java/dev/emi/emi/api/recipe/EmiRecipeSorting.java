@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.api.EMIResourceLocation;
+import net.xylose.emi.inject_interface.EMIResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 

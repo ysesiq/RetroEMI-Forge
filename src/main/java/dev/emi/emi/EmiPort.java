@@ -1,5 +1,7 @@
 package dev.emi.emi;
 
+import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
+import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.RecipeDefaultLoader;
@@ -7,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResource;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -84,6 +87,10 @@ public final class EmiPort {
 	public static void setPositionColorTexShader() {
 		glEnable(GL_TEXTURE_2D);
 	}
+
+    public static FMLControlledNamespacedRegistry<Item> getItemRegistry() {
+        return GameData.getItemRegistry();
+    }
 
 	public static ButtonWidget newButton(int x, int y, int w, int h, Text name, ButtonWidget.PressAction action) {
 		return ButtonWidget.builder(name, action).position(x, y).size(w, h).build();

@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.recipe;
 
-import net.xylose.emi.api.EMIShapedRecipes;
+import net.xylose.emi.inject_interface.EMIShapedRecipes;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;

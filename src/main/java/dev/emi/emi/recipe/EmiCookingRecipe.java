@@ -18,17 +18,19 @@ public class EmiCookingRecipe implements EmiRecipe {
 	private final EmiRecipeCategory category;
 	private final EmiIngredient input;
 	private final EmiStack output;
-	private int fuelMultiplier;
-	private float xp;
+    private final float exp;
+    private int fuelMultiplier;
+    private final boolean infiniBurn;
 
-	public EmiCookingRecipe(ResourceLocation id, ItemStack input, ItemStack output, EmiRecipeCategory category, int fuelMultiplier, float xp) {
-		this.id = id;
-		this.category = category;
-		this.input = EmiStack.of(input);
-		this.output = EmiStack.of(output);
-		this.fuelMultiplier = fuelMultiplier;
-		this.xp = xp;
-	}
+    public EmiCookingRecipe(ResourceLocation id, ItemStack input, ItemStack output, float exp, EmiRecipeCategory category, int fuelMultiplier, boolean infiniBurn) {
+        this.id = id;
+        this.category = category;
+        this.input = EmiStack.of(input);
+        this.output = EmiStack.of(output);
+        this.exp = exp;
+        this.fuelMultiplier = fuelMultiplier;
+        this.infiniBurn = infiniBurn;
+    }
 
 	@Override
 	public EmiRecipeCategory getCategory() {
@@ -62,14 +64,18 @@ public class EmiCookingRecipe implements EmiRecipe {
 
 	@Override
 	public void addWidgets(WidgetHolder widgets) {
-		int duration = (200 << fuelMultiplier); //OvenTileEntity.cookTimeMultiplier
-		widgets.addFillingArrow(24, 5, 50 * 200).tooltip((mx, my) -> com.rewindmc.retroemi.shim.java.List.of((TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.cooking.time", duration / 20))))));
-		widgets.addTexture(EmiTexture.EMPTY_FLAME, 1, 24);
-		widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, 1, 24, duration * 20, false, true, true);
-		widgets.addSlot(input, 0, 4);
-		widgets.addSlot(output, 56, 0).large(true).recipeContext(this);
-		if (xp != 0)
-			widgets.addText(EmiPort.ordered(EmiPort.translatable("emi.cooking.experience", xp)), 26, 28, -1, true);
+        widgets.addFillingArrow(24, 5, 50 * 200).tooltip((mx, my) -> {
+            return com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.cooking.time", 200 / 20f))));
+        });
+        if (infiniBurn) {
+            widgets.addTexture(EmiTexture.FULL_FLAME, 1, 24);
+        } else {
+            widgets.addTexture(EmiTexture.EMPTY_FLAME, 1, 24);
+            widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, 1, 24, 4000 / fuelMultiplier, false, true, true);
+        }
+        widgets.addText(EmiPort.ordered(EmiPort.translatable("emi.cooking.experience", exp)), 26, 28, -1, true);
+        widgets.addSlot(input, 0, 4);
+        widgets.addSlot(output, 56, 0).large(true).recipeContext(this);
 
 	}
 }

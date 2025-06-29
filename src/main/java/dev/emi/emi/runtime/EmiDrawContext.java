@@ -1,7 +1,6 @@
 package dev.emi.emi.runtime;
 
 import dev.emi.emi.api.stack.EmiIngredient;
-import net.xylose.emi.api.EMIMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
@@ -140,11 +139,11 @@ public class EmiDrawContext {
 	}
 
 	public void drawStack(EmiIngredient stack, int x, int y) {
-		stack.render(raw(), x, y, ((EMIMinecraft) client).getTimer().renderPartialTicks);
+		stack.render(raw(), x, y, client.timer.renderPartialTicks);
 	}
 
 	public void drawStack(EmiIngredient stack, int x, int y, int flags) {
-		drawStack(stack, x, y, ((EMIMinecraft) client).getTimer().renderPartialTicks, flags);
+		drawStack(stack, x, y, client.timer.renderPartialTicks, flags);
 	}
 
 	public void drawStack(EmiIngredient stack, int x, int y, float delta, int flags) {

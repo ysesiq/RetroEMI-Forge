@@ -1,6 +1,7 @@
 package dev.emi.emi.recipe;
 
 import dev.emi.emi.EmiPort;
+import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
@@ -65,9 +66,10 @@ public class EmiFuelRecipe implements EmiRecipe {
 
 	@Override
 	public void addWidgets(WidgetHolder widgets) {
-		widgets.addTexture(EmiTexture.EMPTY_FLAME, 1, 1);
-		widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, 1, 1, 1000 * time / 20, false, true, true);
-		widgets.addSlot(stack, 18, 0).recipeContext(this);
-		widgets.addText(EmiPort.translatable("emi.fuel_number.items", String.format("%.1f", (time / 200f))), 38, 0, -1, true);
-	}
+        widgets.addTexture(EmiTexture.EMPTY_FLAME, 1, 1);
+        widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, 1, 1, 1000 * time / 20, false, true, true);
+        widgets.addSlot(stack, 18, 0).recipeContext(this);
+        widgets.addText(EmiPort.translatable("emi.fuel_time.items",
+            EmiRenderHelper.TEXT_FORMAT.format(time / 200f)), 38, 5, -1, true);
+    }
 }

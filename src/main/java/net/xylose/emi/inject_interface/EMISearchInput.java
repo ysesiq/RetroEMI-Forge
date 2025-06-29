@@ -1,4 +1,4 @@
-package net.xylose.emi.api;
+package net.xylose.emi.inject_interface;
 
 public interface EMISearchInput {
     boolean getEMISearchInput();

@@ -287,12 +287,7 @@ emi.chess.multiplayer.unavailable=%s can't play chess
 
 emi.cooking.time=%s Seconds
 emi.cooking.experience=%s XP
-emi.fuel_time.items=Burns for %s
-emi.fuel_number.items=Burns for %s items
-emi.fuel_heat.items=Heat level %s
-emi.craft_difficult.items=%s Difficulty
-emi.craft_time.items=%s S
-emi.exp_cost.items=%s XP
+emi.fuel_time.items=Burns for %s items
 
 emi.trade.BlacksmithVillagerEntity=Requires Rank %d Blacksmith
 emi.trade.PriestVillagerEntity=Requires Rank %d Priest

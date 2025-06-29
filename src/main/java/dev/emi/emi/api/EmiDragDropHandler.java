@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.Bounds;
-import net.xylose.emi.api.EMIGuiContainerCreative;
+import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;

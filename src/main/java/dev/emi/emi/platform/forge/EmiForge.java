@@ -16,16 +16,14 @@ public class EmiForge {
     public static final String MODID = "emi";
     public static final String NAME = "EMI";
     public static final String VERSION = "alpha";
-    public static SimpleNetworkWrapper network;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        EmiMain.init();
+//        EmiMain.init();
     }
 
     @Mod.EventHandler
     public void postInit(FMLInitializationEvent event) {
         EMIPostInit.initEMI();
-        network = NetworkRegistry.INSTANCE.newSimpleChannel(NAME);
     }
 }

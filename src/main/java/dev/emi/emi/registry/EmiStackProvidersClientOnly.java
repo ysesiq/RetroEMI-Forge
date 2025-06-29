@@ -4,7 +4,7 @@ import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.EmiStackInteraction;
-import net.xylose.emi.api.EMISlotCrafting;
+import net.xylose.emi.inject_interface.EMISlotCrafting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;

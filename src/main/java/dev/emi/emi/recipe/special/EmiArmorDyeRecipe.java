@@ -17,14 +17,19 @@ import net.minecraft.util.DyeColor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EmiArmorDyeRecipe extends EmiPatternCraftingRecipe {
-	public static final List<Object> DYEABLE_ITEMS = Arrays.stream(Item.itemRegistry.getKeys().toArray())
-			.filter(i -> i != null)
-			.filter(i -> i instanceof ItemArmor a && a.getArmorMaterial() == ItemArmor.ArmorMaterial.CLOTH).collect(java.util.stream.Collectors.toList());
-	private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(c -> DyeItem.byColor(c)).collect(java.util.stream.Collectors.toList());
+	public static final List<Item> DYEABLE_ITEMS =
+    ((Set<String>) Item.itemRegistry.getKeys())
+        .stream()
+            .map(name -> (Item) Item.itemRegistry.getObject(name))
+        .filter(i -> i != null)
+        .filter(i -> i instanceof ItemArmor a && a.getArmorMaterial() == ItemArmor.ArmorMaterial.CLOTH)
+        .collect(Collectors.toList());
+    private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(c -> DyeItem.byColor(c)).collect(java.util.stream.Collectors.toList());
 
 	private final Item armor;
 

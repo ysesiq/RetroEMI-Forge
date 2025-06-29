@@ -5,9 +5,9 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import net.xylose.emi.api.EMIInventoryCrafting;
-import net.xylose.emi.api.EMISlot;
-import net.xylose.emi.api.EMISlotCrafting;
+import net.xylose.emi.inject_interface.EMIInventoryCrafting;
+import net.xylose.emi.inject_interface.EMISlot;
+import net.xylose.emi.inject_interface.EMISlotCrafting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.*;
 

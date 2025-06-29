@@ -72,11 +72,6 @@ public class EmiConfig {
 	@ConfigValue("general.search-id-by-default")
 	public static boolean searchIdByDefault = true;
 
-	@Comment("Whether normal search queries should include the pinyin, need Pinin_Lib Mod and zh_CN language.This option is not recommended for non-Chinese users.")
-	@ConfigValue("general.search-name-by-pinyin")
-	@ConfigGroupEnd
-	public static boolean searchNameByPinyin = true;
-
 	// UI
 
 	@Comment("Where to display status effects in the inventory.")
@@ -691,16 +686,14 @@ public class EmiConfig {
 		defineType(double.class, (css, annot, field) -> field.setDouble(null, css.getDouble(annot).get()));
 		defineType(String.class, (css, annot, field) -> {
 			String s = css.get(annot).get();
-			// Nil's QDCSS handles quoted strings on its own
-			//				s = s.substring(1, s.length() - 1);
+            s = s.substring(1, s.length() - 1);
 			field.set(null, s);
 		}, (String field) -> "\"" + field + "\"");
 		defineMultiType(EmiBind.class, (css, annot, field) -> {
 			List<String> strings = Lists.newArrayList(css.getAll(annot));
 			for (int i = 0; i < strings.size(); i++) {
 				String s = strings.get(i);
-				s = s.substring(1, s.length() - 1);
-				strings.set(i, s);
+				strings.set(i, s.substring(1, s.length() - 1));
 			}
 			((EmiBind) field.get(null)).setKey(strings);
 		}, (EmiBind field) -> {

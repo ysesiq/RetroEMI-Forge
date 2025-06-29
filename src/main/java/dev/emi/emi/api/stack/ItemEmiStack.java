@@ -1,9 +1,11 @@
 package dev.emi.emi.api.stack;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.EmiUtil;
 import dev.emi.emi.Prototype;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.platform.EmiAgnos;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 @ApiStatus.Internal
 public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
@@ -106,7 +109,8 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
 		EmiDrawContext context = EmiDrawContext.wrap(draw);
 		ItemStack stack = getItemStack();
 		if ((flags & RENDER_ICON) != 0) {
-			glEnable(GL_DEPTH_TEST);
+            glEnable(GL_RESCALE_NORMAL);
+            glEnable(GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
 			if (stack.getItem() instanceof ItemBlock && stack.getItemDamage() == 32767) stack.setItemDamage(0);
 			draw.drawItem(stack, x, y);
@@ -170,12 +174,16 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
 		List<TooltipComponent> list = Lists.newArrayList();
 		if (!isEmpty()) {
             list.addAll(EmiAgnos.getItemTooltip(stack));
-//			String namespace = EmiPort.getItemRegistry().getId(stack.getItem()).getNamespace();
-//			String mod = EmiUtil.getModName(namespace);
-//			list.add(TooltipComponent.of(EmiLang.literal(mod, Formatting.BLUE, Formatting.ITALIC)));
-            if (EmiConfig.appendModId || EmiConfig.appendItemModId)
-                list.add(TooltipComponent.of(Text.literal(GameData.getItemRegistry().getNameForObject(stack.getItem())).formatted(Formatting.BLUE, Formatting.ITALIC)));
-			list.addAll(super.getTooltip());
+            //String namespace = EmiPort.getItemRegistry().getNameForObject(stack.getItem());
+            //String mod = EmiUtil.getModName(namespace);
+            //list.add(TooltipComponent.of(Text.literal(mod).formatted(Formatting.BLUE, Formatting.ITALIC)));
+            if (EmiConfig.appendModId || EmiConfig.appendItemModId) {
+                String stackNamespace = GameData.getItemRegistry().getNameForObject(stack.getItem());
+                String modNamespaceBase = stackNamespace.replaceAll(":.*", "");
+                String modNamespace = modNamespaceBase.substring(0, 1).toUpperCase() + modNamespaceBase.substring(1);
+                list.add(TooltipComponent.of(Text.literal(modNamespace).formatted(Formatting.BLUE, Formatting.ITALIC)));
+            }
+            list.addAll(super.getTooltip());
 		}
 		return list;
 	}
@@ -185,7 +193,7 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
 		if (isEmpty()) {
 			return EmiPort.literal("");
 		}
-		return Text.literal(getItemStack().getDisplayName());
+		return Text.translatable(getItemStack().getUnlocalizedName() + ".name");
 	}
 
 	static class ItemEntry {

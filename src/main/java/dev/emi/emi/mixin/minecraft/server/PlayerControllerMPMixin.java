@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.server;
 
-import net.xylose.emi.api.EMIPlayerControllerMP;
+import net.xylose.emi.inject_interface.EMIPlayerControllerMP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import org.spongepowered.asm.mixin.Final;

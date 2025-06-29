@@ -1,8 +1,8 @@
 package dev.emi.emi.mixin.minecraft.client;
 
 import dev.emi.emi.screen.EmiScreenManager;
-import net.xylose.emi.api.EMIGuiContainerCreative;
-import net.xylose.emi.api.EMISearchInput;
+import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
+import net.xylose.emi.inject_interface.EMISearchInput;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;

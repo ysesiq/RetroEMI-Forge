@@ -1,4 +1,4 @@
-package net.xylose.emi.api;
+package net.xylose.emi.inject_interface;
 
 import net.minecraft.inventory.Slot;
 

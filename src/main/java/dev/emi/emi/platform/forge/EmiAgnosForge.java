@@ -1,9 +1,17 @@
 package dev.emi.emi.platform.forge;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.ModMetadata;
+import dev.emi.emi.api.EmiPluginRegistry;
+import org.objectweb.asm.Type;
+
+import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.InputPair;
 import dev.emi.emi.Prototype;
+import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.runtime.EmiLog;
@@ -33,8 +41,11 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,33 +63,15 @@ public class EmiAgnosForge extends EmiAgnos {
 	public static void poke() {
 	}
 
-//	@Override
-//	protected String getModNameAgnos(String namespace) {
-//		Optional<ModContainer> container = FishModLoader.getModContainer(namespace);
-//		if (container.isPresent()) {
-//			return container.get().getMetadata().getName();
-//		}
-//		return namespace;
-//	}
-
 	@Override
 	protected String getModNameAgnos(String namespace) {
-        if (namespace.equals("c")) {
-            return "Common";
+        try {
+            String name = this.getModContainer(namespace).getName();
+            return name == null ? "Minecraft" : name;
+        } catch (NullPointerException exception) {
+            return "";
         }
-
-        ModContainer container = getModContainer(namespace);
-        if (container != null) {
-            return container.getMetadata().name;
-        }
-
-        container = getModContainer(namespace.replace('_', '-'));
-        if (container != null) {
-            return container.getMetadata().name;
-        }
-
-        return WordUtils.capitalizeFully(namespace.replace('_', ' '));
-    }
+	}
 
     private ModContainer getModContainer(String namespace) {
         for (ModContainer mod : Loader.instance().getActiveModList()) {
@@ -133,18 +126,32 @@ public class EmiAgnosForge extends EmiAgnos {
 
     @Override
     protected List<EmiPluginContainer> getPluginsAgnos() {
-        List<EmiPluginContainer> plugins = new ArrayList<>();
-
-        for (ModContainer container : Loader.instance().getActiveModList()) {
-            if (container.getMetadata().name.equals("EMI")) {
-                plugins.add(new EmiPluginContainer(new VanillaPlugin(), container.getModId()));
-            }
-        }
-
-        plugins.add(new EmiPluginContainer(new VanillaPlugin(), "minecraft"));
-
-        return plugins;
+        return EmiPluginRegistry.getPlugins();
     }
+
+//    protected List<EmiPluginContainer> getPluginsAgnos() {
+//        List<EmiPluginContainer> containers = Lists.newArrayList();
+//        for (ModContainer mod : Loader.instance().getActiveModList()) {
+//            ModMetadata metadata = mod.getMetadata();
+//            if (metadata.containsKey("emiPlugin")) {
+//                String pluginClassName = (String) metadata.get("emiPlugin");
+//                try {
+//                    Class<?> clazz = Class.forName(pluginClassName);
+//                    if (EmiPlugin.class.isAssignableFrom(clazz)) {
+//                        @SuppressWarnings("unchecked")
+//                        Class<? extends EmiPlugin> pluginClass = (Class<? extends EmiPlugin>) clazz;
+//                        EmiPlugin plugin = pluginClass.newInstance();
+//                        containers.add(new EmiPluginContainer(plugin, mod.getModId()));
+//                    } else {
+//                        EmiLog.error("EmiEntrypoint " + pluginClassName + " does not implement EmiPlugin");
+//                    }
+//                } catch (Throwable t) {
+//                    EmiLog.error("Exception constructing entrypoint:", t);
+//                }
+//            }
+//        }
+//        return containers;
+//    }
 
 	private Stream<EmiPluginContainer> createPlugin(String clazzName, String id) {
 		try {
@@ -170,11 +177,13 @@ public class EmiAgnosForge extends EmiAgnos {
 	@Override
 	protected void addBrewingRecipesAgnos(EmiRegistry registry) {
 		var tebs = new TileEntityBrewingStand();
-		var ingredience = Arrays.stream(Item.itemRegistry.getKeys().toArray(new Object[0]))
+		var ingredience = ((Set<String>) Item.itemRegistry.getKeys())
+            .stream()
+            .map(name -> (Item) Item.itemRegistry.getObject(name))
             .filter(i -> i != null && ((Item) i).isPotionIngredient(new ItemStack((Item) i)))
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
 
-		Map<InputPair, Prototype> recipes = new HashMap<>();
+        Map<InputPair, Prototype> recipes = new HashMap<>();
 		IntList potions = new IntArrayList();
 		potions.add(0); // water bottle
 		IntSet seenPotions = new IntLinkedOpenHashSet();
@@ -293,7 +302,7 @@ public class EmiAgnosForge extends EmiAgnos {
 	protected List<TooltipComponent> getItemTooltipAgnos(ItemStack stack) {
 		List<String> tip = stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
 		for (int i = 0; i < tip.size(); i++) {
-			tip.set(i, "§" + (i == 0 ? Integer.toHexString(stack.getRarity().rarityColor.getFormattingCode()) : "7") + tip.get(i));
+			tip.set(i, "§" + (i == 0 ? stack.getRarity().rarityColor.getFormattingCode() : "7") + tip.get(i));
 		}
 		return tip.stream()
 				.map(Text::literal).map(TooltipComponent::of)

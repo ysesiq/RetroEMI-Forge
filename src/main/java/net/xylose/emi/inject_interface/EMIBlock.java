@@ -1,6 +1,4 @@
-package net.xylose.emi.api;
-
-import net.minecraft.init.Blocks;
+package net.xylose.emi.inject_interface;
 
 public interface EMIBlock {
 //    default Blocks hideFromEMI() {

@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.client;
 
-import net.xylose.emi.api.EMIInventoryCrafting;
+import net.xylose.emi.inject_interface.EMIInventoryCrafting;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;

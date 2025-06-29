@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.client;
 
-import net.xylose.emi.api.EMIGuiTextField;
+import net.xylose.emi.inject_interface.EMIGuiTextField;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import org.spongepowered.asm.mixin.Mixin;

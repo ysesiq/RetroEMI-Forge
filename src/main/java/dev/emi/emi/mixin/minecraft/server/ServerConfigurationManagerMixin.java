@@ -15,10 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerConfigurationManager.class)
 public class ServerConfigurationManagerMixin {
-
     @Shadow @Final private MinecraftServer mcServer;
 
-    @Inject(method = "playerLoggedIn", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/management/ServerConfigurationManager;sendPacketToAllPlayers(Lnet/minecraft/network/Packet;)V", shift = At.Shift.AFTER))
+    @Inject(method = "playerLoggedIn", at = @At("HEAD"))
     private void loggedInEMIPack(EntityPlayerMP par1EntityPlayerMP, CallbackInfo ci) {
         EmiNetwork.sendToClient(par1EntityPlayerMP, new PingS2CPacket(this.mcServer.isDedicatedServer() || (this.mcServer instanceof IntegratedServer integratedServer && integratedServer.getPublic())));
     }

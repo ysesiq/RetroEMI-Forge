@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.client;
 
-import net.xylose.emi.api.EMIResourceLocation;
+import net.xylose.emi.inject_interface.EMIResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,9 +23,4 @@ public class ResourceLocationMixin implements EMIResourceLocation {
         if (i != 0) return i;
         return this.resourceDomain.compareTo(that.getResourceDomain());
     }
-
-//    @Inject(method = "exists", at = @At("RETURN"), cancellable = true)
-//    public void exists(CallbackInfoReturnable<Boolean> cir) {
-//        cir.setReturnValue(true);
-//    }
 }

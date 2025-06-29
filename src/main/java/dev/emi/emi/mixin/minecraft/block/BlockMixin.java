@@ -1,16 +1,8 @@
 package dev.emi.emi.mixin.minecraft.block;
 
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.data.EmiRemoveFromIndex;
-import net.xylose.emi.api.EMIBlock;
+import net.xylose.emi.inject_interface.EMIBlock;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Block.class)
 public class BlockMixin implements EMIBlock {

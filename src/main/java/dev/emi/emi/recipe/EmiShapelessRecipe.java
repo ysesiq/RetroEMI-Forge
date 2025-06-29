@@ -3,7 +3,7 @@ package dev.emi.emi.recipe;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.api.EMIShapelessRecipes;
+import net.xylose.emi.inject_interface.EMIShapelessRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapelessRecipes;

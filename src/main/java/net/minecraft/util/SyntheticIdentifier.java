@@ -4,14 +4,13 @@ import dev.emi.emi.Prototype;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.api.EMIShapedRecipes;
-import net.xylose.emi.api.EMIShapelessRecipes;
+import net.xylose.emi.inject_interface.EMIShapedRecipes;
+import net.xylose.emi.inject_interface.EMIShapelessRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.nbt.StringNbtReader;
 
 import java.util.Arrays;
 import java.util.List;

@@ -5,9 +5,6 @@ import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
-import net.minecraft.block.Block;
-import net.minecraft.init.Items;
-import net.xylose.emi.api.EMIItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -16,8 +13,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class EmiRepairItemRecipe extends EmiPatternCraftingRecipe {
-    public static final List<Object> TOOLS =
-        Arrays.stream(Item.itemRegistry.getKeys().toArray()).filter(i -> i != null && ((Item)Item.itemRegistry.getObject(i)).isRepairable()).collect(Collectors.toList());
+
+    public static final List<Item> TOOLS =
+        ((Set<String>) Item.itemRegistry.getKeys())
+            .stream()
+            .map(name -> (Item) Item.itemRegistry.getObject(name))
+            .filter(item -> item != null && item.isRepairable())
+            .collect(Collectors.toList());
     private final Item tool;
 
 	public EmiRepairItemRecipe(Item tool, ResourceLocation id) {

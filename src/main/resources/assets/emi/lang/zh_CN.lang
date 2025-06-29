@@ -286,12 +286,7 @@ emi.chess.multiplayer.unavailable=%s 不能玩棋
 
 emi.cooking.time=%s 秒
 emi.cooking.experience=%s 经验
-emi.fuel_time.items=烧炼 %s
-emi.fuel_number.items=烧炼 %s 个物品
-emi.fuel_heat.items=热值 %s 级
-emi.craft_difficult.items=%s 难度
-emi.craft_time.items=%s 秒
-emi.exp_cost.items=%s 经验
+emi.fuel_time.items=烧炼 %s 个物品
 
 emi.trade.BlacksmithVillagerEntity=需要等级 %d 铁匠
 emi.trade.PriestVillagerEntity=需要等级 %d 牧师

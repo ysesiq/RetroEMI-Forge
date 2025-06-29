@@ -88,10 +88,8 @@ public class EmiSearch {
 					idString = String.valueOf(Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()));
 				}
 				ids.add(stack, idString + "/" + stack.getItemStack().getItemDamage());
-			}
-			catch (Exception e) {
-				EmiLog.error("EMI caught an exception while baking search for " + stack);
-				EmiLog.error(e);
+			} catch (Exception e) {
+				EmiLog.error("EMI caught an exception while baking search for " + stack, e);
 			}
 		}
 		for (Supplier<dev.emi.emi.data.EmiAlias> supplier : EmiData.aliases) {
@@ -187,10 +185,6 @@ public class EmiSearch {
 						constructors.add(QueryType.MOD.queryConstructor);
 						regexConstructors.add(QueryType.MOD.regexQueryConstructor);
 					}
-					if (EmiConfig.searchNameByPinyin && Objects.equals(Minecraft.getMinecraft().gameSettings.language, "zh_CN") && Loader.isModLoaded("pinin")) {
-						constructors.add(QueryType.PINYIN.queryConstructor);
-						regexConstructors.add(QueryType.PINYIN.regexQueryConstructor);
-					}
 					if (EmiConfig.searchTagsByDefault) {
 						constructors.add(QueryType.TAG.queryConstructor);
 						regexConstructors.add(QueryType.TAG.regexQueryConstructor);
@@ -226,11 +220,9 @@ public class EmiSearch {
 		public boolean test(EmiStack stack) {
 			if (fullQuery == null) {
 				return true;
-			}
-			else if (EmiSearch.bakedStacks.contains(stack)) {
+			} else if (EmiSearch.bakedStacks.contains(stack)) {
 				return fullQuery.matches(stack);
-			}
-			else {
+			} else {
 				return fullQuery.matchesUnbaked(stack);
 			}
 		}
@@ -284,8 +276,7 @@ public class EmiSearch {
 					}
 				}
 				apply(this, Lists.newArrayList(stacks));
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				EmiLog.error("Error when attempting to search:");
 				e.printStackTrace();
 			}

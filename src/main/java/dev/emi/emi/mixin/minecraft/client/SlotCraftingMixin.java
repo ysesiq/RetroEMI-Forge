@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.minecraft.client;
 
-import net.xylose.emi.api.EMISlotCrafting;
+import net.xylose.emi.inject_interface.EMISlotCrafting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;

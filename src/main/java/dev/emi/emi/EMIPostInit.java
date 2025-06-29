@@ -4,11 +4,9 @@ import dev.emi.emi.data.EmiData;
 import dev.emi.emi.network.*;
 import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.platform.EmiMain;
-import net.xylose.emi.api.EMIPlayerControllerMP;
-import dev.emi.emi.platform.forge.EmiAgnosForge;
+import net.xylose.emi.inject_interface.EMIPlayerControllerMP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
-import net.minecraft.server.MinecraftServer;
 import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.network.PacketByteBuf;
 

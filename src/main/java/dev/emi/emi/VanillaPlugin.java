@@ -25,8 +25,9 @@ import dev.emi.emi.api.recipe.*;
 import dev.emi.emi.api.render.EmiRenderable;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.*;
-import net.xylose.emi.api.EMIGuiContainerCreative;
-import net.xylose.emi.api.EMIShapelessRecipes;
+import net.minecraft.util.SyntheticIdentifier;
+import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
+import net.xylose.emi.inject_interface.EMIShapelessRecipes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -54,30 +55,30 @@ import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.*;
 @EmiEntrypoint
 public class VanillaPlugin implements EmiPlugin {
 	public static EmiRecipeCategory TAG =
-			new EmiRecipeCategory(new ResourceLocation("emi:tag"), EmiStack.of(Item.getItemFromBlock(Blocks.iron_ore)), simplifiedRenderer(240, 208),
+			new EmiRecipeCategory(new ResourceLocation("emi", "tag"), EmiStack.of(Item.getItemFromBlock(Blocks.iron_ore)), simplifiedRenderer(240, 208),
 					EmiRecipeSorting.none());
 
 	public static EmiRecipeCategory INGREDIENT =
-			new EmiRecipeCategory(new ResourceLocation("emi:ingredient"), EmiStack.of(Items.compass), simplifiedRenderer(240, 208));
+			new EmiRecipeCategory(new ResourceLocation("emi", "ingredient"), EmiStack.of(Items.compass), simplifiedRenderer(240, 208));
 	public static EmiRecipeCategory RESOLUTION =
-			new EmiRecipeCategory(new ResourceLocation("emi:resolution"), EmiStack.of(Items.compass), simplifiedRenderer(240, 208));
+			new EmiRecipeCategory(new ResourceLocation("emi", "resolution"), EmiStack.of(Items.compass), simplifiedRenderer(240, 208));
 
 	static {
-		CRAFTING = new EmiRecipeCategory(new ResourceLocation("minecraft:crafting"), EmiStack.of(Blocks.crafting_table), simplifiedRenderer(240, 240),
+		CRAFTING = new EmiRecipeCategory(new ResourceLocation("minecraft", "crafting"), EmiStack.of(Blocks.crafting_table), simplifiedRenderer(240, 240),
 				EmiRecipeSorting.compareOutputThenInput());
-		SMELTING = new EmiRecipeCategory(new ResourceLocation("minecraft:smelting"), EmiStack.of(Blocks.lit_furnace), simplifiedRenderer(224, 240),
+		SMELTING = new EmiRecipeCategory(new ResourceLocation("minecraft", "smelting"), EmiStack.of(Blocks.furnace), simplifiedRenderer(224, 240),
 				EmiRecipeSorting.compareOutputThenInput());
-		ANVIL_REPAIRING = new EmiRecipeCategory(new ResourceLocation("emi:anvil_repairing"), EmiStack.of(Blocks.anvil), simplifiedRenderer(240, 224),
+		ANVIL_REPAIRING = new EmiRecipeCategory(new ResourceLocation("emi", "anvil_repairing"), EmiStack.of(Blocks.anvil), simplifiedRenderer(240, 224),
 				EmiRecipeSorting.none());
-		BREWING = new EmiRecipeCategory(new ResourceLocation("minecraft:brewing"), EmiStack.of(Items.brewing_stand), simplifiedRenderer(224, 224),
+		BREWING = new EmiRecipeCategory(new ResourceLocation("minecraft", "brewing"), EmiStack.of(Items.brewing_stand), simplifiedRenderer(224, 224),
 				EmiRecipeSorting.none());
-		WORLD_INTERACTION = new EmiRecipeCategory(new ResourceLocation("emi:world_interaction"), EmiStack.of(Item.getItemFromBlock(Blocks.grass)),
+		WORLD_INTERACTION = new EmiRecipeCategory(new ResourceLocation("emi", "world_interaction"), EmiStack.of(Item.getItemFromBlock(Blocks.grass)),
 				simplifiedRenderer(208, 224), EmiRecipeSorting.none());
 		EmiRenderable flame = (matrices, x, y, delta) -> {
 			EmiTexture.FULL_FLAME.render(matrices, x + 1, y + 1, delta);
 		};
-		FUEL = new EmiRecipeCategory(new ResourceLocation("emi:fuel"), flame, flame, EmiRecipeSorting.compareInputThenOutput());
-		INFO = new EmiRecipeCategory(new ResourceLocation("emi:info"), EmiStack.of(Items.written_book), simplifiedRenderer(208, 224), EmiRecipeSorting.none());
+		FUEL = new EmiRecipeCategory(new ResourceLocation("emi", "fuel"), flame, flame, EmiRecipeSorting.compareInputThenOutput());
+		INFO = new EmiRecipeCategory(new ResourceLocation("emi", "info"), EmiStack.of(Items.written_book), simplifiedRenderer(208, 224), EmiRecipeSorting.none());
 	}
 
 	@Override
@@ -104,7 +105,7 @@ public class VanillaPlugin implements EmiPlugin {
 
         registry.addWorkstation(CRAFTING, EmiStack.of(new ItemStack(Blocks.crafting_table, 1, 0)));
         registry.addWorkstation(ANVIL_REPAIRING, EmiStack.of(Blocks.anvil));
-		registry.addWorkstation(SMELTING, EmiStack.of(Blocks.lit_furnace));
+		registry.addWorkstation(SMELTING, EmiStack.of(Blocks.furnace));
 		registry.addWorkstation(BREWING, EmiStack.of(Items.brewing_stand));
 		registry.addWorkstation(WORLD_INTERACTION, EmiStack.of(Blocks.grass));
 
@@ -187,13 +188,11 @@ public class VanillaPlugin implements EmiPlugin {
 			return false;
 		};
 
-        //TODO
-//		for (Object o : EmiRepairItemRecipe.TOOLS) {
-//            Item i = (Item) o;
-//			if (!hiddenItems.contains(i)) {
-//				addRecipeSafe(registry, () -> new EmiRepairItemRecipe(i, synthetic("crafting/repairing", EmiUtil.subId(i))));
-//			}
-//		}
+		for (Item i : EmiRepairItemRecipe.TOOLS) {
+			if (!hiddenItems.contains(i)) {
+				addRecipeSafe(registry, () -> new EmiRepairItemRecipe(i, synthetic("crafting/repairing", EmiUtil.subId(i))));
+			}
+		}
 
 		for (IRecipe recipe : (List<IRecipe>) registry.getRecipeManager().getRecipeList()) {
 			if (recipe instanceof RecipesMapExtending map) {
@@ -210,32 +209,30 @@ public class VanillaPlugin implements EmiPlugin {
 			} else if (recipe instanceof ShapelessRecipes shapeless) {
 				addRecipeSafe(registry, () -> new EmiShapelessRecipe((EMIShapelessRecipes) shapeless, shapeless), recipe);
 			} else if (recipe instanceof RecipesArmorDyes dye) {
-//				for (Item i : EmiArmorDyeRecipe.DYEABLE_ITEMS) {
-//					if (!hiddenItems.contains(i)) {
-//						addRecipeSafe(registry, () -> new EmiArmorDyeRecipe(i, synthetic("crafting/dying", EmiUtil.subId(i))), recipe);
-//					}
-//				}
+				for (Item i : EmiArmorDyeRecipe.DYEABLE_ITEMS) {
+					if (!hiddenItems.contains(i)) {
+						addRecipeSafe(registry, () -> new EmiArmorDyeRecipe(i, synthetic("crafting/dying", EmiUtil.subId(i))), recipe);
+					}
+				}
 			} else if (recipe instanceof RecipeFireworks fwork) {
-				// All firework recipes are one recipe in 1.6
+				// All firework recipes are one recipe in 1.7
 				addRecipeSafe(registry, () -> new EmiFireworkStarRecipe(new ResourceLocation("minecraft", "firework_star")), recipe);
 				addRecipeSafe(registry, () -> new EmiFireworkStarFadeRecipe(new ResourceLocation("minecraft", "firework_star_fade")), recipe);
 				addRecipeSafe(registry, () -> new EmiFireworkRocketRecipe(new ResourceLocation("minecraft", "firework_rocket")), recipe);
 			} else if (recipe instanceof RecipesMapCloning map) {
 				addRecipeSafe(registry, () -> new EmiMapCloningRecipe(new ResourceLocation("minecraft", "map_cloning")), recipe);
 			} else {
-				// No way to introspect arbitrary recipes in 1.6. :(
+				// No way to introspect arbitrary recipes in 1.7. :(
 			}
 		}
 
-        //TODO
-//		for (var recipe : ((Map<Integer, ItemStack>) FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
-//			int id = recipe.getKey();
-//            ItemStack in = new ItemStack(Item.getItemById(id));
-//            ItemStack out = recipe.getValue();
-//			TileEntityFurnace furnace = new TileEntityFurnace();
-//			int fuel = furnace.currentItemBurnTime;
-//			addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("minecraft", "furnace/" + id), in, out, SMELTING, fuel, Objects.requireNonNull(out.getItem()).getSmeltingExperience(out)));
-//		}
+        for (var recipe : ((Map<ItemStack, ItemStack>)FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
+            ItemStack in = recipe.getKey();
+            ItemStack out = recipe.getValue();
+            String id = in + "." + out;
+            float xp = FurnaceRecipes.smelting().func_151398_b(out);
+            addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("minecraft", "furnace/" + id), in, out, xp, SMELTING, 1, false));
+        }
 
 		for (Object obj : Item.itemRegistry) {
             Item i = (Item) obj;
@@ -243,77 +240,70 @@ public class VanillaPlugin implements EmiPlugin {
 			if (hiddenItems.contains(i)) {
 				continue;
 			}
-//			if (i.isRepairable()) {
-//				if (i instanceof ItemArmor ai && ai.getArmorMaterial() != null && ai.getArmorMaterial().getMaterialMobility() != 0) {
-//					var material = Item.itemsList[ai.getArmorMaterial().getMaterialMobility()];
-//					addRecipeSafe(registry, () -> new EmiAnvilRecipe(EmiStack.of(i), EmiStack.of(material),
-//							new ResourceLocation("minecraft", "anvil/armor/" + SyntheticIdentifier.describe(i) + "/" + SyntheticIdentifier.describe(material))));
-//				} else if (i instanceof ItemTool ti && ti.getToolMaterial().getMaterialMobility() != 0) {
-//					var material = Item.itemsList[ti.getToolMaterial().getMaterialMobility()];
-//					addRecipeSafe(registry, () -> new EmiAnvilRecipe(EmiStack.of(i), EmiStack.of(material),
-//							new ResourceLocation("minecraft", "anvil/tool/" + SyntheticIdentifier.describe(i) + "/" + SyntheticIdentifier.describe(material))));
-//				}
-//			}
-//			if (i.isDamageable() && !(i instanceof ItemAnvilBlock)) {
-//				addRecipeSafe(registry, () -> new EmiAnvilRepairToolRecipe(i, new ResourceLocation("minecraft", "anvil/repair/tool/" + SyntheticIdentifier.describe(i))));
-//				if (!(i instanceof ItemFishingRod) && !(i instanceof ItemCarrotOnAStick) && !(i instanceof ItemFlintAndSteel))
-//					addRecipeSafe(registry, () -> new EmiAnvilRepairItemRecipe(i, new ResourceLocation("minecraft", "anvil/repair/nugget/" + SyntheticIdentifier.describe(i))));
-//			}
-//			var is = new ItemStack(i);
-//			if (is.isEnchantable() && !(is.getItem() instanceof ItemAppleGold) && !(is.getItem() instanceof ItemBook) && !(is.getItem() instanceof ItemExpBottle) && !(is.getItem() instanceof ItemCarrotOnAStick)) {
-//				for (Enchantment e : EmiAnvilEnchantRecipe.ENCHANTMENTS) {
-//					if (e.canEnchantItem(is.getItem())) {
-//						int max = e.getNumLevels();
-//						int min = e.getLevel(is);
-//						while (min <= max) {
-//							int finalMin = min;
-//							if (max == min)
-//								addRecipeSafe(registry, () -> new EmiAnvilEnchantRecipe(i, e, finalMin,
-//										new ResourceLocation("minecraft", "anvil/enchant/" + SyntheticIdentifier.describe(i) + "/" + e.effectId + "/" + SyntheticIdentifier.describe(finalMin))));
-//							min++;
-//						}
-//					}
-//				}
-//				VanillaPlugin.addRecipeSafe(registry, () -> new EmiAnvilDisenchantRecipe(i, new ResourceLocation("minecraft", "anvil/disenchant/" + SyntheticIdentifier.describe(i))));
-//			}
-//		}
-//
-//		EmiAgnos.addBrewingRecipes(registry);
-//
-//		for (int i = 0; i < Item.itemsList.length; ++i) {
-//			Item item = Item.getItem(i);
-//			if (item instanceof ItemHoe itemHoe)
-//				addRecipeSafe(registry, () -> basicWorld(EmiStack.of(Blocks.dirt), EmiStack.of(itemHoe), EmiStack.of(Block.tilledField), new ResourceLocation("minecraft", item + "/tilling")));
-//			if (item instanceof ItemMattock itemMattock)
-//				addRecipeSafe(registry, () -> basicWorld(EmiStack.of(Blocks.dirt), EmiStack.of(itemMattock), EmiStack.of(Block.tilledField), new ResourceLocation("mite", item + "/tilling")));
-//			if (item instanceof ItemFood itemMeat && !itemMeat.is_cooked && itemMeat != Items.rotten_flesh)
-//				addRecipeSafe(registry, () -> basicWorld(EmiStack.of(itemMeat), EmiStack.of(Blocks.fire), EmiStack.of(itemMeat.getCookedItem()), new ResourceLocation("mite", item + String.valueOf(item.itemID) + "/fire")));
+			if (i.isRepairable()) {
+				if (i instanceof ItemArmor ai && ai.getArmorMaterial() != null) {
+					var material = ai.getArmorMaterial().func_151685_b();
+					addRecipeSafe(registry, () -> new EmiAnvilRecipe(EmiStack.of(i), EmiStack.of(material),
+							new ResourceLocation("minecraft", "anvil/armor/" + SyntheticIdentifier.describe(i) + "/" + SyntheticIdentifier.describe(material))));
+				} else if (i instanceof ItemTool ti && ti.func_150913_i() != null) {
+					var material = ti.func_150913_i().getRepairItemStack();
+					addRecipeSafe(registry, () -> new EmiAnvilRecipe(EmiStack.of(i), EmiStack.of(material),
+							new ResourceLocation("minecraft", "anvil/tool/" + SyntheticIdentifier.describe(i) + "/" + SyntheticIdentifier.describe(material))));
+				}
+			}
+			if (i.isDamageable()) {
+				addRecipeSafe(registry, () -> new EmiAnvilRepairToolRecipe(i, new ResourceLocation("minecraft", "anvil/repair/tool/" + SyntheticIdentifier.describe(i))));
+            }
+			var is = new ItemStack(i);
+			if (is.isItemEnchantable() && !(is.getItem() instanceof ItemBook) && !(is.getItem() instanceof ItemCarrotOnAStick)) {
+				for (Enchantment e : EmiAnvilEnchantRecipe.ENCHANTMENTS) {
+					if (e.canApply(is)) {
+						int max = e.getMaxLevel();
+						int min = EnchantmentHelper.getEnchantmentLevel(e.effectId, is);
+						while (min <= max) {
+							int finalMin = min;
+							if (max == min)
+								addRecipeSafe(registry, () -> new EmiAnvilEnchantRecipe(i, e, finalMin,
+										new ResourceLocation("minecraft", "anvil/enchant/" + SyntheticIdentifier.describe(i) + "/" + e.effectId + "/" + SyntheticIdentifier.describe(finalMin))));
+							min++;
+						}
+					}
+				}
+			}
 		}
 
-//		for (Item item : EmiArmorDyeRecipe.DYEABLE_ITEMS) {
-//			if (!hiddenItems.contains(item)) {
-//				continue;
-//			}
-//			EmiStack cauldron = EmiStack.of(Items.cauldron);
-//			EmiStack waterThird = EmiStack.of(Blocks.water
-////					, FluidUnit.BOTTLE
-//			);
-//			int uniq = EmiUtil.RANDOM.nextInt();
-//			addRecipeSafe(registry, () -> EmiWorldInteractionRecipe.builder()
-//					.id(synthetic("world/cauldron_washing", EmiUtil.subId(item)))
-//					.leftInput(EmiStack.EMPTY, s -> new GeneratedSlotWidget(r -> {
-//						ItemStack stack = new ItemStack(item);
-//						if (stack.hasTagCompound() && stack.getTagCompound().hasKey("display")) {
-//							stack.getTagCompound().getCompoundTag("display").removeTag("Color");
-//						}
-//						return EmiStack.of(stack);
-//					}, uniq, s.getBounds().x(), s.getBounds().y()))
-//					.rightInput(cauldron, true)
-//					.rightInput(waterThird, false)
-//					.output(EmiStack.of(item))
-//					.supportsRecipeTree(false)
-//					.build());
-//		}
+		EmiAgnos.addBrewingRecipes(registry);
+
+		for (Object obj : Item.itemRegistry) {
+            Item item = (Item) obj;
+			if (item instanceof ItemHoe itemHoe)
+				addRecipeSafe(registry, () -> basicWorld(EmiStack.of(Blocks.dirt), EmiStack.of(itemHoe), EmiStack.of(Blocks.farmland), new ResourceLocation("minecraft", item + "/tilling")));
+        }
+
+		for (Item item : EmiArmorDyeRecipe.DYEABLE_ITEMS) {
+			if (!hiddenItems.contains(item)) {
+				continue;
+			}
+			EmiStack cauldron = EmiStack.of(Items.cauldron);
+			EmiStack waterThird = EmiStack.of(Blocks.water
+//					, FluidUnit.BOTTLE
+			);
+			int uniq = EmiUtil.RANDOM.nextInt();
+			addRecipeSafe(registry, () -> EmiWorldInteractionRecipe.builder()
+					.id(synthetic("world/cauldron_washing", EmiUtil.subId(item)))
+					.leftInput(EmiStack.EMPTY, s -> new GeneratedSlotWidget(r -> {
+						ItemStack stack = new ItemStack(item);
+						if (stack.hasTagCompound() && stack.getTagCompound().hasKey("display")) {
+							stack.getTagCompound().getCompoundTag("display").removeTag("Color");
+						}
+						return EmiStack.of(stack);
+					}, uniq, s.getBounds().x(), s.getBounds().y()))
+					.rightInput(cauldron, true)
+					.rightInput(waterThird, false)
+					.output(EmiStack.of(item))
+					.supportsRecipeTree(false)
+					.build());
+		}
 
 		EmiStack water = EmiStack.of(Blocks.water
 //				, FluidUnit.BUCKET
@@ -354,7 +344,7 @@ public class VanillaPlugin implements EmiPlugin {
 				.output(EmiStack.of(Blocks.obsidian))
 				.build());
 
-		//need minecraft forge
+		//TODO
 //		for (var entry : LiquidContainerRegistry.getRegisteredLiquidContainerData()) {
 //			Fluid fluid = Fluid.of(entry.stillLiquid);
 //			if (entry.container.itemID == Items.BUCKET.itemID) {
