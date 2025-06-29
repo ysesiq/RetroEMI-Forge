@@ -1,5 +1,7 @@
 package dev.emi.emi.api.recipe;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -25,7 +27,7 @@ public class EmiInfoRecipe implements EmiRecipe {
 
 	public EmiInfoRecipe(List<EmiIngredient> stacks, List<Text> text, @Nullable ResourceLocation id) {
 		this.stacks = stacks;
-		this.text = !MinecraftServer.getServer().isServerRunning() ? text.stream().flatMap(
+		this.text = !FMLCommonHandler.instance().getSide().isServer() ? text.stream().flatMap(
 				t -> Arrays.stream(Minecraft.getMinecraft().fontRenderer.wrapFormattedStringToWidth(t.asString().replace("\\n", "\n"), getDisplayWidth() - 4).split("\n")).map(Text::literal)
 						.map(Text::asOrderedText)).collect(Collectors.toList()) : new ArrayList<>();
 		this.id = id;

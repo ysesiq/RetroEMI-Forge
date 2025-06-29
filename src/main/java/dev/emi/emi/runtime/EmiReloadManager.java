@@ -1,6 +1,8 @@
 package dev.emi.emi.runtime;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.data.EmiData;
@@ -181,7 +183,7 @@ public class EmiReloadManager {
 					step(EmiPort.literal("Finishing up"));
 					BoM.reload();
 					EmiPersistentData.load();
-					if (!MinecraftServer.getServer().isServerRunning()) {
+					if (!(FMLCommonHandler.instance().getSide().isServer())) {
 						EmiSearch.bake();
 						EmiScreenManager.search.update();
 						EmiScreenManager.forceRecalculate();

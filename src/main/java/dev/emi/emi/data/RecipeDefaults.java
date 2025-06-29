@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeManager;
@@ -48,7 +50,7 @@ public class RecipeDefaults {
 
 	public Map<EmiIngredient, EmiRecipe> bake() {
 		Map<EmiIngredient, EmiRecipe> map = Maps.newHashMap();
-		if (!MinecraftServer.getServer().isServerRunning()) {
+		if (!FMLCommonHandler.instance().getSide().isServer()) {
 			Minecraft client = Minecraft.getMinecraft();
 			if (client.theWorld == null) {
 				return map;

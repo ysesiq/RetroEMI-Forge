@@ -4,9 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameData;
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.config.EmiConfig;
+import dev.emi.emi.data.EmiAlias;
 import dev.emi.emi.data.EmiData;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiLog;
@@ -33,92 +35,113 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class EmiSearch {
-	public static final Pattern TOKENS = Pattern.compile("(-?[@#]?\\/(\\\\.|[^\\\\\\/])+\\/|[^\\s]+)");
-	private static volatile SearchWorker currentWorker = null;
+    public static final Pattern TOKENS = Pattern.compile(
+        "-?[@#$]?" // Any query can be negated or prefixed with type
+        + "(" // Query contents
+            + "\\/(\\\\.|[^\\\\\\/])+\\/" // Any regex contents, for example `/some thing/`
+            + "|"
+            + "\\\"(\\.|[^\\\"])+\\\"" // Any quoted contents, for example, `"some thing"`
+            + "|"
+            + "[^\\s|]+" // Any raw contents, split on space
+            + "|"
+            + "\\|" // Literal OR symbol
+            + "|"
+            + "\\&" // Literal AND symbol (currently ignored since queries AND by deafult, but parsed)
+        + ")");
+    private static volatile SearchWorker currentWorker = null;
 	public static volatile Thread searchThread = null;
 	public static volatile List<? extends EmiIngredient> stacks = EmiStackList.stacks;
 	public static volatile CompiledQuery compiledQuery;
 	public static Set<EmiStack> bakedStacks;
 	public static SuffixArray<EmiStack> names, tooltips, mods, aliases, ids;
 
-	public static <EmiAlias> void bake() {
-		SuffixArray<EmiStack> names = new SuffixArray<EmiStack>();
-		SuffixArray<EmiStack> tooltips = new SuffixArray<EmiStack>();
-		SuffixArray<EmiStack> mods = new SuffixArray<EmiStack>();
-		SuffixArray<EmiStack> aliases = new SuffixArray<EmiStack>();
-		SuffixArray<EmiStack> ids = new SuffixArray<EmiStack>();
-		Set<EmiStack> bakedStacks = Sets.newIdentityHashSet();
-		boolean old = EmiConfig.appendItemModId;
-		EmiConfig.appendItemModId = false;
-		for (EmiStack stack : EmiStackList.stacks) {
-			try {
-				EmiStack strictStack = stack;
-				bakedStacks.add(stack);
-				Text name = NameQuery.getText(stack);
-				if (name != null) {
-					names.add(strictStack, name.getString().toLowerCase());
-				}
-				List<Text> tooltip = stack.getTooltipText();
-				if (tooltip != null) {
-					for (int i = 1; i < tooltip.size(); i++) {
-						Text text = tooltip.get(i);
-						if (text != null) {
-							tooltips.add(strictStack, text.getString().toLowerCase());
-						}
-					}
-				}
-				ResourceLocation id = stack.getId();
-				EmiRecipe recipe = BoM.getRecipe(stack);
-				if (id != null) {
-					mods.add(stack, GameData.findModOwner(GameData.itemRegistry.getNameForObject(stack.getItemStack())).getName().toLowerCase().replace(" ", ""));
-					names.add(stack, id.toString());
-				}
-				//TODO search recipe id
-				if (recipe != null) {
-					names.add(stack, recipe.getId().toString());
-				}
-				String idString = "";
-				if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 10) {
-					idString = "000" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-				} else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 100) {
-					idString = "00" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-				} else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 1000) {
-					idString = "0" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-				} else {
-					idString = String.valueOf(Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()));
-				}
-				ids.add(stack, idString + "/" + stack.getItemStack().getItemDamage());
-			} catch (Exception e) {
-				EmiLog.error("EMI caught an exception while baking search for " + stack, e);
-			}
-		}
-		for (Supplier<dev.emi.emi.data.EmiAlias> supplier : EmiData.aliases) {
-			dev.emi.emi.data.EmiAlias alias = supplier.get();
-			for (String key : alias.keys()) {
-				if (!StringTranslate.getInstance().containsTranslateKey(key)) {
-					EmiReloadLog.warn("Untranslated alias " + key);
-				}
-				String text = RetroEMI.translate(key).toLowerCase();
-				for (EmiIngredient ing : alias.stacks()) {
-					for (EmiStack stack : ing.getEmiStacks()) {
-						aliases.add(stack.copy().comparison(Comparison.compareNbt()), text);
-					}
-				}
-			}
-		}
-		EmiConfig.appendItemModId = old;
-		names.build();
-		tooltips.build();
-		mods.build();
-		aliases.build();
-		ids.build();
-		EmiSearch.names = names;
-		EmiSearch.tooltips = tooltips;
-		EmiSearch.mods = mods;
-		EmiSearch.aliases = aliases;
-		EmiSearch.bakedStacks = bakedStacks;
-		EmiSearch.ids = ids;
-	}
+    public static void bake() {
+        SuffixArray<EmiStack> names = new SuffixArray<EmiStack>();
+        SuffixArray<EmiStack> tooltips = new SuffixArray<EmiStack>();
+        SuffixArray<EmiStack> mods = new SuffixArray<EmiStack>();
+        SuffixArray<EmiStack> aliases = new SuffixArray<EmiStack>();
+        SuffixArray<EmiStack> ids = new SuffixArray<EmiStack>();
+        Set<EmiStack> bakedStacks = Sets.newIdentityHashSet();
+        boolean old = EmiConfig.appendItemModId;
+        EmiConfig.appendItemModId = false;
+        for (EmiStack stack : EmiStackList.stacks) {
+            try {
+                EmiStack strictStack = stack;
+                bakedStacks.add(stack);
+                Text name = NameQuery.getText(stack);
+                if (name != null) {
+                    names.add(strictStack, name.getString().toLowerCase());
+                }
+                List<Text> tooltip = stack.getTooltipText();
+                if (tooltip != null) {
+                    for (int i = 1; i < tooltip.size(); i++) {
+                        Text text = tooltip.get(i);
+                        if (text != null) {
+                            tooltips.add(strictStack, text.getString().toLowerCase());
+                        }
+                    }
+                }
+                ResourceLocation id = stack.getId();
+                EmiRecipe recipe = BoM.getRecipe(stack);
+                if (id != null) {
+                    mods.add(stack, GameData.findModOwner(GameData.itemRegistry.getNameForObject(stack.getItemStack())).getName().toLowerCase().replace(" ", ""));
+                    names.add(stack, id.toString());
+                }
+                //TODO search recipe id
+                if (recipe != null) {
+                    names.add(stack, recipe.getId().toString());
+                }
+                String idString = "";
+                if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 10) {
+                    idString = "000" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
+                } else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 100) {
+                    idString = "00" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
+                } else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 1000) {
+                    idString = "0" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
+                } else {
+                    idString = String.valueOf(Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()));
+                }
+                ids.add(stack, idString + "/" + stack.getItemStack().getItemDamage());
+            } catch (Exception e) {
+                EmiLog.error("EMI caught an exception while baking search for " + stack, e);
+            }
+        }
+        for (Supplier<EmiAlias> supplier : EmiData.aliases) {
+            EmiAlias alias = supplier.get();
+            for (String key : alias.keys()) {
+                if (!StringTranslate.getInstance().containsTranslateKey(key)) {
+                    EmiReloadLog.warn("Untranslated alias " + key);
+                }
+                String text = RetroEMI.translate(key).toLowerCase();
+                for (EmiIngredient ing : alias.stacks()) {
+                    for (EmiStack stack : ing.getEmiStacks()) {
+                        aliases.add(stack.copy().comparison(Comparison.compareNbt()), text);
+                    }
+                }
+            }
+        }
+        for (EmiAlias.Baked alias : EmiStackList.registryAliases) {
+            for (Text text : alias.text()) {
+                for (EmiIngredient ing : alias.stacks()) {
+                    for (EmiStack stack : ing.getEmiStacks()) {
+                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text.getString().toLowerCase());
+                    }
+                }
+            }
+        }
+        EmiConfig.appendItemModId = old;
+        names.build();
+        tooltips.build();
+        mods.build();
+        aliases.build();
+        ids.build();
+        EmiSearch.names = names;
+        EmiSearch.tooltips = tooltips;
+        EmiSearch.mods = mods;
+        EmiSearch.aliases = aliases;
+        EmiSearch.bakedStacks = bakedStacks;
+        EmiSearch.ids = ids;
+    }
 
 	public static void update() {
 		search(EmiScreenManager.search.getText());

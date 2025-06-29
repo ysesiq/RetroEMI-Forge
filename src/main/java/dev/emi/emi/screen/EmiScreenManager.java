@@ -1,6 +1,7 @@
 package dev.emi.emi.screen;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
@@ -27,8 +28,10 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.EmiStackInteraction;
 import net.minecraft.item.Item;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.util.ChatComponentText;
+import net.xylose.emi.REMIForge;
 import net.xylose.emi.inject_interface.EMIGuiTextField;
 import net.xylose.emi.inject_interface.EMIPlayerControllerMP;
 import net.minecraft.client.Minecraft;
@@ -705,8 +708,7 @@ public class EmiScreenManager {
 					TooltipComponent.of(EmiPort.ordered(EmiConfig.deleteCursorStack.getBindText())));
 			if (space.rtl) {
 				EmiRenderHelper.drawLeftTooltip(screen, context, list, mouseX, mouseY);
-			}
-			else {
+			} else {
 				EmiRenderHelper.drawTooltip(screen, context, list, mouseX, mouseY);
 			}
 		}
@@ -920,18 +922,15 @@ public class EmiScreenManager {
 								space.batcher.repopulate();
 							}
 							return true;
-						}
-						else if (panel.getType() == SidebarType.CHESS) {
+						} else if (panel.getType() == SidebarType.CHESS) {
 							EmiChess.drop(draggedStack, getHoveredStack(mx, my, true).getStack());
 						}
-					}
-					else if (client.currentScreen != null) {
+					} else if (client.currentScreen != null) {
 						if (EmiDragDropHandlers.dropStack(client.currentScreen, draggedStack, mx, my)) {
 							return true;
 						}
 					}
-				}
-				else {
+				} else {
 					EmiStackInteraction hovered = getHoveredStack((int) mouseX, (int) mouseY, false);
 					if (draggedStack.isEmpty() && stackInteraction(hovered, bind -> bind.matchesMouse(button))) {
 						return true;
@@ -1245,18 +1244,19 @@ public class EmiScreenManager {
 		if (EmiClient.onServer) {
 			EmiNetwork.sendToServer(new CreateItemC2SPacket(mode, is));
 			return true;
-		}
-		else {
+		} else {
 			if (!ItemStacks.isEmpty(is)) {
-				int id = Item.getIdFromItem(is.getItem());
-				String command = "/give @p " + id + " " + amount + " " + is.getItemDamage();
-
-				if (is.hasTagCompound()) {
-					command += is.getTagCompound().toString();
+				String id = Item.itemRegistry.getNameForObject(is.getItem());
+                String command = "/give @p " + id;
+                command += " " + amount + " " + is.getItemDamage();
+                if (is.hasTagCompound()) {
+                    String nbt = REMIForge.sanitizeNBT(is.getTagCompound().toString());
+                    command += nbt;
 				}
-                ChatComponentText commandChatText = new ChatComponentText(command);
-                ((EMIPlayerControllerMP) client.playerController).getNetClientHandler().addToSendQueue(new S02PacketChat(commandChatText));
-				return true;
+                if (command.length() < 256) {
+                    ((EMIPlayerControllerMP) client.playerController).getNetClientHandler().addToSendQueue(new C01PacketChatMessage(command));
+                    return true;
+                }
 			}
 			return false;
 		}
@@ -1268,7 +1268,9 @@ public class EmiScreenManager {
 			ScreenSpace space = getHoveredSpace(mx, my);
 			if (!ItemStacks.isEmpty(cursor) && space != null && space.getType() == SidebarType.INDEX) {
 				client.thePlayer.inventory.setItemStack(null);
-				EmiNetwork.sendToServer(new CreateItemC2SPacket(1, null));
+                if (FMLCommonHandler.instance().getSide().isServer()) {
+                    EmiNetwork.sendToServer(new CreateItemC2SPacket(1, null));
+                }
 				return true;
 			}
 		}

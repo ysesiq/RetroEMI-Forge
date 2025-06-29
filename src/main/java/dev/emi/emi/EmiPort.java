@@ -2,6 +2,7 @@ package dev.emi.emi;
 
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
+import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.RecipeDefaultLoader;
@@ -109,4 +110,8 @@ public final class EmiPort {
 		manager.registerReloadListener(new EmiRemoveFromIndex());
 		manager.registerReloadListener(new EmiTagExclusionsLoader());
 	}
+
+    public static Comparison compareStrict() {
+        return Comparison.compareComponents();
+    }
 }
