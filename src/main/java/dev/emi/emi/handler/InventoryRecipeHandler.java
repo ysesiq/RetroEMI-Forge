@@ -7,7 +7,7 @@ import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import net.xylose.emi.inject_interface.EMIInventoryCrafting;
+import dev.emi.emi.mixin.minecraft.accessor.InventoryCraftingAccessor;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerWorkbench;
@@ -90,12 +90,12 @@ public class InventoryRecipeHandler implements StandardRecipeHandler<ContainerPl
 		int h = 0;
 		EmiCraftingRecipe ecr = null;
 		if (sh instanceof ContainerWorkbench arsh) {
-			w = ((EMIInventoryCrafting)arsh.craftMatrix).getInventoryWidth();
-			h = arsh.craftMatrix.getSizeInventory() / ((EMIInventoryCrafting)arsh.craftMatrix).getInventoryWidth();
+			w = ((InventoryCraftingAccessor)arsh.craftMatrix).getInventoryWidth();
+			h = arsh.craftMatrix.getSizeInventory() / ((InventoryCraftingAccessor)arsh.craftMatrix).getInventoryWidth();
 		}
 		if (sh instanceof ContainerPlayer arsh) {
-			w = ((EMIInventoryCrafting)arsh.craftMatrix).getInventoryWidth();
-			h = arsh.craftMatrix.getSizeInventory() / ((EMIInventoryCrafting)arsh.craftMatrix).getInventoryWidth();
+			w = ((InventoryCraftingAccessor)arsh.craftMatrix).getInventoryWidth();
+			h = arsh.craftMatrix.getSizeInventory() / ((InventoryCraftingAccessor)arsh.craftMatrix).getInventoryWidth();
 		}
 		if (recipe instanceof EmiCraftingRecipe crafting) {
 			ecr = crafting;

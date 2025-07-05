@@ -4,7 +4,7 @@ import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.EmiStackInteraction;
-import net.xylose.emi.inject_interface.EMISlotCrafting;
+import dev.emi.emi.mixin.minecraft.accessor.SlotCraftingAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
@@ -24,7 +24,7 @@ public class EmiStackProvidersClientOnly {
 		if (s instanceof SlotCrafting craf) {
 			// Emi be making assumptions
 			try {
-				InventoryCrafting inv = (InventoryCrafting) ((EMISlotCrafting) craf).getCraftMatrix();
+				InventoryCrafting inv = (InventoryCrafting) ((SlotCraftingAccessor) craf).getCraftMatrix();
 				Minecraft client = Minecraft.getMinecraft();
 				List<IRecipe> list = CraftingManager.getInstance().getRecipeList();
 				for (var r : list) {

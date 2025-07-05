@@ -3,6 +3,7 @@ package dev.emi.emi.api.recipe;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiFavorite;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class EmiPlayerInventory {
 	private final Comparison none = Comparison.DEFAULT_COMPARISON;
-	private final Comparison nbt = Comparison.compareNbt();
+	private final Comparison nbt = EmiPort.compareStrict();
 	public Map<EmiStack, EmiStack> inventory = Maps.newHashMap();
 
 	@Deprecated
@@ -119,9 +120,18 @@ public class EmiPlayerInventory {
 		for (EmiStack stack : inventory.keySet()) {
 			set.addAll(EmiApi.getRecipeManager().getRecipesByInput(stack));
 		}
-		return set.stream().filter(r -> !r.hideCraftable() && predicate.test(r) && !r.getOutputs().isEmpty()).map(EmiFavorite.Craftable::new)
-				.sorted(Comparator.comparingInt((EmiFavorite.Craftable a) -> EmiStackList.indices.getOrDefault(a.getStack(), Integer.MAX_VALUE)).thenComparingLong(EmiFavorite::getAmount)).collect(Collectors.toList());
-	}
+        return set.stream().filter(r -> !r.hideCraftable() && predicate.test(r) && r.getOutputs().size() > 0)
+            .map(r -> new EmiFavorite.Craftable(r))
+            .sorted((a, b) -> {
+                int i = Integer.compare(
+                    EmiStackList.getIndex(a.getStack()),
+                    EmiStackList.getIndex(b.getStack()));
+                if (i != 0) {
+                    return i;
+                }
+                return Long.compare(a.getAmount(), b.getAmount());
+            }).collect(Collectors.toList());
+    }
 
 	public List<Boolean> getCraftAvailability(EmiRecipe recipe) {
 		Object2LongMap<EmiStack> used = new Object2LongOpenHashMap<>();

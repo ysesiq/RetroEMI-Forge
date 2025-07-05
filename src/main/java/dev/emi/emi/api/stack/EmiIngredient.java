@@ -1,6 +1,5 @@
 package dev.emi.emi.api.stack;
 
-import dev.emi.emi.Prototype;
 import dev.emi.emi.registry.EmiTags;
 import dev.emi.emi.api.render.EmiRenderable;
 import net.minecraft.client.gui.DrawContext;
@@ -108,14 +107,12 @@ public interface EmiIngredient extends EmiRenderable {
 			for (EmiIngredient i : list) {
 				for (EmiStack s : i.getEmiStacks()) {
 					if (!s.isEmpty()) {
-						Class<?> tt = null;
-						if (s.getKey() instanceof Prototype) {
-							tt = Prototype.class;
-						}
-						if (tt == null) {
-							return new ListEmiIngredient(list, amount);
-						}
-						tagType = tt;
+//                        if (tagType == null) {
+//                            tagType = EmiTags.ADAPTERS_BY_CLASS.getKey(s.getKey().getClass());
+//                        }
+                        if (tagType == null || !tagType.isAssignableFrom(s.getKey().getClass())) {
+                            return new ListEmiIngredient(list, amount);
+                        }
 					}
 				}
 			}

@@ -3,12 +3,12 @@ package com.rewindmc.retroemi;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.mixin.minecraft.accessor.CraftingManagerAccessor;
+import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiSidebars;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.search.EmiSearch;
-import net.xylose.emi.inject_interface.EMICraftingManager;
-import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -24,23 +24,21 @@ import net.minecraft.util.SyntheticIdentifier;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.glColor4f;
-
 public class REMIMixinHooks {
-	static Minecraft minecraft = Minecraft.getMinecraft();
+	static Minecraft client = Minecraft.getMinecraft();
 
 	//GuiContainer
 	public static void renderBackground(int par1, int par2) {
 		EmiDrawContext context = EmiDrawContext.instance();
-		EmiScreenManager.drawBackground(context, par1, par2, minecraft.timer.renderPartialTicks);
+		EmiScreenManager.drawBackground(context, par1, par2, client.timer.renderPartialTicks);
 	}
 
 	public static void renderForegroundPre(int par1, int par2, Minecraft mc) {
 		GuiContainer screen = (GuiContainer) mc.currentScreen;
 		EmiDrawContext context = EmiDrawContext.instance();
 		context.push();
-		context.matrices().translate(-((EMIGuiContainerCreative) screen).getGuiLeft(), -((EMIGuiContainerCreative) screen).getGuiTop(), 0.0);
-		EmiScreenManager.render(context, par1, par2, minecraft.timer.renderPartialTicks);
+		context.matrices().translate(-((GuiContainerAccessor) screen).getGuiLeft(), -((GuiContainerAccessor) screen).getGuiTop(), 0.0);
+		EmiScreenManager.render(context, par1, par2, mc.timer.renderPartialTicks);
 		context.pop();
 	}
 
@@ -48,8 +46,8 @@ public class REMIMixinHooks {
 		GuiContainer screen = (GuiContainer) mc.currentScreen;
 		EmiDrawContext context = EmiDrawContext.instance();
 		context.push();
-		context.matrices().translate(-((EMIGuiContainerCreative) screen).getGuiLeft(), -((EMIGuiContainerCreative) screen).getGuiTop(), 0.0);
-		EmiScreenManager.drawForeground(context, par1, par2, minecraft.timer.renderPartialTicks);
+		context.matrices().translate(-((GuiContainerAccessor) screen).getGuiLeft(), -((GuiContainerAccessor) screen).getGuiTop(), 0.0);
+		EmiScreenManager.drawForeground(context, par1, par2, mc.timer.renderPartialTicks);
 		context.pop();
 	}
 
@@ -65,14 +63,14 @@ public class REMIMixinHooks {
 			}
 		}
 	}
+
 	//SlotCrafting
 	public static void onCrafting(EntityPlayer thePlayer, IInventory craftMatrix) {
 		World world = thePlayer.worldObj;
 		if (world.isRemote) {
 			try {
 				InventoryCrafting inv = (InventoryCrafting) craftMatrix;
-				Minecraft client = Minecraft.getMinecraft();
-				List<IRecipe> list = ((EMICraftingManager) CraftingManager.getInstance()).getRecipes();
+				List<IRecipe> list = ((CraftingManagerAccessor) CraftingManager.getInstance()).getRecipes();
 				for (var r : list) {
 					if (r.matches(inv, client.theWorld)) {
 						ResourceLocation id = new SyntheticIdentifier(r);
@@ -89,16 +87,17 @@ public class REMIMixinHooks {
 
 	//FontRenderer
 	public static int applyCustomFormatCodes(FontRenderer subject, String str, boolean shadow, int i) {
-		if (str.charAt(i+1) == 'x') {
-			int next = str.indexOf(String.valueOf('\u00a7') + "x", i+1);
+        EmiDrawContext context = EmiDrawContext.instance();
+		if (str.charAt(i + 1) == 'x') {
+			int next = str.indexOf(String.valueOf('\u00a7') + "x", i + 1);
 			if (next != -1) {
-				String s = str.substring(i+1, next);
+				String s = str.substring(i + 1, next);
 				int color = Integer.parseInt(s.replace(String.valueOf('\u00a7'), "").substring(1), 16);
 				if (shadow) {
 					color = (color & 16579836) >> 2 | color & -16777216;
 				}
 				subject.textColor = color;
-				glColor4f((color >> 16) / 255.0F, (color >> 8 & 255) / 255.0F, (color & 255) / 255.0F, subject.alpha);
+                context.setColor((color >> 16) / 255.0F, (color >> 8 & 255) / 255.0F, (color & 255) / 255.0F, subject.alpha);
 				i += s.length()+1;
 			}
 		}

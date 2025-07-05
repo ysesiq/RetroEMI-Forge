@@ -47,6 +47,6 @@ public class EmiTagRecipe extends EmiIngredientRecipe {
 
 	@Override
 	public ResourceLocation getId() {
-		return new ResourceLocation("emi", "tag/" + key.getFlavor() + "/" + EmiUtil.subId(key.id()));
+		return new ResourceLocation("emi", "tag/" + key.getTag().getResourcePath() + "/" + EmiUtil.subId(key.id()));
 	}
 }

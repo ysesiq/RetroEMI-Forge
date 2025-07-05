@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.bom.*;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.EmiRecipeCategoryProperties;
@@ -40,7 +41,6 @@ import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -113,10 +113,14 @@ public class BoMScreen extends REMIScreen {
 			costs.clear();
 			BoM.tree.calculateCost();
 
-			List<FlatMaterialCost> treeCosts = Stream.concat(BoM.tree.cost.costs.values().stream(), BoM.tree.cost.chanceCosts.values().stream())
-					.sorted((a, b) -> Integer.compare(EmiStackList.indices.getOrDefault(a.ingredient.getEmiStacks().get(0), Integer.MAX_VALUE),
-							EmiStackList.indices.getOrDefault(b.ingredient.getEmiStacks().get(0), Integer.MAX_VALUE))).collect(Collectors.toList());
-			int cy = nodeHeight * NODE_VERTICAL_SPACING * 2;
+            List<FlatMaterialCost> treeCosts = Stream.concat(
+                BoM.tree.cost.costs.values().stream(),
+                BoM.tree.cost.chanceCosts.values().stream()
+            ).sorted((a, b) -> Integer.compare(
+                EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
+                EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))
+            )).collect(Collectors.toList());
+            int cy = nodeHeight * NODE_VERTICAL_SPACING * 2;
 			int costX = 0;
 			for (FlatMaterialCost node : treeCosts) {
 				Cost cost = new Cost(node, costX, cy, false);
@@ -124,17 +128,14 @@ public class BoMScreen extends REMIScreen {
 					if (node instanceof ChanceMaterialCost cmc) {
 						if (!chanceProgressCosts.containsKey(node.ingredient)) {
 							cost.alreadyDone = node.getEffectiveAmount();
-						}
-						else {
+						} else {
 							ChanceMaterialCost progress = chanceProgressCosts.get(node.ingredient);
 							cost.alreadyDone = (long) Math.ceil(cmc.amount * cmc.chance - progress.amount * progress.chance);
 						}
-					}
-					else {
+					} else {
 						if (!progressCosts.containsKey(node.ingredient)) {
 							cost.alreadyDone = node.amount;
-						}
-						else {
+						} else {
 							FlatMaterialCost progress = progressCosts.get(node.ingredient);
 							cost.alreadyDone = node.amount - progress.amount;
 						}
@@ -153,9 +154,14 @@ public class BoMScreen extends REMIScreen {
 
 			List<Cost> remainders = Lists.newArrayList();
 
-			List<FlatMaterialCost> remainderCosts = Stream.concat(BoM.tree.cost.remainders.values().stream(), BoM.tree.cost.chanceRemainders.values().stream())
-					.sorted(Comparator.comparingInt(a -> EmiStackList.indices.getOrDefault(a.ingredient.getEmiStacks().get(0), Integer.MAX_VALUE))).collect(Collectors.toList());
-			cy += 40;
+            List<FlatMaterialCost> remainderCosts = Stream.concat(
+                BoM.tree.cost.remainders.values().stream(),
+                BoM.tree.cost.chanceRemainders.values().stream()
+            ).sorted((a, b) -> Integer.compare(
+                EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
+                EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))
+            )).collect(Collectors.toList());
+            cy += 40;
 			int remainderX = 0;
 			for (FlatMaterialCost node : remainderCosts) {
 				if (node.getEffectiveAmount() <= 0) {
@@ -194,7 +200,7 @@ public class BoMScreen extends REMIScreen {
 		float scale = getScale();
 		int scaledWidth = (int) (width / scale);
 		int scaledHeight = (int) (height / scale);
-		// TODO should be the ingredient width if higher, (todo from RetroEMI)
+		// TODO should be the ingredient width if higher
 		int contentWidth = nodeWidth * NODE_WIDTH;
 		int contentHeight = nodeHeight * NODE_VERTICAL_SPACING + 80;
 		int xBound = scaledWidth / 2 + contentWidth - 100;

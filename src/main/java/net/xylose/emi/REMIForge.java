@@ -11,4 +11,8 @@ public class REMIForge {
         }
         return nbt;
     }
+
+    public static String replaceCharAt(String s, int index, char c) {
+        return s.substring(0, index) + c + s.substring(index + 1);
+    }
 }

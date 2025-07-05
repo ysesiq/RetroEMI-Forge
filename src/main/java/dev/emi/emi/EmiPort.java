@@ -1,11 +1,14 @@
 package dev.emi.emi;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.RecipeDefaultLoader;
+import dev.emi.emi.registry.EmiRecipes;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -15,13 +18,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glEnable;
@@ -93,6 +101,14 @@ public final class EmiPort {
         return GameData.getItemRegistry();
     }
 
+    public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
+        return GameData.getBlockRegistry();
+    }
+
+    public static Map<String, Fluid> getFluidRegistry() {
+        return FluidRegistry.getRegisteredFluids();
+    }
+
 	public static ButtonWidget newButton(int x, int y, int w, int h, Text name, ButtonWidget.PressAction action) {
 		return ButtonWidget.builder(name, action).position(x, y).size(w, h).build();
 	}
@@ -105,6 +121,10 @@ public final class EmiPort {
 		widget.setFocused(focused);
 	}
 
+    public static ResourceLocation getId(IRecipe recipe) {
+        return EmiRecipes.recipeIds.get(recipe);
+    }
+
 	public static void registerReloadListeners(IReloadableResourceManager manager) {
 		manager.registerReloadListener(new RecipeDefaultLoader());
 		manager.registerReloadListener(new EmiRemoveFromIndex());
@@ -113,5 +133,21 @@ public final class EmiPort {
 
     public static Comparison compareStrict() {
         return Comparison.compareComponents();
+    }
+
+    public static NBTTagCompound emptyExtraData() {
+        return null;
+    }
+
+    public static ResourceLocation id(String id) {
+        return new ResourceLocation(id);
+    }
+
+    public static ResourceLocation id(String namespace, String path) {
+        return new ResourceLocation(namespace, path);
+    }
+
+    public static void applyModelViewMatrix() {
+        RenderSystem.applyModelViewMatrix();
     }
 }

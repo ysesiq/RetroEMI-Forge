@@ -3,8 +3,9 @@ package dev.emi.emi.registry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.screen.Bounds;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.screen.EmiScreen;
+import dev.emi.emi.screen.EmiScreenBase;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.api.EmiExclusionArea;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,7 +24,8 @@ public class EmiExclusionAreas {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static List<Bounds> getExclusion(GuiScreen screen) {
+	public static List<Bounds> getExclusion(EmiScreenBase base) {
+        GuiScreen screen = base.screen();
 		List<Bounds> list = Lists.newArrayList();
 		if (RetroEMI.emify(screen) instanceof EmiScreen emi) {
 			int left = emi.emi$getLeft();
@@ -52,8 +54,7 @@ public class EmiExclusionAreas {
 				});
 			}
 		} catch (Exception e) {
-			EmiLog.error("Exception thrown when adding exclusion areas");
-			e.printStackTrace();
+			EmiLog.error("Exception thrown when adding exclusion areas", e);
 		}
 		return list;
 	}

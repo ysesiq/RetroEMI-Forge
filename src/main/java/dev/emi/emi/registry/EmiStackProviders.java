@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import dev.emi.emi.api.EmiStackProvider;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.EmiStackInteraction;
-import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
+import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
@@ -41,7 +41,7 @@ public class EmiStackProviders {
 			}
 		}
 		if (notClick && screen instanceof GuiContainer handled) {
-			Slot s = ((EMIGuiContainerCreative) handled).getTheSlot();
+			Slot s = ((GuiContainerAccessor) handled).getTheSlot();
 			if (s != null) {
 				ItemStack stack = s.getStack();
 				if (!ItemStacks.isEmpty(stack)) {

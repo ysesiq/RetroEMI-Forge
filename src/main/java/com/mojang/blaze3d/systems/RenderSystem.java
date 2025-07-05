@@ -3,6 +3,11 @@ package com.mojang.blaze3d.systems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
+
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -37,7 +42,22 @@ public class RenderSystem {
     }
 
     public static void applyModelViewMatrix() {
-        // it's already applied
+        FloatBuffer currentMatrix = BufferUtils.createFloatBuffer(16);
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, currentMatrix);
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.load(currentMatrix);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadMatrix(matrixToFloatBuffer(matrix4f));
+    }
+
+    public static FloatBuffer matrixToFloatBuffer(Matrix4f matrix) {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+        buffer.put(matrix.m00).put(matrix.m01).put(matrix.m02).put(matrix.m03);
+        buffer.put(matrix.m10).put(matrix.m11).put(matrix.m12).put(matrix.m13);
+        buffer.put(matrix.m20).put(matrix.m21).put(matrix.m22).put(matrix.m23);
+        buffer.put(matrix.m30).put(matrix.m31).put(matrix.m32).put(matrix.m33);
+        buffer.flip();
+        return buffer;
     }
 
     public static void setShaderColor(float r, float g, float b, float a) {

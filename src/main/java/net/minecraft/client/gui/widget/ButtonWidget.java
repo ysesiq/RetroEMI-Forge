@@ -13,8 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ButtonWidget
-		extends ClickableWidget {
+public class ButtonWidget extends ClickableWidget {
 	public static final int DEFAULT_WIDTH_SMALL = 120;
 	public static final int DEFAULT_WIDTH = 150;
 	public static final int DEFAULT_HEIGHT = 20;

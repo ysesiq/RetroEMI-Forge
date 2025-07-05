@@ -14,11 +14,11 @@ public abstract class EmiPatternCraftingRecipe extends EmiCraftingRecipe {
 	protected final int unique = EmiUtil.RANDOM.nextInt();
 
 	public EmiPatternCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id) {
-		super(input, output, id, null);
+		super(input, output, id);
 	}
 
 	public EmiPatternCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id, boolean shapeless) {
-		super(input, output, id, shapeless, null);
+		super(input, output, id, shapeless);
 	}
 
 	public abstract SlotWidget getInputWidget(int slot, int x, int y);

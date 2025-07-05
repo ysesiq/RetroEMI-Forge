@@ -3,12 +3,15 @@ package dev.emi.emi.screen;
 import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.SidebarSide;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiFavorite;
+import dev.emi.emi.runtime.EmiHistory;
+import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.widget.ResolutionButtonWidget;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
 import dev.emi.emi.api.EmiApi;
@@ -35,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RecipeScreen extends REMIScreen implements EmiScreen {
 	private static final ResourceLocation TEXTURE = new ResourceLocation("emi", "textures/gui/background.png");
@@ -53,19 +57,26 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 	private int minimumWidth = 176;
 	int backgroundWidth = minimumWidth;
 	int backgroundHeight = 200;
-	public int x = (this.width - backgroundWidth) / 2;
-	public int y = (this.height - backgroundHeight) / 2;
+    int x = (this.width - backgroundWidth) / 2;
+    int y = (this.height - backgroundHeight) / 2;
 
 	public RecipeScreen(GuiContainer old, Map<EmiRecipeCategory, List<EmiRecipe>> recipes) {
 		super(EmiPort.translatable("screen.emi.recipe"));
 		this.old = old;
-		arrows = com.rewindmc.retroemi.shim.java.List.of(new SizedButtonWidget(x + 2, y - 18, 12, 12, 0, 0, () -> tabs.size() > tabPageSize, w -> setPage(tabPage - 1, tab, page)),
-				new SizedButtonWidget(x + backgroundWidth - 14, y - 18, 12, 12, 12, 0, () -> tabs.size() > tabPageSize, w -> setPage(tabPage + 1, tab, page)),
-				new SizedButtonWidget(x + 5, y + 5, 12, 12, 0, 0, () -> tabs.size() > 1, w -> setPage(tabPage, tab - 1, 0)),
-				new SizedButtonWidget(x + backgroundWidth - 17, y + 5, 12, 12, 12, 0, () -> tabs.size() > 1, w -> setPage(tabPage, tab + 1, 0)),
-				new SizedButtonWidget(x + 5, y + 18, 12, 12, 0, 0, () -> tabs.get(tab).getPageCount() > 1, w -> setPage(tabPage, tab, page - 1)),
-				new SizedButtonWidget(x + backgroundWidth - 17, y + 18, 12, 12, 12, 0, () -> tabs.get(tab).getPageCount() > 1,
-						w -> setPage(tabPage, tab, page + 1)));
+		arrows = com.rewindmc.retroemi.shim.java.List.of(
+			new SizedButtonWidget(x + 2, y - 18, 12, 12, 0, 0,
+				() -> tabs.size() > tabPageSize, w -> setPage(tabPage - 1, tab, page)),
+			new SizedButtonWidget(x + backgroundWidth - 14, y - 18, 12, 12, 12, 0,
+				() -> tabs.size() > tabPageSize, w -> setPage(tabPage + 1, tab, page)),
+			new SizedButtonWidget(x + 5, y + 5, 12, 12, 0, 0,
+				() -> tabs.size() > 1, w -> setPage(tabPage, tab - 1, 0)),
+			new SizedButtonWidget(x + backgroundWidth - 17, y + 5, 12, 12, 12, 0,
+				() -> tabs.size() > 1, w -> setPage(tabPage, tab + 1, 0)),
+			new SizedButtonWidget(x + 5, y + 18, 12, 12, 0, 0,
+				() -> tabs.get(tab).getPageCount() > 1, w -> setPage(tabPage, tab, page - 1)),
+			new SizedButtonWidget(x + backgroundWidth - 17, y + 18, 12, 12, 12, 0,
+				() -> tabs.get(tab).getPageCount() > 1, w -> setPage(tabPage, tab, page + 1))
+		);
 		resolve = null;
 		this.recipes = recipes;
 	}
@@ -75,7 +86,7 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 		super.init();
 		minimumWidth = Math.max(EmiConfig.minimumRecipeScreenWidth, 56);
 		backgroundWidth = minimumWidth;
-		backgroundHeight = height - 52 - EmiConfig.verticalMargin;
+		backgroundHeight = Math.min(EmiConfig.maximumRecipeScreenHeight, height - 52 - EmiConfig.verticalMargin);
 		x = (this.width - backgroundWidth) / 2;
 		y = (this.height - backgroundHeight) / 2 + 1;
 		this.tabPageSize = (minimumWidth - 32) / 24;
@@ -90,22 +101,23 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 		}
 		if (recipes != null) {
 			EmiRecipe current = null;
-			if (tab < tabs.size() && page < tabs.get(tab).getPageCount() && !tabs.get(tab).getPage(page).isEmpty()) {
+			if (tab < tabs.size() && page < tabs.get(tab).getPageCount() && tabs.get(tab).getPage(page).size() > 0) {
 				current = tabs.get(tab).getPage(page).get(0).recipe;
 			}
 			tabs.clear();
 			if (!recipes.isEmpty()) {
-				for (Map.Entry<EmiRecipeCategory, List<EmiRecipe>> entry : recipes.entrySet().stream().sorted((a, b) -> {
-					int ai = EmiApi.getRecipeManager().getCategories().indexOf(a.getKey());
-					int bi = EmiApi.getRecipeManager().getCategories().indexOf(b.getKey());
-					if (ai < 0) {
-						ai = Integer.MAX_VALUE;
-					}
-					if (bi < 0) {
-						bi = Integer.MAX_VALUE;
-					}
-					return ai - bi;
-				}).collect(java.util.stream.Collectors.toList())) {
+				for (Map.Entry<EmiRecipeCategory, List<EmiRecipe>> entry : recipes.entrySet().stream()
+						.sorted((a, b) -> {
+							int ai = EmiApi.getRecipeManager().getCategories().indexOf(a.getKey());
+							int bi = EmiApi.getRecipeManager().getCategories().indexOf(b.getKey());
+							if (ai < 0) {
+								ai = Integer.MAX_VALUE;
+							}
+							if (bi < 0) {
+								bi = Integer.MAX_VALUE;
+							}
+							return ai - bi;
+						}).collect(Collectors.toList())) {
 					List<EmiRecipe> set = entry.getValue();
 					if (!set.isEmpty()) {
 						RecipeTab tab = new RecipeTab(entry.getKey(), set);
@@ -162,7 +174,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 		for (int i = tp; i < tabs.size() && i < tp + tabPageSize; i++) {
 			RecipeTab tab = tabs.get(i);
 			int sOff = (i == this.tab ? 2 : 0);
-			EmiRenderHelper.drawNinePatch(context, TEXTURE, x + tabOff + off * 24 + 16, y - 24 - sOff, 24, 27 + sOff, i == this.tab ? 9 : 18, 0, 4, 1);
+			EmiRenderHelper.drawNinePatch(context, TEXTURE, x + tabOff + off * 24 + 16, y - 24 - sOff, 24, 27 + sOff,
+				i == this.tab ? 9 : 18, 0, 4, 1);
 			tab.category.render(context.raw(), x + tabOff + off++ * 24 + 20, y - 20 - (i == this.tab ? 2 : 0), delta);
 		}
 
@@ -181,8 +194,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 			text = EmiPort.literal(client.fontRenderer.trimStringToWidth(text.asString(), (minimumWidth - 40) - extraWidth) + "...");
 		}
 		context.drawCenteredTextWithShadow(text, x + backgroundWidth / 2, y + 7, categoryNameColor);
-		context.drawCenteredTextWithShadow(EmiRenderHelper.getPageText(this.page + 1, tab.getPageCount(), minimumWidth - 40), x + backgroundWidth / 2, y + 21,
-				0xffffff);
+		context.drawCenteredTextWithShadow(EmiRenderHelper.getPageText(this.page + 1, tab.getPageCount(), minimumWidth - 40),
+			x + backgroundWidth / 2, y + 21, 0xffffff);
 
 		List<EmiIngredient> workstations = EmiApi.getRecipeManager().getWorkstations(tab.category);
 		int workstationAmount = Math.min(workstations.size(), getMaxWorkstations());
@@ -194,11 +207,9 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 			}
 			if (EmiConfig.workstationLocation == SidebarSide.LEFT) {
 				EmiRenderHelper.drawNinePatch(context, TEXTURE, bounds.x() - 5, bounds.y() - 5, 28, 10 + 18 * workstationAmount + offset, 36, 0, 5, 1);
-			}
-			else if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
+			} else if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
 				EmiRenderHelper.drawNinePatch(context, TEXTURE, bounds.x() - 5, bounds.y() - 5, 28, 10 + 18 * workstationAmount + offset, 47, 0, 5, 1);
-			}
-			else if (EmiConfig.workstationLocation == SidebarSide.BOTTOM) {
+			} else if (EmiConfig.workstationLocation == SidebarSide.BOTTOM) {
 				EmiRenderHelper.drawNinePatch(context, TEXTURE, bounds.x() - 5, bounds.y() - 5, 10 + 18 * workstationAmount + offset, 28, 58, 0, 5, 1);
 			}
 		}
@@ -207,13 +218,13 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 			int my = mouseY - group.y();
 			context.push();
 			context.matrices().translate(group.x(), group.y(), 0);
+			EmiPort.applyModelViewMatrix();
 			try {
 				for (Widget widget : group.widgets) {
 					widget.render(context.raw(), mx, my, delta);
 				}
-			}
-			catch (Throwable e) {
-				e.printStackTrace();
+			} catch (Throwable e) {
+				EmiLog.error("Error rendering widget", e);
 				group.error(e);
 			}
 			for (Widget widget : group.widgets) {
@@ -222,10 +233,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 						GuiContainer hs = EmiApi.getHandledScreen();
 						EmiRecipeHandler handler = EmiRecipeFiller.getFirstValidHandler(group.recipe, hs);
 						if (handler != null) {
-							handler.render(group.recipe, new EmiCraftContext(hs, handler.getInventory(hs), EmiCraftContext.Type.FILL_BUTTON), group.widgets,
-									context.raw());
-						}
-						else if (EmiScreenManager.lastPlayerInventory != null) {
+							handler.render(group.recipe, new EmiCraftContext(hs, handler.getInventory(hs), EmiCraftContext.Type.FILL_BUTTON), group.widgets, context.raw());
+						} else if (EmiScreenManager.lastPlayerInventory != null) {
 							StandardRecipeHandler.renderMissing(group.recipe, EmiScreenManager.lastPlayerInventory, group.widgets, context.raw());
 						}
 						break;
@@ -233,13 +242,17 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 				}
 			}
 			context.pop();
+			EmiPort.applyModelViewMatrix();
 		}
 		EmiScreenManager.drawBackground(context, mouseX, mouseY, delta);
 		EmiScreenManager.render(context, mouseX, mouseY, delta);
 		EmiScreenManager.drawForeground(context, mouseX, mouseY, delta);
 		super.render(context.raw(), mouseX, mouseY, delta);
 		if (categoryHovered) {
-			context.raw().drawTooltip(client.fontRenderer, com.rewindmc.retroemi.shim.java.List.of(tab.category.getName(), EmiPort.translatable("emi.view_all_recipes")), mouseX, mouseY);
+			context.raw().drawTooltip(client.fontRenderer, com.rewindmc.retroemi.shim.java.List.of(
+				tab.category.getName(),
+				EmiPort.translatable("emi.view_all_recipes")
+			), mouseX, mouseY);
 		}
 		hoveredWidget = null;
 		outer:
@@ -257,9 +270,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 						}
 					}
 				}
-			}
-			catch (Throwable e) {
-				e.printStackTrace();
+			} catch (Throwable e) {
+				EmiLog.error("Error rendering widget group", e);
 				group.error(e);
 			}
 		}
@@ -289,8 +301,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 
 	public int getMaxWorkstations() {
 		return switch (EmiConfig.workstationLocation) {
-			case LEFT, RIGHT -> (this.backgroundHeight - getResolveOffset() - 16) / 16;
-			case BOTTOM -> (this.backgroundWidth - getResolveOffset() - 16) / 16;
+			case LEFT, RIGHT -> (this.backgroundHeight - getResolveOffset() - 18) / 18;
+			case BOTTOM -> (this.backgroundWidth - getResolveOffset() - 18) / 18;
 			default -> 0;
 		};
 	}
@@ -307,11 +319,9 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 		}
 		if (EmiConfig.workstationLocation == SidebarSide.LEFT) {
 			return new Bounds(this.x - 18, this.y + 9 + getResolveOffset() + i * 18 + offset, 18, 18);
-		}
-		else if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
+		} else if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
 			return new Bounds(this.x + this.backgroundWidth, this.y + 9 + getResolveOffset() + i * 18 + offset, 18, 18);
-		}
-		else if (EmiConfig.workstationLocation == SidebarSide.BOTTOM) {
+		} else if (EmiConfig.workstationLocation == SidebarSide.BOTTOM) {
 			return new Bounds(this.x + 5 + getResolveOffset() + i * 18 + offset, this.y + this.backgroundHeight - 23, 18, 18);
 		}
 		return Bounds.EMPTY;
@@ -382,8 +392,7 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 	public int wrap(int value, int size) {
 		if (value >= size) {
 			return 0;
-		}
-		else if (value < 0) {
+		} else if (value < 0) {
 			return size - 1;
 		}
 		return value;
@@ -407,9 +416,10 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 				for (Widget widget : group.widgets) {
 					if (widget.getBounds().contains(ox, oy)) {
 						if (widget instanceof SlotWidget slot) {
-							pressedSlot = widget;
-						}
-						else {
+							if (pressedSlot == null) {
+								pressedSlot = widget;
+							}
+						} else {
 							if (widget.mouseClicked(ox, oy, button)) {
 								return true;
 							}
@@ -421,7 +431,7 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 					return true;
 				}
 			} catch (Throwable e) {
-				e.printStackTrace();
+				EmiLog.error("Error handling widget input", e);
 				group.error(e);
 			}
 		}
@@ -453,9 +463,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 							return true;
 						}
 					}
-				}
-				catch (Throwable e) {
-					e.printStackTrace();
+				} catch (Throwable e) {
+					EmiLog.error("Error handling widget input", e);
 					group.error(e);
 				}
 			}
@@ -492,15 +501,13 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		if (EmiScreenManager.mouseScrolled(mouseX, mouseY, amount)) {
 			return true;
-		}
-		else if (mouseX > x && mouseX < x + backgroundWidth && mouseY < x + backgroundHeight) {
+		} else if (mouseX > x && mouseX < x + backgroundWidth && mouseY < x + backgroundHeight) {
 			scrollAcc += amount;
 			int sa = (int) scrollAcc;
 			scrollAcc %= 1;
-			if (EmiInput.isShiftDown()) {
+			if (EmiInput.isShiftDown() || mouseY < this.y) {
 				setPage(tabPage, tab - sa, 0);
-			}
-			else {
+			} else {
 				setPage(tabPage, tab, page - sa);
 			}
 		}
@@ -544,14 +551,13 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 					return true;
 				}
 			} catch (Throwable e) {
-				e.printStackTrace();
+				EmiLog.error("Error handling widget input", e);
 				group.error(e);
 			}
 		}
 		if (keyCode == GLFW.GLFW_KEY_LEFT) {
 			setPage(tabPage, tab - 1, 0);
-		}
-		else if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+		} else if (keyCode == GLFW.GLFW_KEY_RIGHT) {
 			setPage(tabPage, tab + 1, 0);
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
@@ -568,7 +574,7 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 
 	@Override
 	public void close() {
-		this.client.displayGuiScreen(old);
+		EmiHistory.popUntil(s -> !(s instanceof RecipeScreen), old);
 	}
 
 	@Override
@@ -576,13 +582,26 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 		return false;
 	}
 
-	@Override
-	public int emi$getLeft() {
+	public Bounds getBounds() {
+		int top = y - 26;
+		int bottom = y + backgroundHeight;
+		int left = x;
+		int right = x + backgroundWidth;
 		if (EmiConfig.workstationLocation == SidebarSide.LEFT) {
-			return x - 22;
+			left -= 22;
+		} else if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
+			right += 22;
 		}
-		return x;
+		return new Bounds(left, top, right - left, bottom - top);
 	}
+
+    @Override
+    public int emi$getLeft() {
+        if (EmiConfig.workstationLocation == SidebarSide.LEFT) {
+            return x - 22;
+        }
+        return x;
+    }
 
 	@Override
 	public int emi$getRight() {

@@ -47,9 +47,9 @@ public class EmiConfig {
 	@ConfigValue("general.help-level")
 	public static HelpLevel helpLevel = HelpLevel.NORMAL;
 
-//	@Comment("Where EMI should pull stacks from to populate the index.")
-//	@ConfigValue("general.index-source")
-//	public static IndexSource indexSource = IndexSource.CREATIVE;
+	@Comment("Where EMI should pull stacks from to populate the index.")
+	@ConfigValue("general.index-source")
+	public static IndexSource indexSource = IndexSource.CREATIVE;
 
 	@ConfigGroup("general.search")
 	@Comment("Which sidebar should be searched using the search bar.")
@@ -130,15 +130,21 @@ public class EmiConfig {
 	@ConfigValue("ui.recipe-tree-button-visibility")
 	public static ButtonVisibility recipeTreeButtonVisibility = ButtonVisibility.AUTO;
 
+    @ConfigGroup("ui.recipe-screen")
+    @Comment("The maximum height the recipe screen will grow to be if space is available in pixels.")
+    @ConfigValue("ui.maximum-recipe-screen-height")
+    public static int maximumRecipeScreenHeight = 256;
+
+    @Comment("The minimum width of the recipe screen in pixels. "
+        + "Controls how many tabs there can be, and where the page switching buttons go. "
+        + "The default is 176, the width of most screens.")
+    @ConfigValue("ui.minimum-recipe-screen-width")
+    public static int minimumRecipeScreenWidth = 176;
+
 	@ConfigGroup("ui.recipe-screen")
 	@Comment("The amount of vertical margin to give in the recipe screen.")
 	@ConfigValue("ui.vertical-margin")
 	public static int verticalMargin = 20;
-
-	@Comment("The minimum width of the recipe screen in pixels. " + "Controls how many tabs there can be, and where the page switching buttons go. " +
-			"The default is 176, the width of most screens.")
-	@ConfigValue("ui.minimum-recipe-screen-width")
-	public static int minimumRecipeScreenWidth = 176;
 
 	@ConfigFilter("ui.workstation-location")
 	private static Predicate<SidebarSide> workstationLocationFilter = side -> {

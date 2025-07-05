@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.data.IndexStackData;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.api.stack.Comparison;
@@ -59,7 +60,7 @@ public class EmiHidden {
 			EmiIngredient stack = EmiIngredientSerializer.getDeserialized(el).copy();
 			if (!stack.isEmpty()) {
 				for (EmiStack es : stack.getEmiStacks()) {
-					es.comparison(c -> Comparison.compareNbt());
+					es.comparison(c -> EmiPort.compareStrict());
 				}
 				hiddenStacks.add(stack);
 			}
@@ -97,14 +98,14 @@ public class EmiHidden {
 //		}
 //		return !stack.isEmpty();
 //	}
-	
+
 	public static void setVisibility(EmiIngredient stack, boolean hide, boolean similar) {
 		if (similar && stack.getEmiStacks().size() == 1) {
 			EmiStack es = stack.getEmiStacks().get(0);
 			for (EmiStack i : EmiStackList.stacks) {
 				if (es.getId().equals(i.getId())) {
 					if (hide) {
-						hiddenStacks.add(i.copy().comparison(c -> Comparison.compareNbt()));
+						hiddenStacks.add(i.copy().comparison(c -> EmiPort.compareStrict()));
 					} else {
 						hiddenStacks.remove(i);
 					}
@@ -114,7 +115,7 @@ public class EmiHidden {
 			if (hide) {
 				stack = stack.copy();
 				for (EmiStack es : stack.getEmiStacks()) {
-					es.comparison(c -> Comparison.compareNbt());
+					es.comparison(c -> EmiPort.compareStrict());
 				}
 				hiddenStacks.add(stack);
 			} else {

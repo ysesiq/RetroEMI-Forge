@@ -2,7 +2,7 @@ package dev.emi.emi.mixin.minecraft.item;
 
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.data.EmiRemoveFromIndex;
-import net.xylose.emi.inject_interface.EMIItem;
+import net.xylose.emi.inject_interface.EmiItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(Items.class)
-public class ItemMixin implements EMIItem {
+public class ItemMixin implements EmiItem {
     @Unique protected int defaultFurnaceBurnTime = 0;
 
     @Override

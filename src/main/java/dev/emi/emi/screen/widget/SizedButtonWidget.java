@@ -1,5 +1,6 @@
 package dev.emi.emi.screen.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.runtime.EmiDrawContext;
@@ -25,17 +26,19 @@ public class SizedButtonWidget extends ButtonWidget {
 	protected Supplier<List<Text>> text;
 	protected int u, v;
 
-	public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action) {
-		this(x, y, width, height, u, v, isActive, action, () -> 0);
-	}
+    public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action) {
+        this(x, y, width, height, u, v, isActive, action, () -> 0);
+    }
 
-	public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action, List<Text> text) {
-		this(x, y, width, height, u, v, isActive, action, () -> 0, () -> text);
-	}
+    public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action,
+            List<Text> text) {
+        this(x, y, width, height, u, v, isActive, action, () -> 0, () -> text);
+    }
 
-	public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action, IntSupplier vOffset) {
-		this(x, y, width, height, u, v, isActive, action, vOffset, null);
-	}
+    public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action,
+            IntSupplier vOffset) {
+        this(x, y, width, height, u, v, isActive, action, vOffset, null);
+    }
 
 	public SizedButtonWidget(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, PressAction action, IntSupplier vOffset,
 			Supplier<List<Text>> text) {
@@ -56,8 +59,7 @@ public class SizedButtonWidget extends ButtonWidget {
 		this.active = this.isActive.getAsBoolean();
 		if (!this.active) {
 			v += this.height * 2;
-		}
-		else if (this.isMouseOver(mouseX, mouseY)) {
+		} else if (this.isMouseOver(mouseX, mouseY)) {
 			v += this.height;
 		}
 		return v;
@@ -65,16 +67,17 @@ public class SizedButtonWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-//		glColor4f(1, 1, 1, 1);
 		EmiDrawContext context = EmiDrawContext.instance();
-		glEnable(GL_DEPTH_TEST);
-		context.drawTexture(texture, this.x, this.y, getU(mouseX, mouseY), getV(mouseX, mouseY), this.width, this.height);
+        if (!this.isMouseOver(mouseX, mouseY)) {
+            context.resetColor();
+        }
+        RenderSystem.enableDepthTest();
+        context.drawTexture(texture, this.x, this.y, getU(mouseX, mouseY), getV(mouseX, mouseY), this.width, this.height);
 		if (this.isMouseOver(mouseX, mouseY) && text != null && this.active) {
 			context.push();
-			glDisable(GL_DEPTH_TEST);
+            RenderSystem.disableDepthTest();
 			Minecraft client = Minecraft.getMinecraft();
-			EmiRenderHelper.drawTooltip(client.currentScreen, context,
-					text.get().stream().map(EmiPort::ordered).map(TooltipComponent::of).collect(Collectors.toList()), mouseX, mouseY);
+			EmiRenderHelper.drawTooltip(client.currentScreen, context, text.get().stream().map(EmiPort::ordered).map(TooltipComponent::of).collect(Collectors.toList()), mouseX, mouseY);
 			context.pop();
 		}
 	}

@@ -15,12 +15,6 @@ import java.util.Random;
 
 @Mixin(value = FontRenderer.class, priority = 2000)
 public abstract class FontRendererMixin {
-//    @Shadow protected int[] charWidth;
-//
-//    @Inject(method = "<init>", at = @At("TAIL"))
-//    private void modifyChanceTableSize(GameSettings par1GameSettings, ResourceLocation par2ResourceLocation, TextureManager par3TextureManager, boolean par4, CallbackInfo ci) {
-//        this.charWidth = new int[32767];
-//    }
 
     @ModifyVariable(
         method = "renderStringAtPos",
@@ -28,7 +22,8 @@ public abstract class FontRendererMixin {
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/FontRenderer;setColor(FFFF)V",
             ordinal = 0,
-            shift = At.Shift.AFTER
+            shift = At.Shift.AFTER,
+            remap = false
         ),
         ordinal = 0 /*i*/
     )

@@ -1,6 +1,5 @@
 package dev.emi.emi.api.widget;
 
-import dev.emi.emi.screen.Bounds;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.gui.DrawContext;
 

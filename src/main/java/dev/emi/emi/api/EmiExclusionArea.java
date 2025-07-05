@@ -1,6 +1,6 @@
 package dev.emi.emi.api;
 
-import dev.emi.emi.screen.Bounds;
+import dev.emi.emi.api.widget.Bounds;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.util.function.Consumer;

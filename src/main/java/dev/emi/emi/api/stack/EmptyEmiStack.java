@@ -3,6 +3,7 @@ package dev.emi.emi.api.stack;
 import dev.emi.emi.EmiPort;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
 import net.minecraft.client.gui.DrawContext;

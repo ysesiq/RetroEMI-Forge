@@ -2,31 +2,24 @@ package dev.emi.emi.recipe;
 
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.inject_interface.EMIShapelessRecipes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import com.rewindmc.retroemi.RetroEMI;
-import net.minecraft.util.SyntheticIdentifier;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EmiShapelessRecipe extends EmiCraftingRecipe {
 
-	private final ShapelessRecipes shapeless_recipe;
-
-	public EmiShapelessRecipe(EMIShapelessRecipes recipe, ShapelessRecipes shapelessRecipes) {
-		super(((List<ItemStack>) recipe.getRecipeItems()).stream().map(RetroEMI::wildcardIngredient).collect(Collectors.toList()),
-				EmiStack.of(EmiPort.getOutput((IRecipe) recipe)), new SyntheticIdentifier(recipe), recipe.getSecondaryOutput(null));
-        EmiShapedRecipe.setRemainders(input, (IRecipe) recipe);
-		this.shapeless_recipe = shapelessRecipes;
-	}
+    public EmiShapelessRecipe(ShapelessRecipes recipe) {
+        super((List<EmiIngredient>) recipe.recipeItems.stream().map(i -> EmiStack.of((ItemStack) i)).collect(Collectors.toList()),
+            EmiStack.of(EmiPort.getOutput(recipe)), EmiPort.getId(recipe));
+        EmiShapedRecipe.setRemainders(input, recipe);
+    }
 
 	@Override
 	public boolean canFit(int width, int height) {
 		return input.size() <= width * height;
 	}
-
 }

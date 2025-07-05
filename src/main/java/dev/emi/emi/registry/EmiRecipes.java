@@ -20,6 +20,9 @@ import dev.emi.emi.api.stack.ListEmiIngredient;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringTranslate;
 import org.jetbrains.annotations.Nullable;
@@ -34,14 +37,16 @@ public class EmiRecipes {
 	public static EmiRecipeManager manager = Manager.EMPTY;
 	public static List<Consumer<Consumer<EmiRecipe>>> lateRecipes = Lists.newArrayList();
 	public static List<Predicate<EmiRecipe>> invalidators = Lists.newArrayList();
+
 	public static List<EmiRecipeCategory> categories = Lists.newArrayList();
 	private static Map<EmiRecipeCategory, List<EmiIngredient>> workstations = Maps.newHashMap();
-
 	private static List<EmiRecipe> recipes = Lists.newArrayList();
 
 	public static Map<EmiStack, List<EmiRecipe>> byWorkstation = Maps.newHashMap();
 
-	public static void clear() {
+    public static Map<IRecipe, ResourceLocation> recipeIds = com.rewindmc.retroemi.shim.java.Map.of();
+
+    public static void clear() {
 		setWorker(null);
 		lateRecipes.clear();
 		invalidators.clear();
@@ -50,6 +55,18 @@ public class EmiRecipes {
 		recipes.clear();
 		byWorkstation.clear();
 		manager = Manager.EMPTY;
+
+        Minecraft client = Minecraft.getMinecraft();
+        if (client.theWorld != null) {
+            CraftingManager manager = CraftingManager.getInstance();
+            recipeIds = Maps.newIdentityHashMap();
+            if (manager != null) {
+                for (Object o : manager.getRecipeList()) {
+                    IRecipe entry = (IRecipe) o;
+                    recipeIds.put(entry, new ResourceLocation(entry.toString()));
+                }
+            }
+        }
 	}
 
 	public static void bake() {
@@ -150,7 +167,8 @@ public class EmiRecipes {
 				Comparator<EmiRecipe> sort = EmiRecipeCategoryProperties.getSort(category);
 				if (doSort && sort != EmiRecipeSorting.none()) {
 					cRecipes = cRecipes.stream().sorted(sort).collect(Collectors.toList());
-				}
+                    EmiRecipeSorter.clear();
+                }
 				byCategory.put(category, cRecipes);
 				for (EmiRecipe recipe : cRecipes) {
 					recipe.getInputs().stream().flatMap(i -> i.getEmiStacks().stream()).forEach(i -> byInput

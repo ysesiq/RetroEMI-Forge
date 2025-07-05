@@ -1,10 +1,12 @@
 package dev.emi.emi.api.recipe;
 
 import com.google.common.collect.Lists;
+import dev.emi.emi.registry.EmiRecipeSorter;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.inject_interface.EMIResourceLocation;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.xylose.emi.inject_interface.EmiResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -34,13 +36,13 @@ public class EmiRecipeSorting {
 			else if (b == null) {
 				return -1;
 			}
-			return ((EMIResourceLocation) a).compareTo(b);
+			return ((EmiResourceLocation) a).compareTo(b);
 		};
 	}
 
 	public static Comparator<EmiRecipe> compareOutputThenInput() {
 		return (a, b) -> {
-			int comp = compareStacks(a.getOutputs(), b.getOutputs());
+			int comp = compareStacks(EmiRecipeSorter.getInput(a), EmiRecipeSorter.getInput(b));
 			if (comp != 0) {
 				return comp;
 			}
@@ -58,7 +60,7 @@ public class EmiRecipeSorting {
 			if (comp != 0) {
 				return comp;
 			}
-			comp = compareStacks(a.getOutputs(), b.getOutputs());
+			comp = compareStacks(EmiRecipeSorter.getInput(a), EmiRecipeSorter.getInput(b));
 			if (comp != 0) {
 				return comp;
 			}
@@ -66,21 +68,16 @@ public class EmiRecipeSorting {
 		};
 	}
 
-	private static int compareStacks(List<EmiStack> ao, List<EmiStack> bo) {
-		ao = filterEmpty(ao);
-		bo = filterEmpty(bo);
-		if (ao.isEmpty() || bo.isEmpty()) {
-			return Integer.compare(ao.size(), bo.size());
-		}
-		int min = Math.min(ao.size(), bo.size());
-		for (int i = 0; i < min; i++) {
-			int ai = Integer.compare(getIndex(ao.get(i)), getIndex(bo.get(i)));
-			if (ai != 0) {
-				return ai;
-			}
-		}
-		return Integer.compare(ao.size(), bo.size());
-	}
+    private static int compareStacks(IntList a, IntList b) {
+        int min = Math.min(a.size(), b.size());
+        for (int i = 0; i < min; i++) {
+            int comparison = Integer.compare(a.getInt(i), b.getInt(i));
+            if (comparison != 0) {
+                return comparison;
+            }
+        }
+        return Integer.compare(a.size(), b.size());
+    }
 
 	private static int compareIngredients(List<EmiIngredient> ao, List<EmiIngredient> bo) {
 		ao = filterEmpty(ao);
@@ -99,7 +96,7 @@ public class EmiRecipeSorting {
 	}
 
 	private static int getIndex(EmiStack stack) {
-		return EmiStackList.indices.getOrDefault(stack, Integer.MAX_VALUE);
+		return EmiStackList.keyIndices.getOrDefault(stack, Integer.MAX_VALUE);
 	}
 
 	private static <T extends EmiIngredient> List<T> filterEmpty(List<T> list) {

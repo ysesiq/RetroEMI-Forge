@@ -21,6 +21,7 @@ import net.minecraft.util.JsonHelper;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BoM {
 	private static RecipeDefaults defaults = new RecipeDefaults();
@@ -107,28 +108,28 @@ public class BoM {
 			}
 		}
         //TODO
-//		JsonObject resolutions = JsonHelper.getObject(object, "resolutions", new JsonObject());
-//		for (String key : resolutions.keySet()) {
-//			ResourceLocation id = new ResourceLocation(key);
-//			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
-//			if (recipe != null && JsonHelper.hasArray(resolutions, key)) {
-//				JsonArray arr = JsonHelper.getArray(resolutions, key);
-//				for (JsonElement el : arr) {
-//					EmiIngredient stack = EmiIngredientSerializer.getDeserialized(el);
-//					if (!stack.isEmpty()) {
-//						addedRecipes.put(stack, recipe);
-//					}
-//				}
-//			}
-//		}
-//		JsonObject addedTags = JsonHelper.getObject(object, "tags", new JsonObject());
-//		for (String key : addedTags.keySet()) {
-//			EmiIngredient tag = EmiIngredientSerializer.getDeserialized(new JsonPrimitive(key));
-//			EmiIngredient stack = EmiIngredientSerializer.getDeserialized(addedTags.get(key));
-//			if (!tag.isEmpty() && !stack.isEmpty() && stack.getEmiStacks().size() == 1 && tag.getEmiStacks().containsAll(stack.getEmiStacks())) {
-//				addedRecipes.put(tag, new EmiResolutionRecipe(tag, stack.getEmiStacks().get(0)));
-//			}
-//		}
+		JsonObject resolutions = JsonHelper.getObject(object, "resolutions", new JsonObject());
+        for (String key : resolutions.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
+			ResourceLocation id = new ResourceLocation(key);
+			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
+			if (recipe != null && JsonHelper.hasArray(resolutions, key)) {
+				JsonArray arr = JsonHelper.getArray(resolutions, key);
+				for (JsonElement el : arr) {
+					EmiIngredient stack = EmiIngredientSerializer.getDeserialized(el);
+					if (!stack.isEmpty()) {
+						addedRecipes.put(stack, recipe);
+					}
+				}
+			}
+		}
+		JsonObject addedTags = JsonHelper.getObject(object, "tags", new JsonObject());
+        for (String key : addedTags.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
+			EmiIngredient tag = EmiIngredientSerializer.getDeserialized(new JsonPrimitive(key));
+			EmiIngredient stack = EmiIngredientSerializer.getDeserialized(addedTags.get(key));
+			if (!tag.isEmpty() && !stack.isEmpty() && stack.getEmiStacks().size() == 1 && tag.getEmiStacks().containsAll(stack.getEmiStacks())) {
+				addedRecipes.put(tag, new EmiResolutionRecipe(tag, stack.getEmiStacks().get(0)));
+			}
+		}
 	}
 
 	public static void reload() {

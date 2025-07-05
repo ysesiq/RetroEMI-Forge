@@ -1,7 +1,5 @@
 package net.minecraft.util;
 
-import net.minecraft.util.ResourceLocation;
-
 public class NumericIdentifier extends ResourceLocation {
 
 	private final int id;

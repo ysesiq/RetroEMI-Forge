@@ -2,20 +2,26 @@ package dev.emi.emi.platform.forge;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModMetadata;
+import dev.emi.emi.*;
 import dev.emi.emi.api.EmiPluginRegistry;
+import dev.emi.emi.api.stack.FluidEmiStack;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tag.ItemKey;
+import net.minecraft.util.StringTranslate;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameData;
-import dev.emi.emi.InputPair;
-import dev.emi.emi.Prototype;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.VanillaPlugin;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.platform.EmiAgnos;
 import dev.emi.emi.recipe.EmiBrewingRecipe;
@@ -63,25 +69,21 @@ public class EmiAgnosForge extends EmiAgnos {
 	public static void poke() {
 	}
 
-	@Override
-	protected String getModNameAgnos(String namespace) {
-        try {
-            String name = this.getModContainer(namespace).getName();
-            return name == null ? "Minecraft" : name;
-        } catch (NullPointerException exception) {
-            return "";
+    @Override
+    protected String getModNameAgnos(String namespace) {
+        if (namespace.equals("c")) {
+            return "Common";
         }
-	}
-
-    private ModContainer getModContainer(String namespace) {
-        for (ModContainer mod : Loader.instance().getActiveModList()) {
-            if (mod.getModId().equals(namespace)) {
-                return mod;
-            }
+        Optional<? extends ModContainer> container = Optional.ofNullable(Loader.instance().getIndexedModList().get(namespace));
+        if (container.isPresent()) {
+            return container.get().getName();
         }
-        return null;
-	}
-
+        container = Optional.ofNullable(Loader.instance().getIndexedModList().get(namespace.replace('_', '-')));
+        if (container.isPresent()) {
+            return container.get().getName();
+        }
+        return WordUtils.capitalizeFully(namespace.replace('_', ' '));
+    }
 
 	@Override
 	protected Path getConfigDirectoryAgnos() {
@@ -309,63 +311,56 @@ public class EmiAgnosForge extends EmiAgnos {
                 .collect(java.util.stream.Collectors.toList());
 	}
 
-//	@Override
-//	protected Text getFluidNameAgnos(Fluid fluid, NBTTagCompound nbt) {
-//		String key;
-//		Prototype proto = fluid.getPrototype();
-//		if (proto.item().itemID < Block.blocksList.length) {
-//			Block block = Block.blocksList[proto.item().itemID];
-//			key = block.getLocalizedName();
-//		}
-//		else {
-//			key = proto.toStack().getDisplayName();
-//		}
-//		if (!StringTranslate.getInstance().containsTranslateKey(key)) {
-//			key += ".name";
-//		}
-//		return Text.translatable(key)
-//				.append(Text.literal(Minecraft.getMinecraft().gameSettings.advancedItemTooltips ? String.format(" (#%04d)", fluid.getId()) : ""));
-//	}
-//
-//	@Override
-//	protected List<Text> getFluidTooltipAgnos(Fluid fluid, NBTTagCompound nbt) {
-//		return Collections.singletonList(getFluidNameAgnos(fluid, nbt));
-//	}
-
-//	@Override
-//	protected void renderFluidAgnos(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta, int xOff, int yOff, int width, int height) {
-//		Prototype proto = stack.getKeyOfType(Fluid.class).getPrototype();
-//		if (proto.item().itemID < Block.blocksList.length) {
-//			Block block = Block.blocksList[proto.item().itemID];
-//			EmiRenderHelper.drawTintedSprite(matrices, block.getUnlocalizedName(), 1, -1, x, y, xOff, yOff, width, height);
-//		}
-//		else {
-//			Item item = proto.item();
-//			EmiRenderHelper.drawTintedSprite(matrices, item.getUnlocalizedName(), item.getIconIndex(proto.toStack()).getIconHeight(), -1, x, y, xOff, yOff,
-//					width, height);
-//		}
-//	}
+    @Override
+    protected Text getFluidNameAgnos(Fluid fluid, NBTTagCompound nbt) {
+        return Text.literal(new FluidStack(fluid, 1000, nbt).getLocalizedName());
+    }
 
 	@Override
+	protected List<Text> getFluidTooltipAgnos(Fluid fluid, NBTTagCompound nbt) {
+		return Collections.singletonList(getFluidNameAgnos(fluid, nbt));
+	}
+
+    @Override
+    protected boolean isFloatyFluidAgnos(FluidEmiStack stack) {
+        FluidStack fs = new FluidStack(stack.getKeyOfType(Fluid.class), 1000, stack.getNbt());
+        return fs.getFluid().getDensity() <= 0;
+    }
+
+    @Override
+    protected void renderFluidAgnos(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta, int xOff, int yOff, int width, int height) {
+        FluidStack fs = new FluidStack(stack.getKeyOfType(Fluid.class), 1000, stack.getNbt());
+        int color = fs.getFluid().getColor();
+        EmiRenderHelper.drawTintedSprite(matrices, fs.getUnlocalizedName(), 1, color, x, y, xOff, yOff, width, height);
+    }
+
+    @Override
+    protected EmiStack createFluidStackAgnos(Object object) {
+        if (object instanceof FluidStack f) {
+            return EmiStack.of(f.getFluid(), f.tag, f.amount);
+        }
+        return EmiStack.EMPTY;
+    }
+
+    @Override
 	protected boolean canBatchAgnos(ItemStack stack) {
 		return false;
 	}
 
-	@Override
-	protected Map<Prototype, Integer> getFuelMapAgnos() {
-		// fuels are FULLY DYNAMIC in this version. GUESS I'LL ~~DIE~~ *ITERATE THE REGISTRY*
-		ArrayList<ItemStack> pain = new ArrayList<ItemStack>();
-		for (Object obj : ItemPotion.itemRegistry) {
-            Item it = (Item) obj;
-			if (it != null) {
-				it.getSubItems(it, it.getCreativeTab(), pain);
-			}
-		}
-		return pain.stream().filter(TileEntityFurnace::isItemFuel).map(Prototype::of).distinct().collect(Collectors.toMap(p -> p,
-				p -> {
-                    p.toStack().getItem();
-                    return TileEntityFurnace.getItemBurnTime(p.toStack());
+    @Override
+    protected Map<ItemKey, Integer> getFuelMapAgnos() {
+        Map<ItemKey, Integer> fuelMap = new HashMap<>();
+        for (Object obj : ItemPotion.itemRegistry) {
+            Item item = (Item) obj;
+            List<ItemStack> stacks = new ArrayList<>();
+            item.getSubItems(item, CreativeTabs.tabMisc, stacks);
+            for (ItemStack stack : stacks) {
+                int time = TileEntityFurnace.getItemBurnTime(stack);
+                if (time > 0) {
+                    fuelMap.put(ItemKey.of(stack), time);
                 }
-        ));
-	}
+            }
+        }
+        return fuelMap;
+    }
 }

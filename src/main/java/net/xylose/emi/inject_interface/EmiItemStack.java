@@ -1,9 +1,8 @@
 package net.xylose.emi.inject_interface;
 
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 
-public interface EMIItemStack {
+public interface EmiItemStack {
     default Items hideFromEMI() {
         return null;
     }

@@ -1,5 +1,6 @@
 package dev.emi.emi;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -19,15 +20,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.NumericIdentifier;
+import net.minecraftforge.fluids.Fluid;
+import org.apache.http.config.Registry;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EmiUtil {
 	public static final Random RANDOM = new Random();
@@ -37,14 +43,33 @@ public class EmiUtil {
 	}
 
 	public static String subId(Block block) {
-		return "block/" + subId(new NumericIdentifier(Block.blockRegistry.getIDForObject(block)));
+        return subId(new ResourceLocation(GameRegistry.findUniqueIdentifierFor(block).toString()));
 	}
 
 	public static String subId(Item item) {
-		return "item/" + subId(new NumericIdentifier(Item.itemRegistry.getIDForObject(item)));
+        return subId(new ResourceLocation(GameRegistry.findUniqueIdentifierFor(item).toString()));
 	}
 
-	static Minecraft minecraft = Minecraft.getMinecraft();
+    public static String subId(Fluid fluid) {
+        return subId(new ResourceLocation(fluid.getName()));
+    }
+
+//    public static <T> Stream<TagKey.Type> values(TagKey<T> key) {
+//        MinecraftClient client = MinecraftClient.getInstance();
+//        Registry<T> registry = client.world.getRegistryManager().get(key.registry());
+//        Optional<Named<T>> opt = registry.getEntryList(key);
+//        if (opt.isEmpty()) {
+//            return Stream.of();
+//        } else {
+//            if (registry == EmiPort.getFluidRegistry()) {
+//                return opt.get().stream().filter(o -> {
+//                    Fluid f = (Fluid) o.value();
+//                    return f.isStill(f.getDefaultState());
+//                });
+//            }
+//            return opt.get().stream();
+//        }
+//    }
 
 	public static boolean showAdvancedTooltips() {
 		Minecraft client = Minecraft.getMinecraft();

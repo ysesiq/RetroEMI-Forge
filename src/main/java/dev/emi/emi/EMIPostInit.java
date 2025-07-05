@@ -4,7 +4,7 @@ import dev.emi.emi.data.EmiData;
 import dev.emi.emi.network.*;
 import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.platform.EmiMain;
-import net.xylose.emi.inject_interface.EMIPlayerControllerMP;
+import dev.emi.emi.mixin.minecraft.accessor.PlayerControllerMPAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
 import com.rewindmc.retroemi.RetroEMI;
@@ -35,9 +35,9 @@ public class EMIPostInit {
 //			}
 			EmiMain.init();
 
-			EmiNetwork.initServer((player, packet) -> {
-				player.playerNetServerHandler.sendPacket(toVanilla(packet));
-			});
+//			EmiNetwork.initServer((player, packet) -> {
+//				player.playerNetServerHandler.sendPacket(toVanilla(packet));
+//			});
 
 			PacketReader.registerServerPacketReader(EmiNetwork.FILL_RECIPE, FillRecipeC2SPacket::new);
 			PacketReader.registerServerPacketReader(EmiNetwork.CREATE_ITEM, CreateItemC2SPacket::new);
@@ -77,7 +77,7 @@ public class EMIPostInit {
 				EmiClient.init();
 				EmiData.init();
 
-				EmiNetwork.initClient(packet -> ((EMIPlayerControllerMP) Minecraft.getMinecraft().playerController).getNetClientHandler().addToSendQueue(toVanilla(packet)));
+				EmiNetwork.initClient(packet -> ((PlayerControllerMPAccessor) Minecraft.getMinecraft().playerController).getNetClientHandler().addToSendQueue(toVanilla(packet)));
 				PacketReader.registerClientPacketReader(EmiNetwork.PING, PingS2CPacket::new);
 				//NYI
 				//PacketReader.registerClientPacketReader(EmiNetwork.COMMAND, CommandS2CPacket::new);

@@ -1,6 +1,6 @@
 package net.xylose.emi.inject_interface;
 
-public interface EMISearchInput {
+public interface EmiSearchInput {
     boolean getEMISearchInput();
     boolean getEMIMouseInput();
 }

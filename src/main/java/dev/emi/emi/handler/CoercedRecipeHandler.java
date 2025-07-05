@@ -5,9 +5,9 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import net.xylose.emi.inject_interface.EMIInventoryCrafting;
-import net.xylose.emi.inject_interface.EMISlot;
-import net.xylose.emi.inject_interface.EMISlotCrafting;
+import dev.emi.emi.mixin.minecraft.accessor.InventoryCraftingAccessor;
+import dev.emi.emi.mixin.minecraft.accessor.SlotAccessor;
+import dev.emi.emi.mixin.minecraft.accessor.SlotCraftingAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.*;
 
@@ -19,7 +19,7 @@ public class CoercedRecipeHandler<T extends Container> implements StandardRecipe
 
 	public CoercedRecipeHandler(SlotCrafting output) {
 		this.output = output;
-		this.inv = ((EMISlotCrafting) output).getCraftMatrix();
+		this.inv = ((SlotCraftingAccessor) output).getCraftMatrix();
 	}
 
 	@Override
@@ -44,14 +44,14 @@ public class CoercedRecipeHandler<T extends Container> implements StandardRecipe
 	@Override
 	public List<Slot> getCraftingSlots(Container handler) {
 		List<Slot> slots = Lists.newArrayList();
-		int width = inv instanceof InventoryCrafting ic ? ((EMIInventoryCrafting) ic).getInventoryWidth() : 3;
+		int width = inv instanceof InventoryCrafting ic ? ((InventoryCraftingAccessor) ic).getInventoryWidth() : 3;
 		int height = inv.getSizeInventory() / width;
 		for (int i = 0; i < 9; i++) {
 			slots.add(null);
 		}
 		for (Slot slot : (List<Slot>) handler.inventorySlots) { //Something about this is broken, not sure what
-			if (slot.inventory == inv && ((EMISlot) slot).getSlotIndex() < width * height && ((EMISlot) slot).getSlotIndex() >= 0) {
-				int index = ((EMISlot) slot).getSlotIndex();
+			if (slot.inventory == inv && ((SlotAccessor) slot).getSlotIndex() < width * height && ((SlotAccessor) slot).getSlotIndex() >= 0) {
+				int index = ((SlotAccessor) slot).getSlotIndex();
 				index = index * 3 / width;
 				slots.set(index, slot);
 			}
@@ -63,7 +63,7 @@ public class CoercedRecipeHandler<T extends Container> implements StandardRecipe
 	public boolean supportsRecipe(EmiRecipe recipe) {
 		if (recipe.getCategory() == VanillaEmiRecipeCategories.CRAFTING && recipe.supportsRecipeTree()) {
 			if (recipe instanceof EmiCraftingRecipe crafting) {
-				int width = inv instanceof InventoryCrafting ic ? ((EMIInventoryCrafting) ic).getInventoryWidth() : 3;
+				int width = inv instanceof InventoryCrafting ic ? ((InventoryCraftingAccessor) ic).getInventoryWidth() : 3;
 				int height = inv.getSizeInventory() / width;
 				return crafting.canFit(width, height);
 			}

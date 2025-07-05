@@ -1,10 +1,16 @@
 package dev.emi.emi.platform;
 
-import dev.emi.emi.Prototype;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.FluidEmiStack;
 import dev.emi.emi.registry.EmiPluginContainer;
 import dev.emi.emi.api.EmiRegistry;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tag.ItemKey;
+import net.minecraft.text.Text;
+import net.minecraftforge.fluids.Fluid;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -22,10 +28,14 @@ public abstract class EmiAgnos {
 			Class.forName("dev.emi.emi.platform.forge.EmiAgnosForge");
 		} catch (Throwable t) {
 		}
+        try {
+			Class.forName("dev.emi.emi.platform.forge.EmiAgnosNil");
+		} catch (Throwable t) {
+		}
 	}
 
 	public static boolean isForge() {
-		return false;
+		return delegate.isForgeAgnos();
 	}
 
 	protected abstract boolean isForgeAgnos();
@@ -84,15 +94,50 @@ public abstract class EmiAgnos {
 
 	protected abstract List<TooltipComponent> getItemTooltipAgnos(ItemStack stack);
 
-	public static boolean canBatch(ItemStack stack) {
+    public static Text getFluidName(Fluid fluid, NBTTagCompound componentChanges) {
+        return delegate.getFluidNameAgnos(fluid, componentChanges);
+    }
+
+    protected abstract Text getFluidNameAgnos(Fluid fluid, NBTTagCompound componentChanges);
+
+    public static List<Text> getFluidTooltip(Fluid fluid, NBTTagCompound componentChanges) {
+        return delegate.getFluidTooltipAgnos(fluid, componentChanges);
+    }
+
+    protected abstract List<Text> getFluidTooltipAgnos(Fluid fluid, NBTTagCompound componentChanges);
+
+    public static boolean isFloatyFluid(FluidEmiStack stack) {
+        return delegate.isFloatyFluidAgnos(stack);
+    }
+
+    protected abstract boolean isFloatyFluidAgnos(FluidEmiStack stack);
+
+    public static void renderFluid(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta) {
+        renderFluid(stack, matrices, x, y, delta, 0, 0, 16, 16);
+    }
+
+    public static void renderFluid(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta, int xOff, int yOff, int width, int height) {
+        delegate.renderFluidAgnos(stack, matrices, x, y, delta, xOff, yOff, width, height);
+    }
+
+    protected abstract void renderFluidAgnos(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta, int xOff, int yOff, int width, int height);
+
+    public static EmiStack createFluidStack(Object object) {
+        return delegate.createFluidStackAgnos(object);
+    }
+
+    protected abstract EmiStack createFluidStackAgnos(Object object);
+
+
+    public static boolean canBatch(ItemStack stack) {
 		return delegate.canBatchAgnos(stack);
 	}
 
 	protected abstract boolean canBatchAgnos(ItemStack stack);
 
-	public static Map<Prototype, Integer> getFuelMap() {
+	public static Map<ItemKey, Integer> getFuelMap() {
 		return delegate.getFuelMapAgnos();
 	}
 
-	protected abstract Map<Prototype, Integer> getFuelMapAgnos();
+	protected abstract Map<ItemKey, Integer> getFuelMapAgnos();
 }

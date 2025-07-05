@@ -1,6 +1,5 @@
 package dev.emi.emi.api.widget;
 
-import dev.emi.emi.screen.Bounds;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 

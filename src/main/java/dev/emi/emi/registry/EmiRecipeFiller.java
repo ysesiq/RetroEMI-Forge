@@ -15,7 +15,7 @@ import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.xylose.emi.inject_interface.EMISlotCrafting;
+import dev.emi.emi.mixin.minecraft.accessor.SlotCraftingAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -83,7 +83,7 @@ public class EmiRecipeFiller {
 			}
 			for (Slot slot : (List<Slot>)screen.inventorySlots.inventorySlots) {
 				if (slot instanceof SlotCrafting crs) {
-					var inv = ((EMISlotCrafting) crs).getCraftMatrix();
+					var inv = ((SlotCraftingAccessor) crs).getCraftMatrix();
 					if (inv != null && inv.getSizeInventory() > 0) {
 						return com.rewindmc.retroemi.shim.java.List.of(new CoercedRecipeHandler<T>(crs));
 					}

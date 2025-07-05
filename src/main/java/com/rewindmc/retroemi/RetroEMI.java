@@ -1,13 +1,13 @@
 package com.rewindmc.retroemi;
 
-import dev.emi.emi.api.stack.EmiIngredient;
+import cpw.mods.fml.common.FMLCommonHandler;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.input.EmiInput;
+import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreen;
 import dev.emi.emi.screen.EmiScreenManager;
-import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -27,7 +27,6 @@ import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.math.Vec2i;
-import net.minecraft.tag.WildcardItemTag;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.lwjgl.input.Keyboard;
@@ -47,11 +46,11 @@ public class RetroEMI {
 	private static final List<Runnable> tickQueue = new ArrayList<>();
 
 	private RetroEMI() {
-//		if (!MinecraftServer.getServer().isServerRunning()) {
+		if (!FMLCommonHandler.instance().getSide().isServer()) {
 			itemRenderer = new RenderItem();
-//		} else {
-//			itemRenderer = null;
-//		}
+		} else {
+			itemRenderer = null;
+		}
 	}
 
 	public static boolean isSideLit(ItemStack item) {
@@ -99,8 +98,7 @@ public class RetroEMI {
 					li.add(buf.toString());
 					buf.setLength(0);
 					w = 0;
-				}
-				else {
+				} else {
 					if (w != -1) {
 						buf.append(" ");
 					}
@@ -204,22 +202,22 @@ public class RetroEMI {
 
 				@Override
 				public int emi$getLeft() {
-					return ((EMIGuiContainerCreative)hs).getGuiLeft();
+					return ((GuiContainerAccessor) hs).getGuiLeft();
 				}
 
 				@Override
 				public int emi$getRight() {
-					return ((EMIGuiContainerCreative)hs).getGuiLeft() + ((EMIGuiContainerCreative)hs).getxSize();
+					return ((GuiContainerAccessor) hs).getGuiLeft() + ((GuiContainerAccessor) hs).getXSize();
 				}
 
 				@Override
 				public int emi$getTop() {
-					return ((EMIGuiContainerCreative)hs).getGuiTop();
+					return ((GuiContainerAccessor) hs).getGuiTop();
 				}
 
 				@Override
 				public int emi$getBottom() {
-					return ((EMIGuiContainerCreative)hs).getGuiTop() + ((EMIGuiContainerCreative)hs).getySize();
+					return ((GuiContainerAccessor) hs).getGuiTop() + ((GuiContainerAccessor) hs).getYSize();
 				}
 
 			};
@@ -304,29 +302,29 @@ public class RetroEMI {
 		return false;
 	}
 
-	public static EmiIngredient wildcardIngredient(ItemStack stack) {
-		if (stack != null && stack.getItemDamage() == 32767) {
-			EmiIngredient item = EmiIngredient.of(new WildcardItemTag(stack.getItem()));
-			if (item.getEmiStacks().size() == 1) {
-				return item;
-			} else {
-				return EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(item), 65); // Stack size of 1
-			}
-		}
-		return EmiStack.of(stack, 1);
-	}
-
-	public static EmiIngredient wildcardIngredientWithStackSize(ItemStack stack) {
-		if (stack != null && stack.getItemDamage() == 32767) {
-			EmiIngredient item = EmiIngredient.of(new WildcardItemTag(stack.getItem()));
-			if (item.getEmiStacks().size() == 1) {
-				return item;
-			} else {
-				return EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(item), stack.stackSize + 64);
-			}
-		}
-		return EmiStack.of(stack);
-	}
+//	public static EmiIngredient wildcardIngredient(ItemStack stack) {
+//		if (stack != null && stack.getItemDamage() == 32767) {
+//			EmiIngredient item = EmiIngredient.of(new WildcardItemTag(stack.getItem()));
+//			if (item.getEmiStacks().size() == 1) {
+//				return item;
+//			} else {
+//				return EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(item), 65); // Stack size of 1
+//			}
+//		}
+//		return EmiStack.of(stack, 1);
+//	}
+//
+//	public static EmiIngredient wildcardIngredientWithStackSize(ItemStack stack) {
+//		if (stack != null && stack.getItemDamage() == 32767) {
+//			EmiIngredient item = EmiIngredient.of(new WildcardItemTag(stack.getItem()));
+//			if (item.getEmiStacks().size() == 1) {
+//				return item;
+//			} else {
+//				return EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(item), stack.stackSize + 64);
+//			}
+//		}
+//		return EmiStack.of(stack);
+//	}
 
 	public static String compactify(ResourceLocation id) {
 		// 1.4 limits channel length to 20 chars, but all strings in the protocol are UTF-16

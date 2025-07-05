@@ -1,6 +1,6 @@
 package net.xylose.emi.inject_interface;
 
-public interface EMIBlock {
+public interface EmiBlock {
 //    default Blocks hideFromEMI() {
 //        return null;
 //    }

@@ -1,6 +1,5 @@
 package dev.emi.emi.mixin.minecraft.client;
 
-import net.xylose.emi.inject_interface.EMISlotCrafting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
@@ -14,14 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.rewindmc.retroemi.REMIMixinHooks;
 
 @Mixin(SlotCrafting.class)
-public class SlotCraftingMixin implements EMISlotCrafting {
+public class SlotCraftingMixin {
     @Final @Shadow private IInventory craftMatrix;
     @Shadow private EntityPlayer thePlayer;
-
-    @Override
-    public IInventory getCraftMatrix() {
-        return this.craftMatrix;
-    }
 
     @Inject(method = "onCrafting(Lnet/minecraft/item/ItemStack;)V", at = @At("HEAD"))
     private void onCraftRenderEMI(ItemStack par1ItemStack, CallbackInfo ci) {

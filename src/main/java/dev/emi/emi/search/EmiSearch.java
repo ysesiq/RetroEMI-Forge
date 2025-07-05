@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.EmiPort;
+import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.config.EmiConfig;
@@ -84,7 +85,7 @@ public class EmiSearch {
                 ResourceLocation id = stack.getId();
                 EmiRecipe recipe = BoM.getRecipe(stack);
                 if (id != null) {
-                    mods.add(stack, GameData.findModOwner(GameData.itemRegistry.getNameForObject(stack.getItemStack())).getName().toLowerCase().replace(" ", ""));
+                    mods.add(stack, EmiUtil.getModName(id.getResourceDomain()).toLowerCase());
                     names.add(stack, id.toString());
                 }
                 //TODO search recipe id
@@ -115,7 +116,7 @@ public class EmiSearch {
                 String text = RetroEMI.translate(key).toLowerCase();
                 for (EmiIngredient ing : alias.stacks()) {
                     for (EmiStack stack : ing.getEmiStacks()) {
-                        aliases.add(stack.copy().comparison(Comparison.compareNbt()), text);
+                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text);
                     }
                 }
             }

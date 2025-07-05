@@ -2,18 +2,15 @@ package dev.emi.emi.mixin.minecraft.item;
 
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.data.EmiRemoveFromIndex;
-import net.xylose.emi.inject_interface.EMIItemStack;
+import net.xylose.emi.inject_interface.EmiItemStack;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ItemStack.class)
-public class ItemStackMixin implements EMIItemStack {
+public class ItemStackMixin implements EmiItemStack {
     @Override
     public Items hideFromEMI() {
         if (MixinEnvironment.getCurrentEnvironment().equals((MixinEnvironment.Side.CLIENT))) {

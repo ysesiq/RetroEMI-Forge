@@ -19,6 +19,6 @@ public class ServerConfigurationManagerMixin {
 
     @Inject(method = "playerLoggedIn", at = @At("HEAD"))
     private void loggedInEMIPack(EntityPlayerMP par1EntityPlayerMP, CallbackInfo ci) {
-        EmiNetwork.sendToClient(par1EntityPlayerMP, new PingS2CPacket(this.mcServer.isDedicatedServer() || (this.mcServer instanceof IntegratedServer integratedServer && integratedServer.getPublic())));
+//        EmiNetwork.sendToClient(par1EntityPlayerMP, new PingS2CPacket(this.mcServer.isDedicatedServer() || (this.mcServer instanceof IntegratedServer integratedServer && integratedServer.getPublic())));
     }
 }

@@ -8,6 +8,7 @@ import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.handler.CookingRecipeHandler;
 import dev.emi.emi.handler.CraftingRecipeHandler;
 import dev.emi.emi.handler.InventoryRecipeHandler;
+import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
 import dev.emi.emi.platform.EmiAgnos;
 import dev.emi.emi.recipe.*;
 import dev.emi.emi.recipe.special.*;
@@ -15,7 +16,7 @@ import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.registry.EmiTags;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiReloadLog;
-import dev.emi.emi.screen.Bounds;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.stack.serializer.ItemEmiStackSerializer;
 import dev.emi.emi.stack.serializer.TagEmiIngredientSerializer;
 import dev.emi.emi.api.EmiEntrypoint;
@@ -25,12 +26,12 @@ import dev.emi.emi.api.recipe.*;
 import dev.emi.emi.api.render.EmiRenderable;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.*;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.tag.ItemKey;
 import net.minecraft.util.SyntheticIdentifier;
-import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
-import net.xylose.emi.inject_interface.EMIShapelessRecipes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
@@ -40,7 +41,6 @@ import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.*;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.PredicateAsSet;
 import com.rewindmc.retroemi.RetroEMI;
@@ -114,45 +114,45 @@ public class VanillaPlugin implements EmiPlugin {
 		registry.addRecipeHandler(ContainerFurnace.class, new CookingRecipeHandler<>(SMELTING));
 
 		registry.addExclusionArea(GuiContainerCreative.class, (screen, consumer) -> {
-			int left = ((EMIGuiContainerCreative) screen).getGuiLeft();
-			int top = ((EMIGuiContainerCreative) screen).getGuiTop();
-			int width = ((EMIGuiContainerCreative) screen).getxSize();
-			int bottom = top + ((EMIGuiContainerCreative) screen).getySize();
+			int left = ((GuiContainerAccessor) screen).getGuiLeft();
+			int top = ((GuiContainerAccessor) screen).getGuiTop();
+			int width = ((GuiContainerAccessor) screen).getXSize();
+			int bottom = top + ((GuiContainerAccessor) screen).getYSize();
 			consumer.accept(new Bounds(left, top - 28, width, 28));
 			consumer.accept(new Bounds(left, bottom, width, 28));
 		});
 
 		registry.addGenericExclusionArea((screen, consumer) -> {
-			if (screen instanceof GuiInventory inv) {
+			if (screen instanceof InventoryEffectRenderer inv) {
 				Minecraft client = Minecraft.getMinecraft();
-				Collection collection = client.thePlayer.getActivePotionEffects();
+				Collection<PotionEffect> collection = client.thePlayer.getActivePotionEffects();
 				if (!collection.isEmpty()) {
 					int k = 33;
 					if (collection.size() > 5) {
 						k = 132 / (collection.size() - 1);
 					}
-					int right = ((EMIGuiContainerCreative) inv).getGuiLeft() + ((EMIGuiContainerCreative) inv).getxSize() + 2;
+					int right = ((GuiContainerAccessor) inv).getGuiLeft() + ((GuiContainerAccessor) inv).getXSize() + 2;
 					int rightWidth = inv.width - right;
 					if (rightWidth >= 32) {
-						int top = ((EMIGuiContainerCreative) inv).getGuiTop();
+						int top = ((GuiContainerAccessor) inv).getGuiTop();
 						int height = (collection.size() - 1) * k + 32;
 						int left, width;
 						if (EmiConfig.effectLocation == EffectLocation.TOP) {
 							int size = collection.size();
-							top = ((EMIGuiContainerCreative) inv).getGuiTop() - 34;
+							top = ((GuiContainerAccessor) inv).getGuiTop() - 34;
 							int xOff = 34;
 							if (size == 1) {
 								xOff = 122;
 							} else if (size > 5) {
-								xOff = (((EMIGuiContainerCreative) inv).getxSize() - 32) / (size - 1);
+								xOff = (((GuiContainerAccessor) inv).getXSize() - 32) / (size - 1);
 							}
 							width = Math.max(122, (size - 1) * xOff + 32);
-							left = ((EMIGuiContainerCreative) inv).getGuiLeft() + (((EMIGuiContainerCreative) inv).getxSize() - width) / 2;
+							left = ((GuiContainerAccessor) inv).getGuiLeft() + (((GuiContainerAccessor) inv).getXSize() - width) / 2;
 							height = 32;
 						} else {
 							left = switch (EmiConfig.effectLocation) {
-								case LEFT_COMPRESSED -> ((EMIGuiContainerCreative) inv).getGuiLeft() - 2 - 32;
-								case LEFT -> ((EMIGuiContainerCreative) inv).getGuiLeft() - 2 - 120;
+								case LEFT_COMPRESSED -> ((GuiContainerAccessor) inv).getGuiLeft() - 2 - 32;
+								case LEFT -> ((GuiContainerAccessor) inv).getGuiLeft() - 2 - 120;
 								default -> right;
 							};
 							width = switch (EmiConfig.effectLocation) {
@@ -170,7 +170,7 @@ public class VanillaPlugin implements EmiPlugin {
 		Comparison potionComparison = Comparison.of((a, b) -> RetroEMI.getEffects(a).equals(RetroEMI.getEffects(b)));
 
 		registry.setDefaultComparison(Items.potionitem, potionComparison);
-		registry.setDefaultComparison(Items.enchanted_book, Comparison.compareNbt());
+		registry.setDefaultComparison(Items.enchanted_book, EmiPort.compareStrict());
 		var prev = EmiStack.of(Items.enchanted_book);
 		for (var ench : Enchantment.enchantmentsList) {
 			if (ench == null) continue;
@@ -203,11 +203,11 @@ public class VanillaPlugin implements EmiPlugin {
 						paper, paper, paper, paper
 				),
 						EmiStack.of(Items.map),
-						new ResourceLocation("minecraft", "map_extending"), false, null), recipe);
+						new ResourceLocation("minecraft", "map_extending"), false), recipe);
 			} else if (recipe instanceof ShapedRecipes shaped) {
 				addRecipeSafe(registry, () -> new EmiShapedRecipe(shaped), recipe);
 			} else if (recipe instanceof ShapelessRecipes shapeless) {
-				addRecipeSafe(registry, () -> new EmiShapelessRecipe((EMIShapelessRecipes) shapeless, shapeless), recipe);
+				addRecipeSafe(registry, () -> new EmiShapelessRecipe(shapeless), recipe);
 			} else if (recipe instanceof RecipesArmorDyes dye) {
 				for (Item i : EmiArmorDyeRecipe.DYEABLE_ITEMS) {
 					if (!hiddenItems.contains(i)) {
@@ -369,53 +369,68 @@ public class VanillaPlugin implements EmiPlugin {
 	}
 
 	private static void addFuel(EmiRegistry registry, PredicateAsSet<Item> hiddenItems) {
-		Map<Prototype, Integer> fuelMap = EmiAgnos.getFuelMap();
+		Map<ItemKey, Integer> fuelMap = EmiAgnos.getFuelMap();
 		compressRecipesToTags(fuelMap.keySet(), Comparator.comparingInt(fuelMap::get), tag -> {
 			EmiIngredient stack = EmiIngredient.of(tag);
 			Prototype item = Prototype.of(stack.getEmiStacks().get(0).getItemStack());
 			int time = fuelMap.getOrDefault(item, 0);
 			registry.addRecipe(new EmiFuelRecipe(stack, time, synthetic("fuel/tag", EmiUtil.subId(tag.id()))));
 		}, item -> {
-			if (!hiddenItems.contains(item.getItem())) {
+			if (!hiddenItems.contains(item.item())) {
 				int time = fuelMap.get(item);
-				registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item), time,
-						synthetic("fuel/item", EmiUtil.subId(item.getItem()) + "/" + item.toStack().getItemDamage())));
-			}
+                registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item.toStack()), time, synthetic("fuel/item", EmiUtil.subId(item.item()))));
+            }
 		});
 	}
 
-	private static void compressRecipesToTags(Set<Prototype> stacks, Comparator<Prototype> comparator, Consumer<TagKey<Prototype>> tagConsumer,
-			Consumer<Prototype> itemConsumer) {
-		Set<Prototype> handled = Sets.newHashSet();
-		outer:
-		for (TagKey<Prototype> key : EmiTags.getTags(Prototype.class)) {
-			List<Prototype> items = key.get();
-			if (items.size() < 2) {
-				continue;
-			}
-			Prototype base = items.get(0);
-			if (!stacks.contains(base)) {
-				continue;
-			}
-			for (int i = 1; i < items.size(); i++) {
-				Prototype item = items.get(i);
-				if (!stacks.contains(item) || comparator.compare(base, item) != 0) {
-					continue outer;
-				}
-			}
-			if (handled.containsAll(items)) {
-				continue;
-			}
-			handled.addAll(items);
-			tagConsumer.accept(key);
-		}
-		for (Prototype item : stacks) {
-			if (handled.contains(item)) {
-				continue;
-			}
-			itemConsumer.accept(item);
-		}
-	}
+//    private static void addComposting(EmiRegistry registry, Set<Item> hiddenItems) {
+//        compressRecipesToTags(ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.keySet().stream()
+//            .map(ItemConvertible::asItem).collect(Collectors.toSet()), (a, b) -> {
+//            return Float.compare(ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(a), ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(b));
+//        }, tag -> {
+//            EmiIngredient stack = EmiIngredient.of(tag);
+//            Item item = stack.getEmiStacks().get(0).getItemStack().getItem();
+//            float chance = ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item);
+//            registry.addRecipe(new EmiCompostingRecipe(stack, chance, synthetic("composting/tag", EmiUtil.subId(tag.id()))));
+//        }, item -> {
+//            if (!hiddenItems.contains(item)) {
+//                float chance = ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item);
+//                registry.addRecipe(new EmiCompostingRecipe(EmiStack.of(item), chance, synthetic("composting/item", EmiUtil.subId(item))));
+//            }
+//        });
+//    }
+
+    private static void compressRecipesToTags(Set<ItemKey> stacks, Comparator<ItemKey> comparator, Consumer<TagKey<ItemKey>> tagConsumer, Consumer<ItemKey> itemConsumer) {
+        Set<ItemKey> handled = Sets.newHashSet();
+        outer:
+        for (TagKey<ItemKey> key : (List<TagKey<ItemKey>>) (List<?>) EmiTags.getTags(TagKey.Type.ITEM)) {
+            List<ItemKey> items = key.getAll();
+            if (items.size() < 2) {
+                continue;
+            }
+            ItemKey base = items.get(0);
+            if (!stacks.contains(base)) {
+                continue;
+            }
+            for (int i = 1; i < items.size(); i++) {
+                ItemKey item = items.get(i);
+                if (!stacks.contains(item) || comparator.compare(base, item) != 0) {
+                    continue outer;
+                }
+            }
+            if (handled.containsAll(items)) {
+                continue;
+            }
+            handled.addAll(items);
+            tagConsumer.accept(key);
+        }
+        for (ItemKey item : stacks) {
+            if (handled.contains(item)) {
+                continue;
+            }
+            itemConsumer.accept(item);
+        }
+    }
 
 	private static ResourceLocation synthetic(String type, String name) {
 		return new ResourceLocation("emi", "/" + type + "/" + name);

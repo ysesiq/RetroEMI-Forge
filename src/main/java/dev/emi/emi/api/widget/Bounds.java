@@ -1,4 +1,4 @@
-package dev.emi.emi.screen;
+package dev.emi.emi.api.widget;
 
 import com.github.bsideup.jabel.Desugar;
 

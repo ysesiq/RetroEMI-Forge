@@ -37,14 +37,17 @@ public class RecipeCostTooltipComponent implements EmiTooltipComponent {
 
 	public void addNodes() {
 		double batches = tree.batches;
-		List<FlatMaterialCost> costs = Stream.concat(tree.cost.costs.values().stream(), tree.cost.chanceCosts.values().stream())
-				.sorted((a, b) -> Integer.compare(EmiStackList.indices.getOrDefault(a.ingredient.getEmiStacks().get(0), Integer.MAX_VALUE),
-						EmiStackList.indices.getOrDefault(b.ingredient.getEmiStacks().get(0), Integer.MAX_VALUE))).collect(Collectors.toList());
-		for (FlatMaterialCost cost : costs) {
+        List<FlatMaterialCost> costs = Stream.concat(
+            tree.cost.costs.values().stream(),
+            tree.cost.chanceCosts.values().stream()
+        ).sorted((a, b) -> Integer.compare(
+            EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
+            EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))
+        )).collect(Collectors.toList());
+        for (FlatMaterialCost cost : costs) {
 			if (cost instanceof ChanceMaterialCost cmc) {
 				nodes.add(new Node(cost.ingredient, cost.amount / batches * cmc.chance, true));
-			}
-			else {
+			} else {
 				nodes.add(new Node(cost.ingredient, cost.amount / batches, false));
 			}
 		}

@@ -15,18 +15,16 @@ public class EmiCraftingRecipe implements EmiRecipe {
 	protected final List<EmiIngredient> input;
 	protected final EmiStack output;
 	public final boolean shapeless;
-	public final ItemStack[] secondaryOutputs;
 
-	public EmiCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id, ItemStack[] secondaryOutputs) {
-		this(input, output, id, true, secondaryOutputs);
+	public EmiCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id) {
+		this(input, output, id, true);
 	}
 
-	public EmiCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id, boolean shapeless, ItemStack[] secondaryOutputs) {
+	public EmiCraftingRecipe(List<EmiIngredient> input, EmiStack output, ResourceLocation id, boolean shapeless) {
 		this.input = input;
 		this.output = output;
 		this.id = id;
         this.shapeless = shapeless;
-		this.secondaryOutputs = secondaryOutputs;
 	}
 
 	@Override

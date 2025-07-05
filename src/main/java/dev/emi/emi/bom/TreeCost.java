@@ -120,7 +120,7 @@ public class TreeCost {
 		else {
 			FlatMaterialCost remainder = remainders.get(stack);
 			if (remainder != null) {
-				// TODO add partial chanced remainders, (todo from RetroEMI)
+				// TODO add partial chanced remainders
 				if (remainder.amount >= desired) {
 					if (!catalyst) {
 						remainder.amount -= desired;

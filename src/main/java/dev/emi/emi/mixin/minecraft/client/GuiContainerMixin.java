@@ -1,8 +1,7 @@
 package dev.emi.emi.mixin.minecraft.client;
 
 import dev.emi.emi.screen.EmiScreenManager;
-import net.xylose.emi.inject_interface.EMIGuiContainerCreative;
-import net.xylose.emi.inject_interface.EMISearchInput;
+import net.xylose.emi.inject_interface.EmiSearchInput;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -15,17 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.rewindmc.retroemi.REMIMixinHooks;
 
 @Mixin(GuiContainer.class)
-public class GuiContainerMixin extends GuiScreen implements EMIGuiContainerCreative {
-    @Shadow protected int xSize;
-    @Shadow protected int ySize;
-    @Shadow protected int guiLeft;
-    @Shadow protected int guiTop;
-    @Shadow private Slot theSlot;
+public class GuiContainerMixin extends GuiScreen {
     @Shadow public Container inventorySlots;
 
     @Inject(method = "initGui", at = @At("TAIL"))
     private void addEMIWidgets(CallbackInfo ci) {
-        EmiScreenManager.addWidgets((GuiScreen) (GuiContainer) (Object) this);
+        EmiScreenManager.addWidgets(this);
     }
 
     @Inject(
@@ -58,33 +52,8 @@ public class GuiContainerMixin extends GuiScreen implements EMIGuiContainerCreat
 
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     public void disableHotkeyInEMISearchInput(char par1, int par2, CallbackInfo ci) {
-        if (((EMISearchInput) this).getEMISearchInput()) {
+        if (((EmiSearchInput) this).getEMISearchInput()) {
             ci.cancel();
         }
-    }
-
-    @Override
-    public Slot getTheSlot() {
-        return this.theSlot;
-    }
-
-    @Override
-    public int getGuiLeft() {
-        return guiLeft;
-    }
-
-    @Override
-    public int getGuiTop() {
-        return guiTop;
-    }
-
-    @Override
-    public int getxSize() {
-        return xSize;
-    }
-
-    @Override
-    public int getySize() {
-        return ySize;
     }
 }

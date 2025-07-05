@@ -1,6 +1,7 @@
 package dev.emi.emi.api.stack;
 
 import com.google.common.collect.Lists;
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.Prototype;
 import dev.emi.emi.registry.EmiComparisonDefaults;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
@@ -8,16 +9,17 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.DyeItem;
 import net.minecraft.text.Text;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -33,7 +35,7 @@ public abstract class EmiStack implements EmiIngredient {
 
     @Override
 	public List<EmiStack> getEmiStacks() {
-		return Collections.singletonList(this);
+		return com.rewindmc.retroemi.shim.java.List.of(this);
 	}
 
 	public EmiStack getRemainder() {
@@ -104,47 +106,21 @@ public abstract class EmiStack implements EmiIngredient {
 	}
 
 	public boolean isEqual(EmiStack stack) {
-		if (stack.getClass() != getClass()) {
-			return false;
-		}
-		var ka = getKey();
-		var kb = stack.getKey();
-		if (ka instanceof Prototype p) {
-			ka = p.getItem();
-		}
-		if (kb instanceof Prototype p) {
-			kb = p.getItem();
-		}
-		if (!Objects.equals(ka, kb)) {
-			return false;
-		}
-		Comparison a = comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(getKey()) : comparison;
-		Comparison b = stack.comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(stack.getKey()) : stack.comparison;
-		if (a == b) {
-			return a.compare(this, stack);
-		}
-		else {
-			return a.compare(this, stack) && b.compare(this, stack);
-		}
-	}
+        if (!getKey().equals(stack.getKey())) {
+            return false;
+        }
+        Comparison a = comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(getKey()) : comparison;
+        Comparison b = stack.comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(stack.getKey()) : stack.comparison;
+        if (a == b) {
+            return a.compare(this, stack);
+        } else {
+            return a.compare(this, stack) && b.compare(this, stack);
+        }
+    }
 
-	public boolean isEqual(EmiStack stack, Comparison comparison) {
-		if (stack.getClass() != getClass()) {
-			return false;
-		}
-		var ka = getKey();
-		var kb = stack.getKey();
-		if (ka instanceof Prototype p) {
-			ka = p.getItem();
-		}
-		if (kb instanceof Prototype p) {
-			kb = p.getItem();
-		}
-		if (!Objects.equals(ka, kb)) {
-			return false;
-		}
-		return comparison.compare(this, stack);
-	}
+    public boolean isEqual(EmiStack stack, Comparison comparison) {
+        return getKey().equals(stack.getKey()) && comparison.compare(this, stack);
+    }
 
 	public abstract List<Text> getTooltipText();
 
@@ -162,8 +138,7 @@ public abstract class EmiStack implements EmiIngredient {
 	public boolean equals(Object obj) {
 		if (obj instanceof EmiStack stack) {
 			return this.isEqual(stack);
-		}
-		else if (obj instanceof EmiIngredient stack) {
+		} else if (obj instanceof EmiIngredient stack) {
 			return EmiIngredient.areEqual(this, stack);
 		}
 		return false;
@@ -232,6 +207,29 @@ public abstract class EmiStack implements EmiIngredient {
 			return EMPTY;
 		}
 		return of(new ItemStack(block), amount);
+	}
+
+	public static EmiStack of(FluidStack stack) {
+		return of(stack.getFluid(), stack.tag, stack.amount);
+	}
+
+	public static EmiStack of(Fluid fluid) {
+		return of(fluid, EmiPort.emptyExtraData());
+	}
+
+	public static EmiStack of(Fluid fluid, long amount) {
+		return of(fluid, EmiPort.emptyExtraData(), amount);
+	}
+
+	public static EmiStack of(Fluid fluid, NBTTagCompound nbt) {
+		return of(fluid, nbt, 0);
+	}
+
+	public static EmiStack of(Fluid fluid, NBTTagCompound nbt, long amount) {
+		if (fluid == null) {
+			return EmiStack.EMPTY;
+		}
+		return new FluidEmiStack(fluid, nbt, amount);
 	}
 
 	static abstract class Entry<T> {

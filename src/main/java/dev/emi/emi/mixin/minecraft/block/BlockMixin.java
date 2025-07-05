@@ -1,11 +1,11 @@
 package dev.emi.emi.mixin.minecraft.block;
 
-import net.xylose.emi.inject_interface.EMIBlock;
+import net.xylose.emi.inject_interface.EmiBlock;
 import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Block.class)
-public class BlockMixin implements EMIBlock {
+public class BlockMixin implements EmiBlock {
 
 //    @Override
 //    public Blocks hideFromEMI() {
