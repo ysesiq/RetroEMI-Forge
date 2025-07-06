@@ -1,6 +1,11 @@
 package dev.emi.emi.api.widget;
 
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -19,19 +24,11 @@ import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.RecipeScreen;
 import dev.emi.emi.screen.tooltip.EmiTooltip;
 import dev.emi.emi.screen.tooltip.RecipeCostTooltipComponent;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static org.lwjgl.opengl.GL11.glColor4f;
+import net.minecraft.util.ResourceLocation;
 
 public class SlotWidget extends Widget {
 	protected final EmiIngredient stack;
@@ -54,7 +51,11 @@ public class SlotWidget extends Widget {
 		return stack;
 	}
 
-	@ApiStatus.Internal
+	/**
+	 * @return The recipe associated with a slot.
+	 *	Logical output slots will return the recipe they represent.
+	 *  Otherwise, the result will be null.
+	 */
 	public EmiRecipe getRecipe() {
 		return recipe;
 	}
@@ -132,7 +133,6 @@ public class SlotWidget extends Widget {
 
 	/**
 	 * Sets the slot to use a custom texture and custom sizing
-	 *
 	 * @param id The texture identifier to use to draw the background
 	 */
 	public SlotWidget customBackground(ResourceLocation id, int u, int v, int width, int height) {
@@ -147,11 +147,9 @@ public class SlotWidget extends Widget {
 	public Bounds getBounds() {
 		if (custom) {
 			return new Bounds(x, y, customWidth, customHeight);
-		}
-		else if (output) {
+		} else if (output) {
 			return new Bounds(x, y, 26, 26);
-		}
-		else {
+		} else {
 			return new Bounds(x, y, 18, 18);
 		}
 	}
@@ -159,10 +157,11 @@ public class SlotWidget extends Widget {
 	@Override
 	public void render(DrawContext draw, int mouseX, int mouseY, float delta) {
 		EmiPort.setPositionTexShader();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		EmiDrawContext context = EmiDrawContext.wrap(draw);
+		context.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		drawBackground(draw, mouseX, mouseY, delta);
 		drawStack(draw, mouseX, mouseY, delta);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		RenderSystem.disableDepthTest();
 		drawOverlay(draw, mouseX, mouseY, delta);
 	}
 
@@ -174,13 +173,11 @@ public class SlotWidget extends Widget {
 		if (drawBack) {
 			if (textureId != null) {
 				context.drawTexture(textureId, bounds.x(), bounds.y(), width, height, u, v, width, height, 256, 256);
-			}
-			else {
+			} else {
 				int v = getStack().getChance() != 1 ? bounds.height() : 0;
 				if (output) {
 					context.drawTexture(EmiRenderHelper.WIDGETS, bounds.x(), bounds.y(), 26, 26, 18, v, 26, 26, 256, 256);
-				}
-				else {
+				} else {
 					context.drawTexture(EmiRenderHelper.WIDGETS, bounds.x(), bounds.y(), 18, 18, 0, v, 18, 18, 256, 256);
 				}
 			}
@@ -214,7 +211,6 @@ public class SlotWidget extends Widget {
 	}
 
 	public void drawSlotHighlight(DrawContext draw, Bounds bounds) {
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		EmiRenderHelper.drawSlotHightlight(EmiDrawContext.wrap(draw), bounds.x() + 1, bounds.y() + 1, bounds.width() - 2, bounds.height() - 2);
 	}
 
@@ -226,7 +222,6 @@ public class SlotWidget extends Widget {
 		}
 		list.addAll(getStack().getTooltip());
 		addSlotTooltip(list);
-
 		return list;
 	}
 
@@ -234,11 +229,9 @@ public class SlotWidget extends Widget {
 		for (Supplier<TooltipComponent> supplier : tooltipSuppliers) {
 			list.add(supplier.get());
 		}
-
 		if (getStack().getChance() != 1) {
 			list.add(EmiTooltip.chance((recipe != null ? "produce" : "consume"), getStack().getChance()));
 		}
-
 		EmiRecipe recipe = getRecipe();
 		if (recipe != null) {
 			if (recipe.getId() != null && EmiConfig.showRecipeIds) {
@@ -251,8 +244,7 @@ public class SlotWidget extends Widget {
 				if (EmiConfig.defaultStack.isBound()) {
 					list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.resolve.default", EmiConfig.defaultStack.getBindText()))));
 				}
-			}
-			else if (EmiConfig.favorite.isBound() && EmiConfig.helpLevel.has(HelpLevel.NORMAL) && EmiFavorites.canFavorite(getStack(), getRecipe())) {
+			} else if (EmiConfig.favorite.isBound() && EmiConfig.helpLevel.has(HelpLevel.NORMAL) && EmiFavorites.canFavorite(getStack(), getRecipe())) {
 				list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.favorite_recipe", EmiConfig.favorite.getBindText()))));
 			}
 			if (EmiConfig.showCostPerBatch && recipe.supportsRecipeTree() && !(recipe instanceof EmiResolutionRecipe)) {
@@ -269,7 +261,8 @@ public class SlotWidget extends Widget {
 		if (slotInteraction(bind -> bind.matchesMouse(button))) {
 			return true;
 		}
-		return EmiScreenManager.stackInteraction(new EmiStackInteraction(getStack(), getRecipe(), true), bind -> bind.matchesMouse(button));
+		return EmiScreenManager.stackInteraction(new EmiStackInteraction(getStack(), getRecipe(), true),
+			bind -> bind.matchesMouse(button));
 	}
 
 	@Override
@@ -277,7 +270,8 @@ public class SlotWidget extends Widget {
 		if (slotInteraction(bind -> bind.matchesKey(keyCode, scanCode))) {
 			return true;
 		}
-		return EmiScreenManager.stackInteraction(new EmiStackInteraction(getStack(), getRecipe(), true), bind -> bind.matchesKey(keyCode, scanCode));
+		return EmiScreenManager.stackInteraction(new EmiStackInteraction(getStack(), getRecipe(), true),
+			bind -> bind.matchesKey(keyCode, scanCode));
 	}
 
 	private boolean canResolve() {
@@ -289,7 +283,11 @@ public class SlotWidget extends Widget {
 		EmiRecipe recipe = getRecipe();
 		if (canResolve()) {
 			if (function.apply(EmiConfig.defaultStack)) {
-				BoM.addRecipe(RecipeScreen.resolve, recipe);
+				if (BoM.isDefaultRecipe(getStack(), recipe)) {
+					BoM.removeRecipe(getStack(), recipe);
+				} else {
+					BoM.addRecipe(RecipeScreen.resolve, recipe);
+				}
 				EmiHistory.pop();
 				return true;
 			} else if (function.apply(EmiConfig.viewRecipes)) {
@@ -299,8 +297,11 @@ public class SlotWidget extends Widget {
 			}
 		} else if (recipe != null && recipe.supportsRecipeTree()) {
 			if (function.apply(EmiConfig.defaultStack)) {
-				BoM.addRecipe(getStack(), getRecipe());
-				BoM.addRecipe(getStack(), recipe);
+				if (BoM.isDefaultRecipe(getStack(), recipe)) {
+					BoM.removeRecipe(getStack(), recipe);
+				} else {
+					BoM.addRecipe(getStack(), recipe);
+				}
 				return true;
 			}
 		}

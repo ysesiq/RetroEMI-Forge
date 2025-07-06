@@ -1,14 +1,16 @@
 package dev.emi.emi.api.recipe;
 
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.item.crafting.IRecipe;
+import org.jetbrains.annotations.Nullable;
+
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.block.material.Material;
 import net.minecraft.util.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 public interface EmiRecipe {
 
@@ -19,7 +21,13 @@ public interface EmiRecipe {
 	EmiRecipeCategory getCategory();
 
 	/**
-	 * @return The unique id of the recipe, or null. If null, the recipe cannot be serialized.
+	 * IDs should be standard formatting (minecraft:lime_dye_from_smelting) only if they uniquely represent a data driven json recipe.
+	 * If a mod wants to represent a vanilla recipe with different processing, it cannot reuse the vanilla ID.
+	 * For example, a custom machine's recipe crafting an iron pickaxe cannot use "minecraft:iron_pickaxe".
+	 * If a recipe does not have a normal unique ID, it should use a synthetic ID.
+	 * Synthetic IDs are formatted "namespace:/path" with a "/" at the start of the path.
+	 * Commonly, synthetic IDs will be formatted "mymod:/my_process/unique_name".
+	 * @return The unique ID of the recipe, or null. If null, the recipe cannot be serialized.
 	 */
 	@Nullable ResourceLocation getId();
 
@@ -87,7 +95,11 @@ public interface EmiRecipe {
 		return false;
 	}
 
-	default Material craftLevel() {
-		return Material.air;
+	/**
+	 * @return The vanilla {@link IRecipe} this recipe represents, if any.
+	 *  By default, uses the result of {@link EmiRecipe#getId()} to look up in the RecipeManager.
+	 */
+	default @Nullable IRecipe getBackingRecipe() {
+		return EmiPort.getRecipe(getId());
 	}
 }

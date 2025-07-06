@@ -1,12 +1,12 @@
 package dev.emi.emi.api.widget;
 
-import dev.emi.emi.runtime.EmiDrawContext;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+
+import dev.emi.emi.runtime.EmiDrawContext;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 
 public class DrawableWidget extends Widget implements WidgetTooltipHolder<DrawableWidget> {
 	protected final DrawableWidgetConsumer consumer;

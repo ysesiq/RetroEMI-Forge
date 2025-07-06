@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class EmiTags {
-//    public static final InheritanceMap<EmiRegistryAdapter<?>> ADAPTERS_BY_CLASS = new InheritanceMap<>(Maps.newHashMap());
+    public static final InheritanceMap<EmiRegistryAdapter<?>> ADAPTERS_BY_CLASS = new InheritanceMap<>(Maps.newHashMap());
     public static final Map<TagKey.Type, EmiRegistryAdapter<?>> ADAPTERS_BY_REGISTRY = Maps.newHashMap();
     public static final ResourceLocation HIDDEN_FROM_RECIPE_VIEWERS = new ResourceLocation("c", "hidden_from_recipe_viewers");
 	private static final Map<TagKey<?>, ResourceLocation> MODELED_TAGS = Maps.newHashMap();

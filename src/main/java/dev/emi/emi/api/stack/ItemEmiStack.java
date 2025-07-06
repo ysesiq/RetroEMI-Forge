@@ -1,6 +1,18 @@
 package dev.emi.emi.api.stack;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
+
 import com.google.common.collect.Lists;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dev.emi.emi.EmiPort;
@@ -16,7 +28,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tag.ItemKey;
 import net.minecraft.util.ResourceLocation;
@@ -26,41 +37,31 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.NumericIdentifier;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 @ApiStatus.Internal
 public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
-    private static final Minecraft client = Minecraft.getMinecraft();
+	private static final Minecraft client = Minecraft.getMinecraft();
 
-    private final Item item;
-    private final int subtype;
+	private final Item item;
+	private final int subtype;
     private final NBTTagCompound componentChanges;
 
-    private boolean unbatchable;
+	private boolean unbatchable;
 
-    public ItemEmiStack(ItemStack stack) {
-        this(stack, stack.stackSize);
-    }
+	public ItemEmiStack(ItemStack stack) {
+		this(stack, stack.stackSize);
+	}
 
-    public ItemEmiStack(ItemStack stack, long amount) {
-        this(stack.getItem(), stack.getTagCompound(), amount, stack.getItemDamage());
-    }
+	public ItemEmiStack(ItemStack stack, long amount) {
+		this(stack.getItem(), stack.getTagCompound(), amount, stack.getItemDamage());
+	}
 
-    public ItemEmiStack(Item item, NBTTagCompound components, long amount, int subtype) {
-        this.item = item;
-        this.componentChanges = components;
+	public ItemEmiStack(Item item, NBTTagCompound components, long amount, int subtype) {
+		this.item = item;
+		this.componentChanges = components;
         this.subtype = subtype;
-        this.amount = amount;
-    }
+		this.amount = amount;
+	}
 
     @Override
     public ItemStack getItemStack() {
@@ -131,7 +132,7 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
         ItemStack stack = getItemStack();
         if ((flags & RENDER_ICON) != 0) {
             glEnable(GL_RESCALE_NORMAL);
-            glEnable(GL_DEPTH_TEST);
+            RenderSystem.enableDepthTest();
             RenderHelper.enableGUIStandardItemLighting();
             if (stack.getItem() instanceof ItemBlock && stack.getItemDamage() == 32767) stack.setItemDamage(0);
             draw.drawItem(stack, x, y);
@@ -217,6 +218,6 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
         return Text.translatable(getItemStack().getUnlocalizedName() + ".name");
     }
 
-    static class ItemEntry {
-    }
+	static class ItemEntry {
+	}
 }

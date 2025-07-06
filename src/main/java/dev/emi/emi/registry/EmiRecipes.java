@@ -5,15 +5,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.recipe.*;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.EmiData;
 import dev.emi.emi.data.EmiRecipeCategoryProperties;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiReloadLog;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.api.recipe.EmiRecipeManager;
-import dev.emi.emi.api.recipe.EmiRecipeSorting;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
@@ -43,6 +40,7 @@ public class EmiRecipes {
 	private static List<EmiRecipe> recipes = Lists.newArrayList();
 
 	public static Map<EmiStack, List<EmiRecipe>> byWorkstation = Maps.newHashMap();
+    public static List<EmiRecipeDecorator> decorators = Lists.newArrayList();
 
     public static Map<IRecipe, ResourceLocation> recipeIds = com.rewindmc.retroemi.shim.java.Map.of();
 
@@ -54,6 +52,7 @@ public class EmiRecipes {
 		workstations.clear();
 		recipes.clear();
 		byWorkstation.clear();
+        decorators.clear();
 		manager = Manager.EMPTY;
 
         Minecraft client = Minecraft.getMinecraft();

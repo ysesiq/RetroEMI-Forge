@@ -3,8 +3,10 @@ package dev.emi.emi.screen;
 import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.recipe.EmiRecipeDecorator;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.registry.EmiRecipeFiller;
+import dev.emi.emi.registry.EmiRecipes;
 import dev.emi.emi.widget.RecipeDefaultButtonWidget;
 import dev.emi.emi.widget.RecipeScreenshotButtonWidget;
 import dev.emi.emi.widget.RecipeTreeButtonWidget;
@@ -68,10 +70,17 @@ public class RecipeDisplay {
 		if (recipe != null) {
 			try {
 				recipe.addWidgets(widgets);
+                if (EmiConfig.showRecipeDecorators) {
+                    for (EmiRecipeDecorator decorator : EmiRecipes.decorators) {
+                        decorator.decorateRecipe(recipe, widgets);
+                    }
+                }
+                if (EmiConfig.devMode) {
+                    widgets.decorateDevMode();
+                }
 				addButtons(widgets, leftButtons, 0 - 4 - 13, -14);
 				addButtons(widgets, rightButtons, width + 5, 14);
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				widgets = new WidgetGroup(recipe, wx, wy, wWidth, wHeight);
 				widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.render")), wWidth / 2, wHeight / 2 - 5,
 						Formatting.RED.getColorValue(), true).horizontalAlign(TextWidget.Alignment.CENTER));
@@ -80,8 +89,7 @@ public class RecipeDisplay {
 					widgets.addTooltipText(text, 0, 0, wWidth, wHeight);
 				}
 			}
-		}
-		else {
+		} else {
 			widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.initialize")), wWidth / 2, wHeight / 2 - 5,
 					Formatting.RED.getColorValue(), true).horizontalAlign(TextWidget.Alignment.CENTER));
 			if (exception != null) {

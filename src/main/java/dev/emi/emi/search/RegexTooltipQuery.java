@@ -1,10 +1,10 @@
 package dev.emi.emi.search;
 
-import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.text.Text;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import dev.emi.emi.api.stack.EmiStack;
+import net.minecraft.text.Text;
 
 public class RegexTooltipQuery extends Query {
 	private final Pattern pattern;
@@ -13,8 +13,7 @@ public class RegexTooltipQuery extends Query {
 		Pattern p = null;
 		try {
 			p = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 		pattern = p;
 	}

@@ -1,27 +1,28 @@
 package dev.emi.emi.api.stack;
 
+import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.render.EmiRender;
 import dev.emi.emi.config.EmiConfig;
-import dev.emi.emi.platform.EmiAgnos;
 import dev.emi.emi.registry.EmiTags;
 import dev.emi.emi.runtime.EmiDrawContext;
+import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
 import dev.emi.emi.screen.tooltip.TagTooltipComponent;
-import dev.emi.emi.api.render.EmiRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import net.minecraft.util.ResourceLocation;
 
 @ApiStatus.Internal
 public class TagEmiIngredient implements EmiIngredient {
@@ -148,7 +149,7 @@ public class TagEmiIngredient implements EmiIngredient {
 	@Override
 	public List<TooltipComponent> getTooltip() {
 		List<TooltipComponent> list = Lists.newArrayList();
-		list.add(TooltipComponent.of(EmiPort.ordered(EmiTags.getTagName(key))));
+		list.add(new EmiTextTooltipWrapper(this, EmiPort.ordered(EmiTags.getTagName(key))));
 		if (EmiUtil.showAdvancedTooltips()) {
 			list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.literal("#" + id, Formatting.DARK_GRAY))));
 		}

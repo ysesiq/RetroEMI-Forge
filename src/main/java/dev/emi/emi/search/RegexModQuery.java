@@ -1,10 +1,10 @@
 package dev.emi.emi.search;
 
-import cpw.mods.fml.common.registry.GameData;
-import dev.emi.emi.api.stack.EmiStack;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.stack.EmiStack;
 
 public class RegexModQuery extends Query {
 	private final Pattern pattern;
@@ -13,8 +13,7 @@ public class RegexModQuery extends Query {
 		Pattern p = null;
 		try {
 			p = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 		pattern = p;
 	}
@@ -25,7 +24,7 @@ public class RegexModQuery extends Query {
 			return false;
 		}
 		String namespace = stack.getId().getResourceDomain();
-		String mod = GameData.findModOwner(GameData.itemRegistry.getNameForObject(stack.getItemStack())).getName();
+		String mod = EmiUtil.getModName(namespace);
 		Matcher m = pattern.matcher(mod);
 		return m.find();
 	}

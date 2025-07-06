@@ -1,21 +1,22 @@
 package dev.emi.emi.api.stack;
 
-import dev.emi.emi.EmiPort;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.ResourceLocation;
-import com.rewindmc.retroemi.ItemStacks;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.text.Text;
+import java.util.List;
+
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.List;
+import dev.emi.emi.EmiPort;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.text.Text;
+import net.minecraft.util.ResourceLocation;
+import com.rewindmc.retroemi.ItemStacks;
 
 @ApiStatus.Internal
 public class EmptyEmiStack extends EmiStack {
-	private static final ResourceLocation ID = new ResourceLocation("emi", "empty");
+	private static final ResourceLocation ID = EmiPort.id("emi", "empty");
 
 	@Override
 	public EmiStack getRemainder() {
@@ -57,7 +58,7 @@ public class EmptyEmiStack extends EmiStack {
 
 	@Override
 	public Object getKey() {
-		return null;
+		return Blocks.air;
 	}
 
 	@Override

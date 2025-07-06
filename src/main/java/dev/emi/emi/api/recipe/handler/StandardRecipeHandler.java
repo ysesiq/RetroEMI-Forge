@@ -1,5 +1,6 @@
 package dev.emi.emi.api.recipe.handler;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.runtime.EmiDrawContext;
@@ -72,8 +73,7 @@ public interface StandardRecipeHandler<T extends Container> extends EmiRecipeHan
 			Minecraft.getMinecraft().displayGuiScreen(context.getScreen());
 			if (!EmiClient.onServer) {
 				return EmiRecipeFiller.clientFill(this, recipe, context.getScreen(), stacks, context.getDestination());
-			}
-			else {
+			} else {
 				EmiClient.sendFillRecipe(this, context.getScreen(), context.getScreenHandler().windowId, switch (context.getDestination()) {
 					case NONE -> 0;
 					case CURSOR -> 1;
@@ -93,7 +93,7 @@ public interface StandardRecipeHandler<T extends Container> extends EmiRecipeHan
 	@ApiStatus.Internal
 	public static void renderMissing(EmiRecipe recipe, EmiPlayerInventory inv, List<Widget> widgets, DrawContext draw) {
 		EmiDrawContext context = EmiDrawContext.wrap(draw);
-//		glEnable(GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
 		Map<EmiIngredient, Boolean> availableForCrafting = getAvailable(recipe, inv);
 		for (Widget w : widgets) {
 			if (w instanceof SlotWidget sw) {
@@ -108,11 +108,10 @@ public interface StandardRecipeHandler<T extends Container> extends EmiRecipeHan
 				}
 			}
 		}
-		GL11.glColor4f(1, 1, 1, 1);
+		context.resetColor();
 	}
 
-	@ApiStatus.Internal
-	public static Map<EmiIngredient, Boolean> getAvailable(EmiRecipe recipe, EmiPlayerInventory inventory) {
+    static Map<EmiIngredient, Boolean> getAvailable(EmiRecipe recipe, EmiPlayerInventory inventory) {
 		Map<EmiIngredient, Boolean> availableForCrafting = new IdentityHashMap<>();
 		List<Boolean> list = inventory.getCraftAvailability(recipe);
 		List<EmiIngredient> inputs = recipe.getInputs();

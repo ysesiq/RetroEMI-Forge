@@ -1,19 +1,28 @@
 package dev.emi.emi.search;
 
-import com.google.common.collect.Sets;
-import dev.emi.emi.api.stack.EmiStack;
-
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
+import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.stack.EmiStack;
+
 public class ModQuery extends Query {
-	private final Set<EmiStack> valid;
-	
+	private final Set<EmiStack> valid = Sets.newIdentityHashSet();
+	private final String name;
+
 	public ModQuery(String name) {
-		valid = Sets.newHashSet(EmiSearch.mods.findAll(name.toLowerCase()));
+		this.name = name.toLowerCase();
+		EmiSearch.mods.findAll(this.name).forEach(s -> valid.add(s.stack));
 	}
-	
+
 	@Override
 	public boolean matches(EmiStack stack) {
 		return valid.contains(stack);
+	}
+
+	@Override
+	public boolean matchesUnbaked(EmiStack stack) {
+		return EmiUtil.getModName(stack.getId().getResourceDomain()).toLowerCase().contains(name);
 	}
 }

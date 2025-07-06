@@ -5,9 +5,9 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import dev.emi.emi.mixin.minecraft.accessor.InventoryCraftingAccessor;
-import dev.emi.emi.mixin.minecraft.accessor.SlotAccessor;
-import dev.emi.emi.mixin.minecraft.accessor.SlotCraftingAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.InventoryCraftingAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.SlotAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.SlotCraftingAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.*;
 

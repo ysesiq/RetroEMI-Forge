@@ -258,8 +258,7 @@ public class ConfigScreen extends REMIScreen {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

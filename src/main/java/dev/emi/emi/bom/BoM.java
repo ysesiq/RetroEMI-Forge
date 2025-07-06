@@ -1,13 +1,17 @@
 package dev.emi.emi.bom;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.emi.emi.data.RecipeDefaults;
-import dev.emi.emi.runtime.EmiPersistentData;
+
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiResolutionRecipe;
@@ -15,13 +19,11 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.TagEmiIngredient;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
+import dev.emi.emi.data.RecipeDefaults;
+import dev.emi.emi.runtime.EmiPersistentData;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.util.JsonHelper;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BoM {
 	private static RecipeDefaults defaults = new RecipeDefaults();
@@ -33,7 +35,7 @@ public class BoM {
 
 	public static void setDefaults(RecipeDefaults defaults) {
 		BoM.defaults = defaults;
-//		RetroEMI.executeOnMainThread(() -> reload());
+		RetroEMI.executeOnMainThread(() -> reload());
 	}
 
 	public static JsonObject saveAdded() {
@@ -51,14 +53,12 @@ public class BoM {
 						addedTags.add(el.getAsString(), val);
 					}
 				}
-			}
-			else if (recipe != null && recipe.getId() != null && !placed.contains(recipe.getId())) {
+			} else if (recipe != null && recipe.getId() != null && !placed.contains(recipe.getId())) {
 				DefaultStatus status = getRecipeStatus(recipe);
 				placed.add(recipe.getId());
 				if (status == DefaultStatus.FULL) {
 					added.add(new JsonPrimitive(recipe.getId().toString()));
-				}
-				else if (status == DefaultStatus.PARTIAL) {
+				} else if (status == DefaultStatus.PARTIAL) {
 					JsonArray arr = new JsonArray();
 					for (EmiStack stack : recipe.getOutputs()) {
 						if (recipe.equals(getRecipe(stack))) {
@@ -107,10 +107,9 @@ public class BoM {
 				}
 			}
 		}
-        //TODO
 		JsonObject resolutions = JsonHelper.getObject(object, "resolutions", new JsonObject());
         for (String key : resolutions.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
-			ResourceLocation id = new ResourceLocation(key);
+			ResourceLocation id = EmiPort.id(key);
 			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 			if (recipe != null && JsonHelper.hasArray(resolutions, key)) {
 				JsonArray arr = JsonHelper.getArray(resolutions, key);
@@ -143,17 +142,15 @@ public class BoM {
 	public static DefaultStatus getRecipeStatus(EmiRecipe recipe) {
 		int found = 0;
 		for (EmiStack stack : recipe.getOutputs()) {
-			if (getRecipe(stack) == recipe) {
+			if (recipe.equals(getRecipe(stack))) {
 				found++;
 			}
 		}
 		if (found == 0) {
 			return DefaultStatus.EMPTY;
-		}
-		else if (found >= recipe.getOutputs().size()) {
+		} else if (found >= recipe.getOutputs().size()) {
 			return DefaultStatus.FULL;
-		}
-		else {
+		} else {
 			return DefaultStatus.PARTIAL;
 		}
 	}
@@ -176,6 +173,15 @@ public class BoM {
 
 	public static void addResolution(EmiIngredient ingredient, EmiRecipe recipe) {
 		tree.addResolution(ingredient, recipe);
+	}
+
+	public static boolean isDefaultRecipe(EmiIngredient stack, EmiRecipe recipe) {
+		if (recipe instanceof EmiResolutionRecipe err) {
+			if (getRecipe(err.ingredient) instanceof EmiResolutionRecipe res) {
+				return stack.equals(res.stack);
+			}
+		}
+		return getRecipe(stack) == recipe;
 	}
 
 	public static void addRecipe(EmiRecipe recipe) {
@@ -207,6 +213,21 @@ public class BoM {
 		recalculate();
 	}
 
+	public static void removeRecipe(EmiIngredient stack, EmiRecipe recipe) {
+		if (recipe instanceof EmiResolutionRecipe err) {
+			if (addedRecipes.get(err.ingredient) instanceof EmiResolutionRecipe res && stack.equals(res.stack)) {
+				addedRecipes.remove(err.ingredient);
+			}
+		} else {
+			addedRecipes.remove(stack, recipe);
+		}
+		if (getRecipeStatus(recipe) != DefaultStatus.EMPTY) {
+			disabledRecipes.add(recipe);
+		}
+		EmiPersistentData.save();
+		recalculate();
+	}
+
 	private static void recalculate() {
 		if (tree != null) {
 			tree.recalculate();
@@ -214,6 +235,8 @@ public class BoM {
 	}
 
 	public static enum DefaultStatus {
-		EMPTY, PARTIAL, FULL
+		EMPTY,
+		PARTIAL,
+		FULL
 	}
 }

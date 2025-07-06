@@ -18,7 +18,7 @@ import java.util.List;
  * In most cases, implementing this is not necessary, and {@link StandardRecipeHandler} can be used instead.
  */
 public interface EmiRecipeHandler<T extends Container> {
-	Text NOT_ENOUGH_INGREDIENTS = EmiPort.translatable("emi.not_enough_ingredients");
+	public static final Text NOT_ENOUGH_INGREDIENTS = EmiPort.translatable("emi.not_enough_ingredients");
 
 	/**
 	 * @return An inventory with the stacks the player can use for crafting.
@@ -57,8 +57,7 @@ public interface EmiRecipeHandler<T extends Container> {
 	default List<TooltipComponent> getTooltip(EmiRecipe recipe, EmiCraftContext<T> context) {
 		if (canCraft(recipe, context)) {
 			return Collections.emptyList();
-		}
-		else {
+		} else {
 			return Collections.singletonList(TooltipComponent.of(EmiPort.ordered(NOT_ENOUGH_INGREDIENTS)));
 		}
 	}

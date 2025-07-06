@@ -1,12 +1,19 @@
 package dev.emi.emi.api.recipe;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.ApiStatus;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import dev.emi.emi.EmiPort;
-import dev.emi.emi.registry.EmiRecipeFiller;
-import dev.emi.emi.registry.EmiStackList;
-import dev.emi.emi.runtime.EmiFavorite;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
@@ -14,19 +21,17 @@ import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.registry.EmiRecipeFiller;
+import dev.emi.emi.registry.EmiStackList;
+import dev.emi.emi.runtime.EmiFavorite;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import net.minecraft.inventory.Slot;
+import net.minecraft.client.Minecraft;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class EmiPlayerInventory {
@@ -120,18 +125,18 @@ public class EmiPlayerInventory {
 		for (EmiStack stack : inventory.keySet()) {
 			set.addAll(EmiApi.getRecipeManager().getRecipesByInput(stack));
 		}
-        return set.stream().filter(r -> !r.hideCraftable() && predicate.test(r) && r.getOutputs().size() > 0)
-            .map(r -> new EmiFavorite.Craftable(r))
-            .sorted((a, b) -> {
-                int i = Integer.compare(
-                    EmiStackList.getIndex(a.getStack()),
-                    EmiStackList.getIndex(b.getStack()));
-                if (i != 0) {
-                    return i;
-                }
-                return Long.compare(a.getAmount(), b.getAmount());
-            }).collect(Collectors.toList());
-    }
+		return set.stream().filter(r -> !r.hideCraftable() && predicate.test(r) && r.getOutputs().size() > 0)
+			.map(r -> new EmiFavorite.Craftable(r))
+			.sorted((a, b) -> {
+				int i = Integer.compare(
+					EmiStackList.getIndex(a.getStack()),
+					EmiStackList.getIndex(b.getStack()));
+				if (i != 0) {
+					return i;
+				}
+				return Long.compare(a.getAmount(), b.getAmount());
+			}).collect(Collectors.toList());
+	}
 
 	public List<Boolean> getCraftAvailability(EmiRecipe recipe) {
 		Object2LongMap<EmiStack> used = new Object2LongOpenHashMap<>();
@@ -193,8 +198,7 @@ public class EmiPlayerInventory {
 		});
 		if (other.inventory.size() != inventory.size()) {
 			return false;
-		}
-		else {
+		} else {
 			for (EmiStack stack : inventory.keySet()) {
 				if (!other.inventory.containsKey(stack) || !other.inventory.get(stack).isEqual(stack, comparison)) {
 					return false;

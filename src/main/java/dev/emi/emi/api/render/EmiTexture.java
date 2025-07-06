@@ -2,8 +2,8 @@ package dev.emi.emi.api.render;
 
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.runtime.EmiDrawContext;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiTexture implements EmiRenderable {
 	public static final EmiTexture SLOT = new EmiTexture(EmiRenderHelper.WIDGETS, 0, 0, 18, 18);
@@ -22,8 +22,8 @@ public class EmiTexture implements EmiRenderable {
 	public EmiTexture(ResourceLocation texture, int u, int v, int width, int height) {
 		this(texture, u, v, width, height, width, height, 256, 256);
 	}
-
-	public EmiTexture(ResourceLocation texture, int u, int v, int width, int height, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
+	public EmiTexture(ResourceLocation texture, int u, int v, int width, int height,
+			int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
 		this.texture = texture;
 		this.u = u;
 		this.v = v;

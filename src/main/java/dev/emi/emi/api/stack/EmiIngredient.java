@@ -1,13 +1,14 @@
 package dev.emi.emi.api.stack;
 
-import dev.emi.emi.registry.EmiTags;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import dev.emi.emi.api.render.EmiRenderable;
+import dev.emi.emi.registry.EmiTags;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.tag.TagKey;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public interface EmiIngredient extends EmiRenderable {
 	public static final int RENDER_ICON = 1;
@@ -67,16 +68,9 @@ public interface EmiIngredient extends EmiRenderable {
 		return of(key, 1);
 	}
 
-	public static <T> EmiIngredient of(TagKey<T> key, long amount) {
-		List<EmiStack> stacks = EmiTags.getValues(key);
-		if (stacks.isEmpty()) {
-			return EmiStack.EMPTY;
-		}
-		else if (stacks.size() == 1) {
-			return stacks.get(0);
-		}
-		return new TagEmiIngredient(key, stacks, amount);
-	}
+    public static <T> EmiIngredient of(TagKey<T> key, long amount) {
+        return EmiIngredient.of(EmiTags.getRawValues(key), amount);
+    }
 
 	public static EmiIngredient of(List<? extends EmiIngredient> list) {
 		return of(list, 1);
@@ -85,14 +79,11 @@ public interface EmiIngredient extends EmiRenderable {
 	public static EmiIngredient of(List<? extends EmiIngredient> list, long amount) {
 		if (list.size() == 0) {
 			return EmiStack.EMPTY;
-		}
-		else if ((list.size() == 1) && amount <= 64) {
+		} else if ((list.size() == 1) && amount <= 64) {
 			return list.get(0);
-		}
-		else if (list.size() == 1) {
+		} else if (list.size() == 1) {
 			return new ListEmiIngredient(list, amount - 64); // Surely there's a better way to do this
-		}
-		else {
+		} else {
 			long internalAmount = list.get(0).getAmount();
 			for (EmiIngredient i : list) {
 				if (i.getAmount() != internalAmount) {

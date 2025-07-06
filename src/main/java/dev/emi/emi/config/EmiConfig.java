@@ -68,10 +68,6 @@ public class EmiConfig {
 	@ConfigValue("general.search-tags-by-default")
 	public static boolean searchTagsByDefault = false;
 
-	@Comment("Whether normal search queries should include the stack's item ID. Better Than Wolves specifc.")
-	@ConfigValue("general.search-id-by-default")
-	public static boolean searchIdByDefault = true;
-
 	// UI
 
 	@Comment("Where to display status effects in the inventory.")
@@ -447,6 +443,10 @@ public class EmiConfig {
 	@ConfigValue("dev.show-recipe-ids")
 	public static boolean showRecipeIds = false;
 
+    @Comment("Whether to display additional widgets added to recipes from other mods.\nThese are typically developer facing and compatibility related, and not useful for players.")
+    @ConfigValue("dev.show-recipe-decorators")
+    public static boolean showRecipeDecorators = EmiAgnos.isDevelopmentEnvironment();
+
 	@Comment("Whether stacks in the index should display a highlight if they have a recipe default.")
 	@ConfigValue("dev.highlight-defaulted")
 	public static boolean highlightDefaulted = false;
@@ -454,19 +454,6 @@ public class EmiConfig {
 	@Comment("Whether to display exclusion areas")
 	@ConfigValue("dev.highlight-exclusion-areas")
 	public static boolean highlightExclusionAreas = false;
-
-	//Addon
-
-	//Distraction Free Recipes
-	@ConfigGroup("addon.distraction")
-	@Comment("Turns the mod's effects on/off.")
-	@ConfigValue("addon.enable-distraction-free-mode")
-	public static boolean enableDistractionFreeMode = false;
-
-	@Comment("Lowers the opacity of the search bar to make it blend in more.")
-	@ConfigValue("addon.lower_opacity")
-	@ConfigGroupEnd()
-	public static boolean lowerOpacity = false;
 
 	// Persistent (currently empty)
 
@@ -494,10 +481,8 @@ public class EmiConfig {
 				startupConfig = getSavedConfig();
 			}
 			writeConfig();
-		}
-		catch (Exception e) {
-			EmiLog.error("Error reading config");
-			e.printStackTrace();
+		} catch (Exception e) {
+			EmiLog.error("Error reading config", e);
 		}
 	}
 
@@ -514,14 +499,11 @@ public class EmiConfig {
 			if (!emi.exists()) {
 				emi.createNewFile();
 				writeConfig();
-			}
-			else {
+			} else {
 				loadConfig();
 			}
-		}
-		catch (Exception e) {
-			EmiLog.error("Error writing global config");
-			e.printStackTrace();
+		} catch (Exception e) {
+			EmiLog.error("Error writing global config", e);
 		}
 	}
 
@@ -542,10 +524,8 @@ public class EmiConfig {
 					unparsed.put(key, css.getAll(key));
 				}
 			}
-		}
-		catch (Exception e) {
-			EmiLog.error("Error reading config");
-			e.printStackTrace();
+		} catch (Exception e) {
+			EmiLog.error("Error reading config", e);
 		}
 	}
 
@@ -554,10 +534,8 @@ public class EmiConfig {
 			FileWriter writer = new FileWriter(getConfigFile());
 			writer.write(getSavedConfig());
 			writer.close();
-		}
-		catch (Exception e) {
-			EmiLog.error("Error writing config");
-			e.printStackTrace();
+		} catch (Exception e) {
+			EmiLog.error("Error writing config", e);
 		}
 	}
 
@@ -583,10 +561,8 @@ public class EmiConfig {
 				String text = commentText;
 				try {
 					text += writeField(key, field);
-				}
-				catch (Exception e) {
-					EmiLog.error("Error serializing config");
-					e.printStackTrace();
+				} catch (Exception e) {
+					EmiLog.error("Error serializing config", e);
 				}
 				unparsed.computeIfAbsent(group, g -> Lists.newArrayList()).add(text);
 			}
@@ -782,8 +758,7 @@ public class EmiConfig {
 					FILTERS.put(annot.value(), predicate);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		DEFAULT_CONFIG = getSavedConfig();

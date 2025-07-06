@@ -1,18 +1,5 @@
 package dev.emi.emi.api;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
-import dev.emi.emi.runtime.EmiDrawContext;
-import dev.emi.emi.api.widget.Bounds;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.client.gui.DrawContext;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +8,24 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.widget.Bounds;
+import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.runtime.EmiDrawContext;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+
 public interface EmiDragDropHandler<T extends Gui> {
 
 	/**
 	 * Called when a stack is released while being dragged.
-	 *
 	 * @return Whether to consume the event.
 	 */
 	boolean dropStack(T screen, EmiIngredient stack, int x, int y);
@@ -83,7 +83,7 @@ public interface EmiDragDropHandler<T extends Gui> {
 	public static class SlotBased<T extends GuiContainer> extends BoundsBased<T> {
 
 		/**
-		 * @param slots    A function to get a list of slot targets given a screen
+		 * @param slots A function to get a list of slot targets given a screen
 		 * @param consumer A consumer for dropped stacks
 		 */
 		public SlotBased(Function<T, Collection<Slot>> slots, TriConsumer<T, Slot, EmiIngredient> consumer) {
@@ -92,7 +92,7 @@ public interface EmiDragDropHandler<T extends Gui> {
 
 		/**
 		 * @param slotFilter A filter for which slots are valid targets
-		 * @param consumer   A consumer for dropped stacks
+		 * @param consumer A consumer for dropped stacks
 		 */
 		public SlotBased(BiPredicate<T, Slot> slotFilter, TriConsumer<T, Slot, EmiIngredient> consumer) {
 			super(t -> SlotBased.<T>map(t, screen -> filter(screen, slotFilter), consumer));
@@ -109,12 +109,12 @@ public interface EmiDragDropHandler<T extends Gui> {
 			return slots;
 		}
 
-		private static <T extends GuiContainer> Map<Bounds, Consumer<EmiIngredient>> map(T t, Function<T, Collection<Slot>> slots,
-				TriConsumer<T, Slot, EmiIngredient> consumer) {
+		private static <T extends GuiContainer> Map<Bounds, Consumer<EmiIngredient>>
+				map(T t, Function<T, Collection<Slot>> slots, TriConsumer<T, Slot, EmiIngredient> consumer) {
 			Map<Bounds, Consumer<EmiIngredient>> map = Maps.newHashMap();
 			for (Slot slot : slots.apply(t)) {
-				map.put(new Bounds(((GuiContainerAccessor) t).getGuiLeft() + slot.xDisplayPosition - 1, ((GuiContainerAccessor) t).getGuiTop() + slot.yDisplayPosition - 1, 18, 18),
-						i -> consumer.accept(t, slot, i));
+				map.put(new Bounds(((GuiContainerAccessor) t).getGuiLeft() + slot.xDisplayPosition - 1,
+				    ((GuiContainerAccessor) t).getGuiTop() + slot.yDisplayPosition - 1, 18, 18), i -> consumer.accept(t, slot, i));
 			}
 			return map;
 		}

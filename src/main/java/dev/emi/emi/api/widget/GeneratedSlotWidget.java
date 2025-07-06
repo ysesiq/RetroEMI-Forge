@@ -1,13 +1,13 @@
 package dev.emi.emi.api.widget;
 
+import java.util.Random;
+import java.util.function.Function;
+
 import dev.emi.emi.api.render.EmiRender;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.gui.DrawContext;
-
-import java.util.Random;
-import java.util.function.Function;
 
 public class GeneratedSlotWidget extends SlotWidget {
 	private static final int INCREMENT = 1000;

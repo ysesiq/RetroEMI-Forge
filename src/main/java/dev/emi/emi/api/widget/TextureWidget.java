@@ -1,13 +1,13 @@
 package dev.emi.emi.api.widget;
 
-import dev.emi.emi.runtime.EmiDrawContext;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+
+import dev.emi.emi.runtime.EmiDrawContext;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.util.ResourceLocation;
 
 public class TextureWidget extends Widget implements WidgetTooltipHolder<TextureWidget> {
 	protected final ResourceLocation texture;
@@ -18,8 +18,8 @@ public class TextureWidget extends Widget implements WidgetTooltipHolder<Texture
 	protected final int textureWidth, textureHeight;
 	private BiFunction<Integer, Integer, List<TooltipComponent>> tooltipSupplier = (mouseX, mouseY) -> Collections.emptyList();
 
-	public TextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth, int regionHeight, int textureWidth,
-			int textureHeight) {
+	public TextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v,
+			int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
 		this.texture = texture;
 		this.x = x;
 		this.y = y;

@@ -1,19 +1,20 @@
 package dev.emi.emi.api.widget;
 
-import dev.emi.emi.api.render.EmiTexture;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import dev.emi.emi.api.render.EmiTexture;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.widget.DrawableWidget.DrawableWidgetConsumer;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
+import net.minecraft.util.ResourceLocation;
 
 public interface WidgetHolder {
 
@@ -31,21 +32,26 @@ public interface WidgetHolder {
 		return addSlot(EmiStack.EMPTY, x, y);
 	}
 
+	default TankWidget addTank(EmiIngredient stack, int x, int y, int width, int height, int capacity) {
+		return add(new TankWidget(stack, x, y, width, height, capacity));
+	}
+
 	default TextureWidget addTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v) {
 		return add(new TextureWidget(texture, x, y, width, height, u, v));
 	}
 
-	default TextureWidget addTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth, int regionHeight,
-                                     int textureWidth, int textureHeight) {
-		return add(new TextureWidget(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight));
+	default TextureWidget addTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v,
+			int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
+		return add(new TextureWidget(texture, x, y, width, height, u, v,
+			regionWidth, regionHeight, textureWidth, textureHeight));
 	}
 
 	default TextureWidget addTexture(EmiTexture texture, int x, int y) {
-		return addTexture(texture.texture, x, y, texture.width, texture.height, texture.u, texture.v, texture.regionWidth, texture.regionHeight,
-				texture.textureWidth, texture.textureHeight);
+		return addTexture(texture.texture, x, y, texture.width, texture.height, texture.u, texture.v,
+			texture.regionWidth, texture.regionHeight, texture.textureWidth, texture.textureHeight);
 	}
 
-	default DrawableWidget addDrawable(int x, int y, int width, int height, DrawableWidget.DrawableWidgetConsumer consumer) {
+	default DrawableWidget addDrawable(int x, int y, int width, int height, DrawableWidgetConsumer consumer) {
 		return add(new DrawableWidget(x, y, width, height, consumer));
 	}
 
@@ -57,17 +63,18 @@ public interface WidgetHolder {
 		return add(new TextWidget(text, x, y, color, shadow));
 	}
 
-	default ButtonWidget addButton(int x, int y, int width, int height, int u, int v, BooleanSupplier isActive, ButtonWidget.ClickAction action) {
+	default ButtonWidget addButton(int x, int y, int width, int height, int u, int v,
+			BooleanSupplier isActive, ButtonWidget.ClickAction action) {
 		return add(new ButtonWidget(x, y, width, height, u, v, isActive, action));
 	}
 
-	default ButtonWidget addButton(int x, int y, int width, int height, int u, int v, ResourceLocation texture, BooleanSupplier isActive,
-			ButtonWidget.ClickAction action) {
+	default ButtonWidget addButton(int x, int y, int width, int height, int u, int v,
+			ResourceLocation texture, BooleanSupplier isActive, ButtonWidget.ClickAction action) {
 		return add(new ButtonWidget(x, y, width, height, u, v, texture, isActive, action));
 	}
 
 	default TooltipWidget addTooltip(BiFunction<Integer, Integer, List<TooltipComponent>> tooltipSupplier, int x, int y, int width, int height) {
-		return new TooltipWidget(tooltipSupplier, x, y, width, height);
+		return add(new TooltipWidget(tooltipSupplier, x, y, width, height));
 	}
 
 	default TooltipWidget addTooltip(List<TooltipComponent> tooltip, int x, int y, int width, int height) {
@@ -88,37 +95,42 @@ public interface WidgetHolder {
 	/**
 	 * @param time Animation time, in milliseconds
 	 */
-	default AnimatedTextureWidget addAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int time, boolean horizontal,
-			boolean endToStart, boolean fullToEmpty) {
-		return add(new AnimatedTextureWidget(texture, x, y, width, height, u, v, time, horizontal, endToStart, fullToEmpty));
+	default AnimatedTextureWidget addAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int time,
+			boolean horizontal, boolean endToStart, boolean fullToEmpty) {
+		return add(new AnimatedTextureWidget(texture, x, y, width, height, u, v,
+			time, horizontal, endToStart, fullToEmpty));
 	}
 
 	/**
 	 * @param time Animation time, in milliseconds
 	 */
-	default AnimatedTextureWidget addAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth,
-			int regionHeight, int textureWidth, int textureHeight, int time, boolean horizontal, boolean endToStart, boolean fullToEmpty) {
-		return add(new AnimatedTextureWidget(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight, time, horizontal,
-				endToStart, fullToEmpty));
+	default AnimatedTextureWidget addAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v,
+			int regionWidth, int regionHeight, int textureWidth, int textureHeight, int time,
+			boolean horizontal, boolean endToStart, boolean fullToEmpty) {
+		return add(new AnimatedTextureWidget(texture, x, y, width, height, u, v,
+			regionWidth, regionHeight, textureWidth, textureHeight,
+			time, horizontal, endToStart, fullToEmpty));
 	}
 
 	/**
 	 * @param time Animation time, in milliseconds
 	 */
-	default AnimatedTextureWidget addAnimatedTexture(EmiTexture texture, int x, int y, int time, boolean horizontal, boolean endToStart, boolean fullToEmpty) {
-		return addAnimatedTexture(texture.texture, x, y, texture.width, texture.height, texture.u, texture.v, texture.regionWidth, texture.regionHeight,
-				texture.textureWidth, texture.textureHeight, time, horizontal, endToStart, fullToEmpty);
+	default AnimatedTextureWidget addAnimatedTexture(EmiTexture texture, int x, int y, int time,
+			boolean horizontal, boolean endToStart, boolean fullToEmpty) {
+		return addAnimatedTexture(texture.texture, x, y, texture.width, texture.height, texture.u, texture.v,
+			texture.regionWidth, texture.regionHeight, texture.textureWidth, texture.textureHeight,
+			time, horizontal, endToStart, fullToEmpty);
 	}
 
-	/**
-	 * @param tickTime Animation time, in ticks
-	 */
+    /**
+     * @param tickTime Animation time, in ticks
+     */
 
-	default CustomAnimatedTextureWidget addCustomAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth,
-			int regionHeight, int textureWidth, int textureHeight, int tickTime, int count) {
-		return add(
-				new CustomAnimatedTextureWidget(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight, tickTime, count));
-	}
+    default CustomAnimatedTextureWidget addCustomAnimatedTexture(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth,
+                                                                 int regionHeight, int textureWidth, int textureHeight, int tickTime, int count) {
+        return add(
+            new CustomAnimatedTextureWidget(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight, tickTime, count));
+    }
 
 	/**
 	 * @param tickTime Animation time, in ticks

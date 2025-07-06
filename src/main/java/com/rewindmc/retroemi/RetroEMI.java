@@ -3,7 +3,7 @@ package com.rewindmc.retroemi;
 import cpw.mods.fml.common.FMLCommonHandler;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.mixin.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreen;
@@ -266,8 +266,7 @@ public class RetroEMI {
 			}
 		}
 		catch (Exception e) {
-			EmiLog.error("Error while handling mouse event");
-			e.printStackTrace();
+			EmiLog.error("Error while handling mouse event", e);
 		}
 		return false;
 	}
@@ -294,10 +293,8 @@ public class RetroEMI {
 					//					}
 				}
 			}
-		}
-		catch (Exception e) {
-			EmiLog.error("Error while handling key press");
-			e.printStackTrace();
+		} catch (Exception e) {
+			EmiLog.error("Error while handling key press", e);
 		}
 		return false;
 	}

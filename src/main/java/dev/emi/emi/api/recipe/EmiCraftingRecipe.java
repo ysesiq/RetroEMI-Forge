@@ -1,5 +1,7 @@
 package dev.emi.emi.api.recipe;
 
+import java.util.List;
+
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -7,8 +9,6 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
-
-import java.util.List;
 
 public class EmiCraftingRecipe implements EmiRecipe {
 	protected final ResourceLocation id;
@@ -24,7 +24,7 @@ public class EmiCraftingRecipe implements EmiRecipe {
 		this.input = input;
 		this.output = output;
 		this.id = id;
-        this.shapeless = shapeless;
+		this.shapeless = shapeless;
 	}
 
 	@Override
@@ -90,8 +90,7 @@ public class EmiCraftingRecipe implements EmiRecipe {
 			int s = i + sOff;
 			if (s >= 0 && s < input.size()) {
 				widgets.addSlot(input.get(s), i % 3 * 18, i / 3 * 18);
-			}
-			else {
+			} else {
 				widgets.addSlot(EmiStack.of(ItemStacks.EMPTY), i % 3 * 18, i / 3 * 18);
 			}
 		}

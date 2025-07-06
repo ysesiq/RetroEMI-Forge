@@ -13,7 +13,7 @@ import dev.emi.emi.chess.EmiChess;
 import dev.emi.emi.config.*;
 import dev.emi.emi.input.EmiBind;
 import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.mixin.minecraft.accessor.GuiTextFieldAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.GuiTextFieldAccessor;
 import dev.emi.emi.network.CreateItemC2SPacket;
 import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.platform.EmiClient;
@@ -35,12 +35,11 @@ import net.minecraft.item.Item;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.util.Formatting;
 import net.xylose.emi.REMIForge;
-import dev.emi.emi.mixin.minecraft.accessor.PlayerControllerMPAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.PlayerControllerMPAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.ItemStack;
@@ -1645,9 +1644,6 @@ public class EmiScreenManager {
 				return false;
 			}
 			if (getType() == SidebarType.CHESS && (space.tw != 8 || space.th != 8)) {
-				return false;
-			}
-			if (this.getType() == SidebarType.INDEX && EmiScreenManager.search.getText().isEmpty() && EmiConfig.enableDistractionFreeMode) {
 				return false;
 			}
 			return !isDisabled() && space.pageSize > 0 && pages.pages.size() > 0;

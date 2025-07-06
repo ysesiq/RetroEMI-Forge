@@ -1,15 +1,18 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.screen.tooltip.IngredientTooltipComponent;
-import dev.emi.emi.api.render.EmiRender;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.ApiStatus;
+
+import com.google.common.collect.Lists;
+
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.render.EmiRender;
+import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
+import dev.emi.emi.screen.tooltip.IngredientTooltipComponent;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 
 @ApiStatus.Internal
 public class ListEmiIngredient implements EmiIngredient {
@@ -98,10 +101,15 @@ public class ListEmiIngredient implements EmiIngredient {
 	@Override
 	public List<TooltipComponent> getTooltip() {
 		List<TooltipComponent> tooltip = Lists.newArrayList();
-		tooltip.add(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("tooltip.emi.accepts"))));
+		tooltip.add(new EmiTextTooltipWrapper(this, EmiPort.ordered(EmiPort.translatable("tooltip.emi.accepts"))));
 		tooltip.add(new IngredientTooltipComponent(ingredients));
 		int item = (int) (System.currentTimeMillis() / 1000 % ingredients.size());
 		tooltip.addAll(ingredients.get(item).copy().setAmount(amount).getTooltip());
 		return tooltip;
+	}
+
+	@ApiStatus.Internal
+	public List<? extends EmiIngredient> getIngredients() {
+		return ingredients;
 	}
 }

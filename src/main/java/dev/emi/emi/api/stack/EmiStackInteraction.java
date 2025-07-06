@@ -1,6 +1,7 @@
 package dev.emi.emi.api.stack;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
+import org.jetbrains.annotations.Nullable;
 
 public class EmiStackInteraction {
 	public static final EmiStackInteraction EMPTY = new EmiStackInteraction(EmiStack.EMPTY, null, false);
@@ -13,12 +14,12 @@ public class EmiStackInteraction {
 	}
 
 	/**
-	 * @param stack     The ingredient being interacted with
-	 * @param recipe    The recipe associated with this ingredient, like from the output of a recipe, or a favorited recipe
+	 * @param stack The ingredient being interacted with
+	 * @param recipe The recipe associated with this ingredient, like from the output of a recipe, or a favorited recipe
 	 * @param clickable Whether this stack can be interacted with using a mouse for EMI functions.
-	 *                  For example, stacks in the sidebar can, but stacks in the inventory cannot.
+	 * 	For example, stacks in the sidebar can, but stacks in the inventory cannot.
 	 */
-	public EmiStackInteraction(EmiIngredient stack, EmiRecipe recipe, boolean clickable) {
+	public EmiStackInteraction(EmiIngredient stack, @Nullable EmiRecipe recipe, boolean clickable) {
 		this.stack = stack;
 		this.recipe = recipe;
 		this.clickable = clickable;
@@ -28,6 +29,7 @@ public class EmiStackInteraction {
 		return stack;
 	}
 
+	@Nullable
 	public EmiRecipe getRecipeContext() {
 		return recipe;
 	}

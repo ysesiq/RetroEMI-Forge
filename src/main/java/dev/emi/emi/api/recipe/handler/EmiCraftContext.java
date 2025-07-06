@@ -1,9 +1,10 @@
 package dev.emi.emi.api.recipe.handler;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
-import org.jetbrains.annotations.ApiStatus;
 
 public class EmiCraftContext<T extends Container> {
 	private final GuiContainer screen;
@@ -50,7 +51,7 @@ public class EmiCraftContext<T extends Container> {
 		return amount;
 	}
 
-	public enum Type {
+	public static enum Type {
 		/**
 		 * A fill from the recipe screen's fill button
 		 */
@@ -61,7 +62,7 @@ public class EmiCraftContext<T extends Container> {
 		CRAFTABLE
 	}
 
-	public enum Destination {
+	public static enum Destination {
 		/**
 		 * No output, simply move the ingredients to where they belong.
 		 */

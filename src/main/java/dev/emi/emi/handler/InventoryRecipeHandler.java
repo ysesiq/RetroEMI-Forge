@@ -7,7 +7,7 @@ import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import dev.emi.emi.mixin.minecraft.accessor.InventoryCraftingAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.InventoryCraftingAccessor;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerWorkbench;

@@ -1,11 +1,13 @@
 package dev.emi.emi.api.stack.serializer;
 
-import com.google.gson.JsonElement;
-import dev.emi.emi.registry.EmiIngredientSerializers;
-import dev.emi.emi.api.stack.EmiIngredient;
+import java.io.IOException;
+
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import com.google.gson.JsonElement;
+
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.registry.EmiIngredientSerializers;
 
 public interface EmiIngredientSerializer<T extends EmiIngredient> {
 

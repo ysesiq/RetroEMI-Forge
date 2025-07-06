@@ -1,24 +1,37 @@
 package dev.emi.emi.api.stack.serializer;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.util.JsonHelper;
-
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.runtime.EmiLog;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.JsonHelper;
 
 public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSerializer<T> {
 	static final Pattern STACK_REGEX = Pattern.compile("^([\\w_\\-./]+):([\\w_\\-.]+):([\\w_\\-./]+)(\\{.*\\})?$");
 
 	EmiStack create(ResourceLocation id, NBTTagCompound nbt, long amount);
+
+//	private static <T> DynamicOps<T> withRegistryAccess(DynamicOps<T> ops) {
+//		MinecraftClient instance = MinecraftClient.getInstance();
+//		if (instance == null || instance.world == null) {
+//			//Note: instance can be null in datagen, just fall back to a variant that doesn't have registry access
+//			// as in the majority of cases this will work fine
+//			return ops;
+//		}
+//		return instance.world.getRegistryManager().getOps(ops);
+//	}
 
 	@Override
 	default EmiIngredient deserialize(JsonElement element) {
@@ -31,13 +44,12 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 			String s = element.getAsString();
 			Matcher m = STACK_REGEX.matcher(s);
 			if (m.matches()) {
-				id = new ResourceLocation(m.group(2), m.group(3));
+				id = EmiPort.id(m.group(2), m.group(3));
 				nbt = m.group(4);
 			}
-		}
-		else if (element.isJsonObject()) {
+		} else if (element.isJsonObject()) {
 			JsonObject json = element.getAsJsonObject();
-			id = new ResourceLocation(JsonHelper.getString(json, "id"));
+			id = EmiPort.id(JsonHelper.getString(json, "id"));
 			nbt = JsonHelper.getString(json, "nbt", null);
 			amount = JsonHelper.getLong(json, "amount", 1);
 			chance = JsonHelper.getFloat(json, "chance", 1);
@@ -62,10 +74,8 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 					stack.setRemainder(remainder);
 				}
 				return stack;
-			}
-			catch (Exception e) {
-				EmiLog.error("Error parsing NBT in deserialized stack");
-				e.printStackTrace();
+			} catch (Exception e) {
+				EmiLog.error("Error parsing NBT in deserialized stack", e);
 				return EmiStack.EMPTY;
 			}
 		}
@@ -84,8 +94,7 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 				s += nbt;
 			}
 			return new JsonPrimitive(s);
-		}
-		else {
+		} else {
 			JsonObject json = new JsonObject();
 			json.addProperty("type", getType());
 			json.addProperty("id", stack.getId().toString());

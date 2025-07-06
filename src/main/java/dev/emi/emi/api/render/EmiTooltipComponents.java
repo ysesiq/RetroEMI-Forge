@@ -1,5 +1,7 @@
 package dev.emi.emi.api.render;
 
+import java.util.List;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
@@ -13,8 +15,6 @@ import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.util.List;
 
 public class EmiTooltipComponents {
 
@@ -60,15 +60,15 @@ public class EmiTooltipComponents {
 		return TooltipComponent.of(text.asOrderedText());
 	}
 
-    /**
-     * Appends a mod name to a list of components based on a namespace.
-     * Takes into consideration config options and formatting.
-     * EMI's config allows users to disable displaying mod names, so it is possible for the list of components to be unchanged.
-     */
-    public static void appendModName(List<TooltipComponent> components, String namespace) {
-        if (EmiConfig.appendModId) {
-            String mod = EmiUtil.getModName(namespace);
-            components.add(of(EmiPort.literal(mod, Formatting.BLUE, Formatting.ITALIC)));
-        }
-    }
+	/**
+	 * Appends a mod name to a list of components based on a namespace.
+	 * Takes into consideration config options and formatting.
+	 * EMI's config allows users to disable displaying mod names, so it is possible for the list of components to be unchanged.
+	 */
+	public static void appendModName(List<TooltipComponent> components, String namespace) {
+		if (EmiConfig.appendModId) {
+			String mod = EmiUtil.getModName(namespace);
+			components.add(of(EmiPort.literal(mod, Formatting.BLUE, Formatting.ITALIC)));
+		}
+	}
 }

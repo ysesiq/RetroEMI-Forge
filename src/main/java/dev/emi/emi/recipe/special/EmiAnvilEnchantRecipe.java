@@ -1,5 +1,6 @@
 package dev.emi.emi.recipe.special;
 
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EmiAnvilEnchantRecipe implements EmiRecipe {
-    public static final List<Enchantment> ENCHANTMENTS = Arrays.stream(Enchantment.enchantmentsList)
+    public static final List<Enchantment> ENCHANTMENTS = Arrays.stream(EmiPort.getEnchantmentRegistry())
             .filter(e -> e != null).collect(java.util.stream.Collectors.toList());
     private final Item tool;
     private final Enchantment enchantment;

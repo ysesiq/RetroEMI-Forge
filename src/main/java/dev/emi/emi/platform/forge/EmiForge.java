@@ -1,16 +1,18 @@
 package dev.emi.emi.platform.forge;
 
+import com.rewindmc.retroemi.PacketReader;
 import com.rewindmc.retroemi.RetroEMI;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import dev.emi.emi.EMIPostInit;
-import dev.emi.emi.network.EmiNetwork;
-import dev.emi.emi.network.EmiPacket;
-import dev.emi.emi.network.PingS2CPacket;
+import dev.emi.emi.data.EmiData;
+import dev.emi.emi.mixin.early.minecraft.accessor.PlayerControllerMPAccessor;
+import dev.emi.emi.network.*;
+import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.platform.EmiMain;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.play.server.S3FPacketCustomPayload;
@@ -41,12 +43,15 @@ public class EmiForge {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         EmiMain.init();
+        EmiAgnosForge.poke();
+        Client.init();
     }
 
     @Mod.EventHandler
     public void postInit(FMLInitializationEvent event) {
-        EMIPostInit.initEMI();
-    }
+        PacketReader.registerServerPacketReader(EmiNetwork.FILL_RECIPE, FillRecipeC2SPacket::new);
+        PacketReader.registerServerPacketReader(EmiNetwork.CREATE_ITEM, CreateItemC2SPacket::new);
+        PacketReader.registerServerPacketReader(EmiNetwork.CHESS, EmiChessPacket.C2S::new);    }
 
 //    public void registerCommands(RegisterCommandsEvent event) {
 //        EmiCommands.registerCommands(event.getDispatcher());
@@ -66,5 +71,19 @@ public class EmiForge {
         packet.write(buf);
         S3FPacketCustomPayload pkt = new S3FPacketCustomPayload(RetroEMI.compactify(packet.getId()), baos.toByteArray());
         return pkt;
+    }
+
+    public static final class Client {
+
+        public static void init() {
+            EmiClient.init();
+            EmiData.init();
+
+            EmiNetwork.initClient(packet -> ((PlayerControllerMPAccessor) Minecraft.getMinecraft().playerController).getNetClientHandler().addToSendQueue(toVanilla(packet)));
+            PacketReader.registerClientPacketReader(EmiNetwork.PING, PingS2CPacket::new);
+            //NYI
+            //PacketReader.registerClientPacketReader(EmiNetwork.COMMAND, CommandS2CPacket::new);
+            PacketReader.registerClientPacketReader(EmiNetwork.CHESS, EmiChessPacket.S2C::new);
+        }
     }
 }

@@ -33,7 +33,11 @@ public record Bounds(int x, int y, int width, int height) {
 	public Bounds overlap(Bounds another) {
 		int left = Math.max(left(), another.left());
 		int top = Math.max(top(), another.top());
-		Bounds b = new Bounds(left, top, Math.min(right(), another.right()) - left, Math.min(bottom(), another.bottom()) - top);
+		Bounds b = new Bounds(
+			left, top,
+			Math.min(right(), another.right()) - left,
+			Math.min(bottom(), another.bottom()) - top
+		);
 		return b;
 	}
 }

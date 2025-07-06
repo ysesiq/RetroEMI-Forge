@@ -8,7 +8,7 @@ import dev.emi.emi.config.IndexSource;
 import dev.emi.emi.data.EmiAlias;
 import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.IndexStackData;
-import dev.emi.emi.mixin.minecraft.accessor.ItemBlockAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.ItemBlockAccessor;
 import dev.emi.emi.runtime.EmiHidden;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -35,7 +35,8 @@ import java.util.stream.Collectors;
 public class EmiStackList {
     private static final TagKey<ItemKey> ITEM_HIDDEN = TagKey.of(ItemKey.class, EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
     private static final TagKey<Block> BLOCK_HIDDEN = TagKey.of(Block.class, EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
-    private static final TagKey<Fluid> FLUID_HIDDEN = TagKey.of(Fluid.class, EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);    public static List<EmiAlias.Baked> registryAliases = Lists.newArrayList();
+    private static final TagKey<Fluid> FLUID_HIDDEN = TagKey.of(Fluid.class, EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
+    public static List<EmiAlias.Baked> registryAliases = Lists.newArrayList();
     public static List<Predicate<EmiStack>> invalidators = Lists.newArrayList();
     public static List<EmiStack> stacks = com.rewindmc.retroemi.shim.java.List.of();
     public static List<EmiStack> filteredStacks = com.rewindmc.retroemi.shim.java.List.of();

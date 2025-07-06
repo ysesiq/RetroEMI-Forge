@@ -49,8 +49,7 @@ public class TextWidget extends Widget {
 		context.matrices().translate(xOff, yOff, 300);
 		if (shadow) {
 			context.drawTextWithShadow(text, x, y, color);
-		}
-		else {
+		} else {
 			context.drawText(text, x, y, color);
 		}
 		context.pop();

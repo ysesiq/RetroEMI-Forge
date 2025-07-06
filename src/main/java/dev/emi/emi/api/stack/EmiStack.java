@@ -1,15 +1,14 @@
 package dev.emi.emi.api.stack;
 
 import com.google.common.collect.Lists;
+import com.rewindmc.retroemi.Prototype;
 import dev.emi.emi.EmiPort;
-import dev.emi.emi.Prototype;
 import dev.emi.emi.registry.EmiComparisonDefaults;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.text.MutableText;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -106,21 +105,21 @@ public abstract class EmiStack implements EmiIngredient {
 	}
 
 	public boolean isEqual(EmiStack stack) {
-        if (!getKey().equals(stack.getKey())) {
-            return false;
-        }
-        Comparison a = comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(getKey()) : comparison;
-        Comparison b = stack.comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(stack.getKey()) : stack.comparison;
-        if (a == b) {
-            return a.compare(this, stack);
-        } else {
-            return a.compare(this, stack) && b.compare(this, stack);
-        }
-    }
+		if (!getKey().equals(stack.getKey())) {
+			return false;
+		}
+		Comparison a = comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(getKey()) : comparison;
+		Comparison b = stack.comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(stack.getKey()) : stack.comparison;
+		if (a == b) {
+			return a.compare(this, stack);
+		} else {
+			return a.compare(this, stack) && b.compare(this, stack);
+		}
+	}
 
-    public boolean isEqual(EmiStack stack, Comparison comparison) {
-        return getKey().equals(stack.getKey()) && comparison.compare(this, stack);
-    }
+	public boolean isEqual(EmiStack stack, Comparison comparison) {
+		return getKey().equals(stack.getKey()) && comparison.compare(this, stack);
+	}
 
 	public abstract List<Text> getTooltipText();
 
@@ -189,6 +188,22 @@ public abstract class EmiStack implements EmiIngredient {
 			return EMPTY;
 		}
 		return of(new ItemStack(item), amount);
+	}
+
+	public static EmiStack of(Item item, long amount, int meta) {
+		return of(new ItemStack(item, 1, meta), amount);
+	}
+
+	public static EmiStack of(Item item, NBTTagCompound nbt) {
+		return of(item, nbt, 1, 0);
+	}
+
+	public static EmiStack of(Item item, NBTTagCompound nbt, long amount) {
+		return new ItemEmiStack(item, nbt, amount, 0);
+	}
+
+	public static EmiStack of(Item item, NBTTagCompound nbt, long amount, int meta) {
+		return new ItemEmiStack(item, nbt, amount, meta);
 	}
 
 	public static EmiStack of(DyeItem i) {

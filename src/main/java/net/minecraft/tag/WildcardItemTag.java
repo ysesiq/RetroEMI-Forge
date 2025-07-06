@@ -1,6 +1,6 @@
 //package net.minecraft.tag;
 //
-//import dev.emi.emi.Prototype;
+//import com.rewindmc.retroemi.Prototype;
 //import net.minecraft.item.Item;
 //import net.minecraft.item.ItemStack;
 //import net.minecraft.util.ResourceLocation;

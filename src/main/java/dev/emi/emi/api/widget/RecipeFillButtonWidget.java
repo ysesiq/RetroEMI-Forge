@@ -1,6 +1,11 @@
 package dev.emi.emi.api.widget;
 
+import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiFillAction;
@@ -13,9 +18,6 @@ import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.widget.RecipeButtonWidget;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
 
 public class RecipeFillButtonWidget extends RecipeButtonWidget {
 	private boolean canFill;
@@ -26,13 +28,11 @@ public class RecipeFillButtonWidget extends RecipeButtonWidget {
 	public RecipeFillButtonWidget(int x, int y, EmiRecipe recipe) {
 		super(x, y, 24, 0, recipe);
 		GuiContainer hs = EmiApi.getHandledScreen();
-
 		EmiRecipeHandler handler = EmiRecipeFiller.getFirstValidHandler(recipe, hs);
 		tooltip = com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.inapplicable"))));
 		if (handler == null) {
 			canFill = false;
-		}
-		else {
+		} else {
 			try {
 				EmiPlayerInventory inv = handler.getInventory(hs);
 				boolean applicable = handler.supportsRecipe(recipe);
@@ -41,8 +41,7 @@ public class RecipeFillButtonWidget extends RecipeButtonWidget {
 				if (applicable) {
 					tooltip = handler.getTooltip(recipe, context);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				canFill = false;
 				tooltip = com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.initialize"))));
 			}

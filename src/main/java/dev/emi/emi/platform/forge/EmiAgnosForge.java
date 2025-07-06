@@ -1,10 +1,15 @@
 package dev.emi.emi.platform.forge;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.rewindmc.retroemi.InputPair;
+import com.rewindmc.retroemi.Prototype;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModMetadata;
 import dev.emi.emi.*;
 import dev.emi.emi.api.EmiPluginRegistry;
 import dev.emi.emi.api.stack.FluidEmiStack;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,6 +17,7 @@ import net.minecraft.tag.ItemKey;
 import net.minecraft.util.StringTranslate;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Lists;
@@ -54,6 +60,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 public class EmiAgnosForge extends EmiAgnos {
 	static {
@@ -330,8 +339,8 @@ public class EmiAgnosForge extends EmiAgnos {
     @Override
     protected void renderFluidAgnos(FluidEmiStack stack, MatrixStack matrices, int x, int y, float delta, int xOff, int yOff, int width, int height) {
         FluidStack fs = new FluidStack(stack.getKeyOfType(Fluid.class), 1000, stack.getNbt());
-        int color = fs.getFluid().getColor();
-        EmiRenderHelper.drawTintedSprite(matrices, fs.getUnlocalizedName(), 1, color, x, y, xOff, yOff, width, height);
+        RenderSystem.setShaderTexture(0, TextureMap.locationBlocksTexture);
+        Minecraft.getMinecraft().currentScreen.drawTexturedModelRectFromIcon(x, y, fs.getFluid().getIcon(), 16, 16);
     }
 
     @Override

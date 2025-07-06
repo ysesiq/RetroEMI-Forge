@@ -7,6 +7,7 @@ import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.EmiAlias;
@@ -19,6 +20,10 @@ import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringTranslate;
@@ -36,113 +41,107 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class EmiSearch {
-    public static final Pattern TOKENS = Pattern.compile(
-        "-?[@#$]?" // Any query can be negated or prefixed with type
-        + "(" // Query contents
-            + "\\/(\\\\.|[^\\\\\\/])+\\/" // Any regex contents, for example `/some thing/`
-            + "|"
-            + "\\\"(\\.|[^\\\"])+\\\"" // Any quoted contents, for example, `"some thing"`
-            + "|"
-            + "[^\\s|]+" // Any raw contents, split on space
-            + "|"
-            + "\\|" // Literal OR symbol
-            + "|"
-            + "\\&" // Literal AND symbol (currently ignored since queries AND by deafult, but parsed)
-        + ")");
-    private static volatile SearchWorker currentWorker = null;
+	public static final Pattern TOKENS = Pattern.compile(
+		"-?[@#$]?" // Any query can be negated or prefixed with type
+		+ "(" // Query contents
+			+ "\\/(\\\\.|[^\\\\\\/])+\\/" // Any regex contents, for example `/some thing/`
+			+ "|"
+			+ "\\\"(\\.|[^\\\"])+\\\"" // Any quoted contents, for example, `"some thing"`
+			+ "|"
+			+ "[^\\s|]+" // Any raw contents, split on space
+			+ "|"
+			+ "\\|" // Literal OR symbol
+			+ "|"
+			+ "\\&" // Literal AND symbol (currently ignored since queries AND by deafult, but parsed)
+		+ ")");
+	private static volatile SearchWorker currentWorker = null;
 	public static volatile Thread searchThread = null;
 	public static volatile List<? extends EmiIngredient> stacks = EmiStackList.stacks;
 	public static volatile CompiledQuery compiledQuery;
 	public static Set<EmiStack> bakedStacks;
-	public static SuffixArray<EmiStack> names, tooltips, mods, aliases, ids;
+	public static SuffixArray<SearchStack> names, tooltips, mods;
+	public static SuffixArray<EmiStack> aliases;
 
-    public static void bake() {
-        SuffixArray<EmiStack> names = new SuffixArray<EmiStack>();
-        SuffixArray<EmiStack> tooltips = new SuffixArray<EmiStack>();
-        SuffixArray<EmiStack> mods = new SuffixArray<EmiStack>();
-        SuffixArray<EmiStack> aliases = new SuffixArray<EmiStack>();
-        SuffixArray<EmiStack> ids = new SuffixArray<EmiStack>();
-        Set<EmiStack> bakedStacks = Sets.newIdentityHashSet();
-        boolean old = EmiConfig.appendItemModId;
-        EmiConfig.appendItemModId = false;
-        for (EmiStack stack : EmiStackList.stacks) {
-            try {
-                EmiStack strictStack = stack;
-                bakedStacks.add(stack);
-                Text name = NameQuery.getText(stack);
-                if (name != null) {
-                    names.add(strictStack, name.getString().toLowerCase());
-                }
-                List<Text> tooltip = stack.getTooltipText();
-                if (tooltip != null) {
-                    for (int i = 1; i < tooltip.size(); i++) {
-                        Text text = tooltip.get(i);
-                        if (text != null) {
-                            tooltips.add(strictStack, text.getString().toLowerCase());
+	public static void bake() {
+		SuffixArray<SearchStack> names = new SuffixArray<>();
+		SuffixArray<SearchStack> tooltips = new SuffixArray<>();
+		SuffixArray<SearchStack> mods = new SuffixArray<>();
+		SuffixArray<EmiStack> aliases = new SuffixArray<>();
+		Set<EmiStack> bakedStacks = Sets.newIdentityHashSet();
+		boolean old = EmiConfig.appendItemModId;
+		EmiConfig.appendItemModId = false;
+		for (EmiStack stack : EmiStackList.stacks) {
+			try {
+				SearchStack searchStack = new SearchStack(stack);
+				bakedStacks.add(stack);
+				Text name = NameQuery.getText(stack);
+				if (name != null) {
+					names.add(searchStack, name.getString().toLowerCase());
+				}
+				List<Text> tooltip = stack.getTooltipText();
+				if (tooltip != null) {
+					for (int i = 1; i < tooltip.size(); i++) {
+						Text text = tooltip.get(i);
+						if (text != null) {
+							tooltips.add(searchStack, text.getString().toLowerCase());
+						}
+					}
+				}
+				ResourceLocation id = stack.getId();
+				if (id != null) {
+					mods.add(searchStack, EmiUtil.getModName(id.getResourceDomain()).toLowerCase());
+					mods.add(searchStack, id.getResourceDomain().toLowerCase());
+					names.add(searchStack, id.getResourcePath().toLowerCase());
+				}
+                if (stack.getItemStack().getItem() == Items.enchanted_book) {
+                    for (var eid : (Iterable<Integer>) EnchantmentHelper.getEnchantments(stack.getItemStack()).keySet()) {
+                        var e = Enchantment.enchantmentsList[eid];
+                        switch (eid) {
+                            case 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 32, 33, 34, 35, 48, 49, 50, 51 -> {
+                                // vanilla enchant. ignore
+                            }
+                            default -> mods.add(searchStack, EmiUtil.getModName(e.getName()));
                         }
                     }
                 }
-                ResourceLocation id = stack.getId();
-                EmiRecipe recipe = BoM.getRecipe(stack);
-                if (id != null) {
-                    mods.add(stack, EmiUtil.getModName(id.getResourceDomain()).toLowerCase());
-                    names.add(stack, id.toString());
-                }
-                //TODO search recipe id
-                if (recipe != null) {
-                    names.add(stack, recipe.getId().toString());
-                }
-                String idString = "";
-                if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 10) {
-                    idString = "000" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-                } else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 100) {
-                    idString = "00" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-                } else if (Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()) < 1000) {
-                    idString = "0" + Item.itemRegistry.getIDForObject(stack.getItemStack().getItem());
-                } else {
-                    idString = String.valueOf(Item.itemRegistry.getIDForObject(stack.getItemStack().getItem()));
-                }
-                ids.add(stack, idString + "/" + stack.getItemStack().getItemDamage());
-            } catch (Exception e) {
-                EmiLog.error("EMI caught an exception while baking search for " + stack, e);
-            }
-        }
-        for (Supplier<EmiAlias> supplier : EmiData.aliases) {
-            EmiAlias alias = supplier.get();
-            for (String key : alias.keys()) {
-                if (!StringTranslate.getInstance().containsTranslateKey(key)) {
-                    EmiReloadLog.warn("Untranslated alias " + key);
-                }
-                String text = RetroEMI.translate(key).toLowerCase();
-                for (EmiIngredient ing : alias.stacks()) {
-                    for (EmiStack stack : ing.getEmiStacks()) {
-                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text);
-                    }
-                }
-            }
-        }
-        for (EmiAlias.Baked alias : EmiStackList.registryAliases) {
-            for (Text text : alias.text()) {
-                for (EmiIngredient ing : alias.stacks()) {
-                    for (EmiStack stack : ing.getEmiStacks()) {
-                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text.getString().toLowerCase());
-                    }
-                }
-            }
-        }
-        EmiConfig.appendItemModId = old;
-        names.build();
-        tooltips.build();
-        mods.build();
-        aliases.build();
-        ids.build();
-        EmiSearch.names = names;
-        EmiSearch.tooltips = tooltips;
-        EmiSearch.mods = mods;
-        EmiSearch.aliases = aliases;
-        EmiSearch.bakedStacks = bakedStacks;
-        EmiSearch.ids = ids;
-    }
+			} catch (Exception e) {
+				EmiLog.error("EMI caught an exception while baking search for " + stack, e);
+			}
+		}
+		for (Supplier<EmiAlias> supplier : EmiData.aliases) {
+			EmiAlias alias = supplier.get();
+			for (String key : alias.keys()) {
+				if (!StringTranslate.getInstance().containsTranslateKey(key)) {
+					EmiReloadLog.warn("Untranslated alias " + key);
+				}
+				String text = RetroEMI.translate(key).toLowerCase();
+				for (EmiIngredient ing : alias.stacks()) {
+					for (EmiStack stack : ing.getEmiStacks()) {
+						aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text);
+					}
+				}
+			}
+		}
+		for (EmiAlias.Baked alias : EmiStackList.registryAliases) {
+			for (Text text : alias.text()) {
+				for (EmiIngredient ing : alias.stacks()) {
+					for (EmiStack stack : ing.getEmiStacks()) {
+						aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text.getString().toLowerCase());
+					}
+				}
+			}
+		}
+		EmiConfig.appendItemModId = old;
+		names.build();
+		tooltips.build();
+		mods.build();
+		aliases.build();
+		EmiSearch.names = names;
+		EmiSearch.tooltips = tooltips;
+		EmiSearch.mods = mods;
+		EmiSearch.aliases = aliases;
+		EmiSearch.bakedStacks = bakedStacks;
+	}
 
 	public static void update() {
 		search(EmiScreenManager.search.getText());
@@ -178,18 +177,21 @@ public class EmiSearch {
 			Matcher matcher = TOKENS.matcher(query);
 			while (matcher.find()) {
 				String q = matcher.group();
-				if (q.equals("|")) {
-					if (!queries.isEmpty()) {
-						full.add(new LogicalAndQuery(queries));
-						queries = Lists.newArrayList();
-					}
-					continue;
-				}
 				boolean negated = q.startsWith("-");
 				if (negated) {
 					q = q.substring(1);
 				}
 				if (q.isEmpty()) {
+					continue;
+				}
+				if (q.equals("&")) {
+					// Default behavior
+					continue;
+				} else if (q.equals("|")) {
+					if (!queries.isEmpty()) {
+						full.add(new LogicalAndQuery(queries));
+						queries = Lists.newArrayList();
+					}
 					continue;
 				}
 				QueryType type = QueryType.fromString(q);
@@ -213,10 +215,6 @@ public class EmiSearch {
 						constructors.add(QueryType.TAG.queryConstructor);
 						regexConstructors.add(QueryType.TAG.regexQueryConstructor);
 					}
-					if (EmiConfig.searchIdByDefault) {
-						constructors.add(QueryType.ITEM_ID.queryConstructor);
-						regexConstructors.add(QueryType.ITEM_ID.regexQueryConstructor);
-					}
 					// TODO add config
 					constructors.add(AliasQuery::new);
 					if (constructors.size() > 1) {
@@ -231,8 +229,7 @@ public class EmiSearch {
 			}
 			if (!full.isEmpty()) {
 				fullQuery = new LogicalOrQuery(full);
-			}
-			else {
+			} else {
 				fullQuery = null;
 			}
 		}
@@ -255,8 +252,9 @@ public class EmiSearch {
 			Query q;
 			if (s.length() > 1 && s.startsWith("/") && s.endsWith("/")) {
 				q = regex.apply(s.substring(1, s.length() - 1));
-			}
-			else {
+			} else if (s.length() > 1 && s.startsWith("\"") && s.endsWith("\"")) {
+				q = normal.apply(s.substring(1, s.length() - 1));
+			} else {
 				q = normal.apply(s);
 			}
 			q.negated = negated;
@@ -292,6 +290,7 @@ public class EmiSearch {
 						}
 					}
 					List<EmiStack> ess = stack.getEmiStacks();
+					// TODO properly support ingredients?
 					if (ess.size() == 1) {
 						EmiStack es = ess.get(0);
 						if (compiled.test(es)) {
@@ -301,8 +300,7 @@ public class EmiSearch {
 				}
 				apply(this, Lists.newArrayList(stacks));
 			} catch (Exception e) {
-				EmiLog.error("Error when attempting to search:");
-				e.printStackTrace();
+				EmiLog.error("Error when attempting to search:", e);
 			}
 		}
 	}

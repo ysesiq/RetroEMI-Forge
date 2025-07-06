@@ -383,14 +383,9 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			return;
 		}
 		if (this.drawsBackground()) {
-			if (EmiConfig.lowerOpacity) {
-				drawRect(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, 0x33000000);
-				drawRect(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x44000000);
-			} else {
-				i = this.isFocused() ? -1 : -6250336;
-				drawRect(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, i);
-				drawRect(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, -16777216);
-			}
+            i = this.isFocused() ? -1 : -6250336;
+            drawRect(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, i);
+            drawRect(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, -16777216);
 		}
 		i = this.editable ? this.editableColor : this.uneditableColor;
 		int j = this.selectionStart - this.firstCharacterIndex;

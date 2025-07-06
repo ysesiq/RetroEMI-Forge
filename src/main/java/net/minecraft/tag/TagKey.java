@@ -3,7 +3,7 @@ package net.minecraft.tag;
 import com.google.common.collect.BiMap;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
-import dev.emi.emi.mixin.minecraft.accessor.ItemBlockAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.ItemBlockAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;

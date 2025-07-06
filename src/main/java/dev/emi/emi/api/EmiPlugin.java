@@ -7,6 +7,7 @@ package dev.emi.emi.api;
  * In order to be loaded on Forge, plugins must have the {@link EmiEntrypoint} annotation.
  */
 public interface EmiPlugin {
+
 	/**
 	 * The entrypoint to register information to EMI before standard registration begins.
 	 * This is used for underlying information that affects registration.
@@ -14,6 +15,7 @@ public interface EmiPlugin {
 	 */
 	default void initialize(EmiInitRegistry registry) {
 	}
+
 	/**
 	 * The core method through which information is registered for EMI.
 	 * This includes recipe categories, recipes, recipe handlers.

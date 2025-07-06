@@ -1,26 +1,26 @@
 package dev.emi.emi.api.recipe;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import dev.emi.emi.runtime.EmiDrawContext;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import org.jetbrains.annotations.Nullable;
+
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.widget.WidgetHolder;
+import dev.emi.emi.runtime.EmiDrawContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
+import net.minecraft.util.ResourceLocation;
+
 public class EmiInfoRecipe implements EmiRecipe {
 	private static final int STACK_WIDTH = 6, MAX_STACKS = STACK_WIDTH * 3;
 	private static final int PADDING = 4;
+	private static final Minecraft CLIENT = Minecraft.getMinecraft();
 	private final List<EmiIngredient> stacks;
 	private final List<OrderedText> text;
 	private final ResourceLocation id;
@@ -28,7 +28,7 @@ public class EmiInfoRecipe implements EmiRecipe {
 	public EmiInfoRecipe(List<EmiIngredient> stacks, List<Text> text, @Nullable ResourceLocation id) {
 		this.stacks = stacks;
 		this.text = !FMLCommonHandler.instance().getSide().isServer() ? text.stream().flatMap(
-				t -> Arrays.stream(Minecraft.getMinecraft().fontRenderer.wrapFormattedStringToWidth(t.asString().replace("\\n", "\n"), getDisplayWidth() - 4).split("\n")).map(Text::literal)
+				t -> Arrays.stream(CLIENT.fontRenderer.wrapFormattedStringToWidth(t.asString().replace("\\n", "\n"), getDisplayWidth() - 4).split("\n")).map(Text::literal)
 						.map(Text::asOrderedText)).collect(Collectors.toList()) : new ArrayList<>();
 		this.id = id;
 	}
@@ -66,7 +66,7 @@ public class EmiInfoRecipe implements EmiRecipe {
 	@Override
 	public int getDisplayHeight() {
 		int stackHeight = ((Math.min(stacks.size(), MAX_STACKS) - 1) / STACK_WIDTH + 1) * 18;
-		return stackHeight + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT * text.size() + PADDING;
+		return stackHeight + CLIENT.fontRenderer.FONT_HEIGHT * text.size() + PADDING;
 	}
 
 	@Override
@@ -82,13 +82,12 @@ public class EmiInfoRecipe implements EmiRecipe {
 			}
 			if (i + 1 == stackCount && stacks.size() > stackCount) {
 				widgets.addSlot(EmiIngredient.of(stacks.subList(i, stacks.size())), x + 18, y);
-			}
-			else {
+			} else {
 				widgets.addSlot(stacks.get(i), x + 18, y);
 			}
 		}
 		int y = stackHeight * 18 + PADDING;
-		int lineCount = (widgets.getHeight() - y) / Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
+		int lineCount = (widgets.getHeight() - y) / CLIENT.fontRenderer.FONT_HEIGHT;
 		PageManager manager = new PageManager(text, lineCount);
 		if (lineCount < text.size()) {
 			widgets.addButton(2, 2, 12, 12, 0, 0, () -> true, (mouseX, mouseY, button) -> {
@@ -98,7 +97,6 @@ public class EmiInfoRecipe implements EmiRecipe {
 				manager.scroll(1);
 			});
 		}
-
 		widgets.addDrawable(0, y, 0, 0, (raw, mouseX, mouseY, delta) -> {
 			EmiDrawContext context = EmiDrawContext.wrap(raw);
 			int lo = manager.start();
@@ -108,7 +106,7 @@ public class EmiInfoRecipe implements EmiRecipe {
 					return;
 				}
 				OrderedText text = manager.lines.get(l);
-				context.drawTextWithShadow(text, 0, y - y + i * Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT, 16777215); //White in int
+				context.drawTextWithShadow(text, 0, y - y + i * CLIENT.fontRenderer.FONT_HEIGHT, -1);
 			}
 		});
 	}

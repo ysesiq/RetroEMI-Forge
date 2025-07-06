@@ -1,21 +1,34 @@
 package dev.emi.emi.api;
 
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.api.stack.Comparison;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.util.ResourceLocation;
-
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
+import org.jetbrains.annotations.ApiStatus;
+
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.recipe.EmiRecipeDecorator;
+import dev.emi.emi.api.stack.Comparison;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.text.Text;
+import net.minecraft.util.ResourceLocation;
+
 public interface EmiRegistry {
+
+	/**
+	 * @return Whether the provided stack is disabled.
+	 *	Generally, this is not important to check before registering recipes, EMI will handle recipe hiding.
+	 *	There are certain cases where checking this and not including stacks in recipes is desired behavior, however.
+	 */
+	@ApiStatus.Experimental
+	boolean isStackDisabled(EmiIngredient stack);
 
 	/**
 	 * @return The vanilla recipe manager, for iterating recipe types.
@@ -88,7 +101,7 @@ public interface EmiRegistry {
 	}
 
 	/**
-	 * @deprecated Use {@link EmiPlugin#initialize()} and {@link EmiInitRegistry#addIngredientSerializer()}
+	 * @deprecated Use {@link EmiPlugin#initialize(EmiInitRegistry)} and {@link EmiInitRegistry#addIngredientSerializer(Class, EmiIngredientSerializer)}
 	 */
 	@Deprecated
 	<T extends EmiIngredient> void addIngredientSerializer(Class<T> clazz, EmiIngredientSerializer<T> serializer);
@@ -131,16 +144,14 @@ public interface EmiRegistry {
 
 	/**
 	 * Adds a default compraison method for a stack key.
-	 *
-	 * @param key        A stack key such as an item or fluid.
+	 * @param key A stack key such as an item or fluid.
 	 * @param comparison A function to mutate the current comprison method.
 	 */
 	void setDefaultComparison(Object key, Function<Comparison, Comparison> comparison);
 
 	/**
 	 * Adds a default compraison method for a stack using its key.
-	 *
-	 * @param key        A stack key such as an item or fluid.
+	 * @param key A stack key such as an item or fluid.
 	 * @param comparison The desired comparison method.
 	 */
 	default void setDefaultComparison(Object key, Comparison comparison) {
@@ -149,8 +160,7 @@ public interface EmiRegistry {
 
 	/**
 	 * Adds a default compraison method for a stack using its key.
-	 *
-	 * @param stack      A stack to derive a key from.
+	 * @param stack A stack to derive a key from.
 	 * @param comparison A function to mutate the current comprison method.
 	 */
 	default void setDefaultComparison(EmiStack stack, Function<Comparison, Comparison> comparison) {
@@ -159,8 +169,7 @@ public interface EmiRegistry {
 
 	/**
 	 * Adds a default compraison method for a stack using its key.
-	 *
-	 * @param stack      A stack to derive a key from.
+	 * @param stack A stack to derive a key from.
 	 * @param comparison The desired comparison method.
 	 */
 	default void setDefaultComparison(EmiStack stack, Comparison comparison) {
@@ -168,8 +177,38 @@ public interface EmiRegistry {
 	}
 
 	/**
+	 * Adds a search alias for a given stack.
+	 * Aliases are treated the same as the stack's name when searching.
+	 * Aliases should be text the player would look up trying to find the given stack, but wouldn't match the stack's name.
+	 * @param stack A stack that can be searched with the provided alias.
+	 * @param text The alias for the given stack.
+	 */
+	@ApiStatus.Experimental
+	void addAlias(EmiIngredient stack, Text text);
+
+	/**
 	 * Adds a recipe handler to a specified type of screen handler.
 	 * Recipe handlers are responsible for filling recipes automatically.
 	 */
-	<T extends Container> void addRecipeHandler(Class<T> type, dev.emi.emi.api.recipe.handler.EmiRecipeHandler<T> handler);
+    <T extends Container> void addRecipeHandler(Class<T> type, EmiRecipeHandler<T> handler);
+
+	/**
+	 * Adds a recipe decorator for all recipe categories.
+	 * Recipe decorators can display additional widgets in recipes to indicate information from external mods.
+	 */
+	@ApiStatus.Experimental
+	void addRecipeDecorator(EmiRecipeDecorator decorator);
+
+	/**
+	 * Adds a recipe decorator for a specific recipe category.
+	 * Recipe decorators can display additional widgets in recipes to indicate information from external mods.
+	 */
+	@ApiStatus.Experimental
+	default void addRecipeDecorator(EmiRecipeCategory category, EmiRecipeDecorator decorator) {
+		addRecipeDecorator((recipe, widgets) -> {
+			if (recipe.getCategory() == category) {
+				decorator.decorateRecipe(recipe, widgets);
+			}
+		});
+	}
 }

@@ -1,16 +1,15 @@
 package dev.emi.emi.api.widget;
 
+import java.util.function.BooleanSupplier;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.client.gui.DrawContext;
-
-import java.util.function.BooleanSupplier;
-
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
 
 public class ButtonWidget extends Widget {
 	protected final int x, y, width, height, u, v;
@@ -46,11 +45,10 @@ public class ButtonWidget extends Widget {
 		boolean active = this.isActive.getAsBoolean();
 		if (!active) {
 			v += height * 2;
-		}
-		else if (getBounds().contains(mouseX, mouseY)) {
+		} else if (getBounds().contains(mouseX, mouseY)) {
 			v += this.height;
 		}
-		glEnable(GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
 		context.drawTexture(texture, this.x, this.y, this.u, v, this.width, this.height);
 	}
 

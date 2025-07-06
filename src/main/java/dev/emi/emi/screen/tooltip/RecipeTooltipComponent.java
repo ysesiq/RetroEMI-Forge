@@ -1,8 +1,8 @@
 package dev.emi.emi.screen.tooltip;
 
 import dev.emi.emi.EmiRenderHelper;
-import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.gui.FontRenderer;
 
 public class RecipeTooltipComponent implements EmiTooltipComponent {
@@ -26,9 +26,12 @@ public class RecipeTooltipComponent implements EmiTooltipComponent {
 		try {
 			width = recipe.getDisplayWidth() + 8;
 			height = recipe.getDisplayHeight() + 8 + 2;
+		} catch (Exception e) {
 		}
-		catch (Exception e) {
-		}
+	}
+
+	public EmiRecipe getRecipe() {
+		return recipe;
 	}
 
 	@Override

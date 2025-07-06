@@ -1,16 +1,16 @@
 package dev.emi.emi.api.recipe;
 
+import java.util.List;
+
 import dev.emi.emi.EmiRenderHelper;
-import dev.emi.emi.bom.BoM;
-import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
+import dev.emi.emi.bom.BoM;
+import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.gui.DrawContext;
-
-import java.util.List;
 
 /**
  * Represents a recipe that disambiguates an ingredient.

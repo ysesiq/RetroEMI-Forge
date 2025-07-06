@@ -7,7 +7,7 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.mixin.minecraft.accessor.InventoryCraftingAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.InventoryCraftingAccessor;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;

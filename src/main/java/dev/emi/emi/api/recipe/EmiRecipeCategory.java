@@ -1,22 +1,24 @@
 package dev.emi.emi.api.recipe;
 
+import java.util.Comparator;
+import java.util.List;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
-import dev.emi.emi.config.EmiConfig;
-import dev.emi.emi.data.EmiRecipeCategoryProperties;
 import dev.emi.emi.api.render.EmiRenderable;
 import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.util.ResourceLocation;
+import dev.emi.emi.config.EmiConfig;
+import dev.emi.emi.data.EmiRecipeCategoryProperties;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Comparator;
-import java.util.List;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiRecipeCategory implements EmiRenderable {
 	public ResourceLocation id;
@@ -76,8 +78,8 @@ public class EmiRecipeCategory implements EmiRenderable {
 			list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.literal(id.toString(), Formatting.DARK_GRAY))));
 		}
 		if (EmiConfig.appendModId) {
-			list.add(
-					TooltipComponent.of(EmiPort.ordered(EmiPort.literal(EmiUtil.getModName(getId().getResourceDomain()), Formatting.BLUE, Formatting.ITALIC))));
+			list.add(TooltipComponent.of(EmiPort.ordered(EmiPort.literal(EmiUtil.getModName(getId().getResourceDomain()),
+				Formatting.BLUE, Formatting.ITALIC))));
 		}
 		return list;
 	}

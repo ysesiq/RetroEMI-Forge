@@ -1,24 +1,24 @@
 package dev.emi.emi.api.widget;
 
 import dev.emi.emi.runtime.EmiDrawContext;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.ResourceLocation;
 
 public class AnimatedTextureWidget extends TextureWidget {
 	protected final int time;
 	protected final boolean horizontal, endToStart, fullToEmpty;
 
-	public AnimatedTextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int regionWidth, int regionHeight,
-                                 int textureWidth, int textureHeight, int time, boolean horizontal, boolean endToStart, boolean fullToEmpty) {
+	public AnimatedTextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v,
+	        int regionWidth, int regionHeight, int textureWidth, int textureHeight, int time,
+	        boolean horizontal, boolean endToStart, boolean fullToEmpty) {
 		super(texture, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
 		this.time = time;
 		this.horizontal = horizontal;
 		this.endToStart = endToStart;
 		this.fullToEmpty = fullToEmpty;
 	}
-
-	public AnimatedTextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int time, boolean horizontal, boolean endToStart,
-			boolean fullToEmpty) {
+	public AnimatedTextureWidget(ResourceLocation texture, int x, int y, int width, int height, int u, int v, int time,
+	boolean horizontal, boolean endToStart, boolean fullToEmpty) {
 		this(texture, x, y, width, height, u, v, width, height, 256, 256, time, horizontal, endToStart, fullToEmpty);
 	}
 
