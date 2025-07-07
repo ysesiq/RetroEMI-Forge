@@ -12,9 +12,12 @@ import dev.emi.emi.handler.CookingRecipeHandler;
 import dev.emi.emi.handler.CraftingRecipeHandler;
 import dev.emi.emi.handler.InventoryRecipeHandler;
 import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.early.minecraft.accessor.ShapedRecipesAccessor;
 import dev.emi.emi.platform.EmiAgnos;
 import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.recipe.*;
+import dev.emi.emi.recipe.forge.EmiShapedOreRecipe;
+import dev.emi.emi.recipe.forge.EmiShapelessOreRecipe;
 import dev.emi.emi.recipe.special.*;
 import dev.emi.emi.registry.EmiTags;
 import dev.emi.emi.runtime.EmiDrawContext;
@@ -37,6 +40,7 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.entity.EntityList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tag.ItemKey;
 import net.minecraft.util.Formatting;
@@ -58,6 +62,8 @@ import net.minecraft.tag.TagKey;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.xylose.emi.REMIForge;
 
 import java.util.*;
@@ -222,10 +228,20 @@ public class VanillaPlugin implements EmiPlugin {
 				),
 						EmiStack.of(Items.map),
 						new ResourceLocation("minecraft", "map_extending"), false), recipe);
-			} else if (recipe instanceof ShapedRecipes shaped && recipe.getRecipeSize() <= 9) {
-				addRecipeSafe(registry, () -> new EmiShapedRecipe(shaped), recipe);
-			} else if (recipe instanceof ShapelessRecipes shapeless && recipe.getRecipeSize() <= 9) {
-				addRecipeSafe(registry, () -> new EmiShapelessRecipe(shapeless), recipe);
+			} else if (recipe instanceof ShapedRecipes shaped) {
+                ShapedRecipesAccessor accessor = (ShapedRecipesAccessor) shaped;
+                if (accessor.getRecipeWidth() <= 3 && accessor.getRecipeHeight() <= 3) {
+                    addRecipeSafe(registry, () -> new EmiShapedRecipe(shaped), recipe);
+                }
+            } else if (recipe instanceof ShapelessRecipes shapeless && shapeless.getRecipeSize() <= 9) {
+				addRecipeSafe(registry, () -> new EmiShapelessRecipe(shapeless), shapeless);
+            } else if (recipe instanceof ShapedOreRecipe shaped) {
+                int width = EmiShapedOreRecipe.getWidth(shaped);
+                if (width <= 3 && shaped.getRecipeSize() / width <= 3) {
+                    addRecipeSafe(registry, () -> new EmiShapedOreRecipe(shaped));
+                }
+            } else if (recipe instanceof ShapelessOreRecipe shapeless && recipe.getRecipeSize() <= 9) {
+                addRecipeSafe(registry, () -> new EmiShapelessOreRecipe(shapeless));
 			} else if (recipe instanceof RecipesArmorDyes dye) {
 				for (Item i : dyeableItems) {
 					if (!hiddenItems.contains(i)) {

@@ -184,8 +184,7 @@ public class ConfigScreen extends REMIScreen {
 							public Boolean getValue() {
 								try {
 									return field.getBoolean(null);
-								}
-								catch (Exception e) {
+								} catch (Exception e) {
 								}
 								return false;
 							}
@@ -193,20 +192,17 @@ public class ConfigScreen extends REMIScreen {
 							public void setValue(Boolean value) {
 								try {
 									field.setBoolean(null, value);
-								}
-								catch (Exception e) {
+								} catch (Exception e) {
 								}
 							}
 						});
-					}
-					else if (field.getType() == int.class) {
+					} else if (field.getType() == int.class) {
 						entry = new IntWidget(translation, getFieldTooltip(field), searchSupplier, new Mutator<Integer>() {
 
 							public Integer getValue() {
 								try {
 									return field.getInt(null);
-								}
-								catch (Exception e) {
+								} catch (Exception e) {
 								}
 								return -1;
 							}
@@ -214,28 +210,21 @@ public class ConfigScreen extends REMIScreen {
 							public void setValue(Integer value) {
 								try {
 									field.setInt(null, value);
-								}
-								catch (Exception e) {
+								} catch (Exception e) {
 								}
 							}
 						});
-					}
-					else if (field.getType() == EmiBind.class) {
+					} else if (field.getType() == EmiBind.class) {
 						entry = new EmiBindWidget(this, getFieldTooltip(field), searchSupplier, (EmiBind) field.get(null));
-					}
-					else if (field.getType() == ScreenAlign.class) {
+					} else if (field.getType() == ScreenAlign.class) {
 						entry = new ScreenAlignWidget(translation, getFieldTooltip(field), searchSupplier, objectMutator(field));
-					}
-					else if (field.getType() == SidebarPages.class) {
+					} else if (field.getType() == SidebarPages.class) {
 						entry = new SidebarPagesWidget(translation, getFieldTooltip(field), searchSupplier, objectMutator(field));
-					}
-					else if (field.getType() == SidebarSubpanels.class) {
+					} else if (field.getType() == SidebarSubpanels.class) {
 						entry = new SidebarSubpanelsWidget(translation, getFieldTooltip(field), searchSupplier, objectMutator(field));
-					}
-					else if (IntGroup.class.isAssignableFrom(field.getType())) {
+					} else if (IntGroup.class.isAssignableFrom(field.getType())) {
 						entry = new IntGroupWidget(translation, getFieldTooltip(field), searchSupplier, objectMutator(field));
-					}
-					else if (ConfigEnum.class.isAssignableFrom(field.getType())) {
+					} else if (ConfigEnum.class.isAssignableFrom(field.getType())) {
 						entry = new EnumWidget(translation, getFieldTooltip(field), searchSupplier, objectMutator(field), (Predicate<ConfigEnum>) predicate);
 					}
 					boolean endGroup = field.getAnnotation(ConfigGroupEnd.class) != null;
@@ -272,9 +261,9 @@ public class ConfigScreen extends REMIScreen {
 	private void addJumpButtons() {
 		List<String> jumps =
 				Lists.newArrayList("general", "general.search", "ui", "ui.left-sidebar", "ui.right-sidebar", "ui.top-sidebar", "ui.bottom-sidebar", "binds",
-						"binds.crafts", "binds.cheats", "dev", "addon", "addon.distraction");
+						"binds.crafts", "binds.cheats", "dev");
 		List<List<String>> removes =
-            com.rewindmc.retroemi.shim.java.List.of(com.rewindmc.retroemi.shim.java.List.of("addon.distraction"), com.rewindmc.retroemi.shim.java.List.of("binds.cheats"), com.rewindmc.retroemi.shim.java.List.of("general.search"), com.rewindmc.retroemi.shim.java.List.of("ui.top-sidebar", "ui.bottom-sidebar"),
+            com.rewindmc.retroemi.shim.java.List.of(com.rewindmc.retroemi.shim.java.List.of("binds.cheats"), com.rewindmc.retroemi.shim.java.List.of("general.search"), com.rewindmc.retroemi.shim.java.List.of("ui.top-sidebar", "ui.bottom-sidebar"),
                 com.rewindmc.retroemi.shim.java.List.of("binds.crafts"), com.rewindmc.retroemi.shim.java.List.of("ui.left-sidebar", "ui.right-sidebar"));
 		int space = list.getLogicalHeight() - 10;
 		for (List<String> r : removes) {
@@ -289,8 +278,7 @@ public class ConfigScreen extends REMIScreen {
 			if (newGroup) {
 				v += 16;
 				u = 0;
-			}
-			else {
+			} else {
 				u += 16;
 			}
 			this.addDrawableChild(new ConfigJumpButton(2 + (newGroup ? 0 : 8), y, u, v, w -> jump(s),
@@ -318,8 +306,7 @@ public class ConfigScreen extends REMIScreen {
 			public T getValue() {
 				try {
 					return (T) field.get(null);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -327,8 +314,7 @@ public class ConfigScreen extends REMIScreen {
 			public void setValue(T en) {
 				try {
 					field.set(null, en);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -386,8 +372,7 @@ public class ConfigScreen extends REMIScreen {
 		if (activeBind != null) {
 			if (EmiInput.maskFromCode(keyCode) != 0) {
 				pushModifier(keyCode);
-			}
-			else {
+			} else {
 				pushModifier(0);
 				if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 					activeBind.setBind(activeBindOffset, new ModifiedKey(InputUtil.UNKNOWN_KEY, 0));
@@ -399,8 +384,7 @@ public class ConfigScreen extends REMIScreen {
 				updateChanges();
 			}
 			return true;
-		}
-		else {
+		} else {
 			// Element nesting causes crashing for cycling, for some reason
 			if (keyCode == GLFW.GLFW_KEY_TAB) {
 				return false;
@@ -413,13 +397,11 @@ public class ConfigScreen extends REMIScreen {
 					EmiPort.focus(tfw, false);
 					return true;
 				}
-			}
-			else {
+			} else {
 				if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 					this.close();
 					return true;
-				}
-				else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
+				} else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
 					this.close();
 					return true;
 				}

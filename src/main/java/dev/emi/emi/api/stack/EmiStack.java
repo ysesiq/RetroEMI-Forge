@@ -6,6 +6,7 @@ import dev.emi.emi.EmiPort;
 import dev.emi.emi.registry.EmiComparisonDefaults;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,10 +17,13 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.text.Text;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * An abstract representation of a resource in EMI.
@@ -175,6 +179,30 @@ public abstract class EmiStack implements EmiIngredient {
 		}
 		return new ItemEmiStack(stack, amount);
 	}
+
+    public static EmiIngredient ofPotentialTag(ItemStack stack) {
+        if (stack == null || stack.getItem() == null) {
+            return EmiStack.EMPTY;
+        }
+        return fromPotentialTag(stack, stack.stackSize);
+    }
+
+    public static EmiIngredient ofPotentialTag(ItemStack stack, long amount) {
+        if (stack == null || stack.getItem() == null) {
+            return EmiStack.EMPTY;
+        }
+        return fromPotentialTag(stack, amount);
+    }
+
+    private static EmiIngredient fromPotentialTag(ItemStack stack, long amount) {
+        if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+            List<ItemStack> stacks = new ArrayList<>();
+            stack.getItem().getSubItems(stack.getItem(), CreativeTabs.tabMisc, stacks);
+            return EmiIngredient.of(stacks.stream().map(EmiStack::of).collect(Collectors.toList()));
+        } else {
+            return new ItemEmiStack(stack, amount);
+        }
+    }
 
 	public static EmiStack of(Item item) {
 		if (item == null) {
