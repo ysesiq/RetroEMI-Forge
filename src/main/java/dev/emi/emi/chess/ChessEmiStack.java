@@ -141,4 +141,9 @@ class ChessEmiStack extends EmiStack {
     public Text getName() {
         return EmiPort.literal("Chess Piece");
     }
+
+    @Override
+    public int getSubtype() {
+        return 0;
+    }
 }

@@ -207,7 +207,10 @@ public final class EmiPort {
     }
 
     public static ResourceLocation id(String id) {
-        return new ResourceLocation(id);
+        String[] parts = id.split(":");
+        String mod = parts[0];//Avoid mods being forced to lowercase and not being able to get them
+        String name = parts[1];
+        return new ResourceLocation(mod, name);
     }
 
     public static ResourceLocation id(String namespace, String path) {

@@ -91,7 +91,7 @@ public class REMIScreen extends GuiScreen implements ParentElement {
 	}
 
 	@Override
-	public final void mouseClicked(int var1, int var2, int var3) {
+	public void mouseClicked(int var1, int var2, int var3) {
 		mouseClicked((double) var1, (double) var2, var3);
 		lastMouseX = var1;
 		lastMouseY = var2;

@@ -95,6 +95,11 @@ public class EmptyEmiStack extends EmiStack {
 		return EmiPort.literal("");
 	}
 
-	static class EmptyEntry {
+    @Override
+    public int getSubtype() {
+        return 0;
+    }
+
+    static class EmptyEntry {
 	}
 }

@@ -15,7 +15,7 @@ public class FluidEmiStackSerializer implements EmiStackSerializer<FluidEmiStack
 	}
 
 	@Override
-	public EmiStack create(ResourceLocation id, NBTTagCompound componentChanges, long amount) {
+	public EmiStack create(ResourceLocation id, NBTTagCompound componentChanges, long amount, int subtype) {
 		return EmiStack.of(EmiPort.getFluidRegistry().get(id), componentChanges, amount);
 	}
 }

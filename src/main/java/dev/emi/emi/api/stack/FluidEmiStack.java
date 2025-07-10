@@ -110,6 +110,11 @@ public class FluidEmiStack extends EmiStack {
 		return EmiAgnos.getFluidName(fluid, componentChanges);
 	}
 
-	static class FluidEntry {
+    @Override
+    public int getSubtype() {
+        return 0;
+    }
+
+    static class FluidEntry {
 	}
 }

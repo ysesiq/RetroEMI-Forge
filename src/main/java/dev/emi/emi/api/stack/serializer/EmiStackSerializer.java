@@ -13,15 +13,17 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiLog;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.JsonHelper;
+import net.xylose.emi.REMIForge;
 
 public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSerializer<T> {
 	static final Pattern STACK_REGEX = Pattern.compile("^([\\w_\\-./]+):([\\w_\\-.]+):([\\w_\\-./]+)(\\{.*\\})?$");
 
-	EmiStack create(ResourceLocation id, NBTTagCompound nbt, long amount);
+	EmiStack create(ResourceLocation id, NBTTagCompound nbt, long amount, int subtype);
 
 //	private static <T> DynamicOps<T> withRegistryAccess(DynamicOps<T> ops) {
 //		MinecraftClient instance = MinecraftClient.getInstance();
@@ -39,6 +41,7 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 		String nbt = null;
 		long amount = 1;
 		float chance = 1;
+		int subtype = 0;
 		EmiStack remainder = EmiStack.EMPTY;
 		if (JsonHelper.isString(element)) {
 			String s = element.getAsString();
@@ -53,6 +56,7 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 			nbt = JsonHelper.getString(json, "nbt", null);
 			amount = JsonHelper.getLong(json, "amount", 1);
 			chance = JsonHelper.getFloat(json, "chance", 1);
+            subtype = JsonHelper.getInt(json, "subtype", 0);
 			if (JsonHelper.hasElement(json, "remainder")) {
 				EmiIngredient ing = EmiIngredientSerializer.getDeserialized(json.get("remainder"));
 				if (ing instanceof EmiStack stack) {
@@ -64,9 +68,9 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 			try {
 				NBTTagCompound nbtComp = null;
 				if (nbt != null) {
-					nbtComp = StringNbtReader.parse(nbt);
+					nbtComp = (NBTTagCompound) JsonToNBT.func_150315_a(nbt);
 				}
-				EmiStack stack = create(id, nbtComp, amount);
+				EmiStack stack = create(id, nbtComp, amount, subtype);
 				if (chance != 1) {
 					stack.setChance(chance);
 				}
@@ -83,12 +87,12 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 	}
 
 	@Override
-	default JsonElement serialize(T stack) throws IOException {
+	default JsonElement serialize(T stack) {
 		String nbt = null;
 		if (stack.hasNbt()) {
-			nbt += StringNbtReader.encode(stack.getNbt());
+			nbt = stack.getNbt().toString();
 		}
-		if (stack.getAmount() == 1 && stack.getChance() == 1 && stack.getRemainder().isEmpty()) {
+		if (stack.getAmount() == 1 && stack.getChance() == 1 && stack.getSubtype() == 0 && stack.getRemainder().isEmpty()) {
 			String s = getType() + ":" + stack.getId();
 			if (nbt != null) {
 				s += nbt;
@@ -98,7 +102,8 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 			JsonObject json = new JsonObject();
 			json.addProperty("type", getType());
 			json.addProperty("id", stack.getId().toString());
-			if (nbt != null) {
+            json.addProperty("subtype", stack.getSubtype());
+            if (nbt != null) {
 				json.addProperty("nbt", nbt);
 			}
 			if (stack.getAmount() != 1) {
@@ -107,7 +112,7 @@ public interface EmiStackSerializer<T extends EmiStack> extends EmiIngredientSer
 			if (stack.getChance() != 1) {
 				json.addProperty("chance", stack.getChance());
 			}
-			if (!stack.getRemainder().isEmpty()) {
+            if (!stack.getRemainder().isEmpty()) {
 				EmiStack remainder = stack.getRemainder();
 				if (!remainder.getRemainder().isEmpty()) {
 					remainder = remainder.copy().setRemainder(EmiStack.EMPTY);

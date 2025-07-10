@@ -1,24 +1,39 @@
 package dev.emi.emi.runtime;
 
-import com.google.common.collect.Lists;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.bom.BoM;
-import dev.emi.emi.data.EmiData;
-import dev.emi.emi.platform.EmiAgnos;
-import dev.emi.emi.registry.*;
-import dev.emi.emi.screen.EmiScreenManager;
-import dev.emi.emi.search.EmiSearch;
-import dev.emi.emi.api.EmiRegistry;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
-
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+
+import com.google.common.collect.Lists;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.EmiInitRegistry;
+import dev.emi.emi.api.EmiRegistry;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.bom.BoM;
+import dev.emi.emi.data.EmiData;
+import dev.emi.emi.platform.EmiAgnos;
+import dev.emi.emi.registry.EmiComparisonDefaults;
+import dev.emi.emi.registry.EmiDragDropHandlers;
+import dev.emi.emi.registry.EmiExclusionAreas;
+import dev.emi.emi.registry.EmiIngredientSerializers;
+import dev.emi.emi.registry.EmiInitRegistryImpl;
+import dev.emi.emi.registry.EmiPluginContainer;
+import dev.emi.emi.registry.EmiRecipeFiller;
+import dev.emi.emi.registry.EmiRecipes;
+import dev.emi.emi.registry.EmiRegistryImpl;
+import dev.emi.emi.registry.EmiStackList;
+import dev.emi.emi.registry.EmiStackProviders;
+import dev.emi.emi.registry.EmiTags;
+import dev.emi.emi.screen.EmiScreenManager;
+import dev.emi.emi.search.EmiSearch;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 
 public class EmiReloadManager {
 	private static int loadedResourcesMask = 0;
@@ -53,6 +68,7 @@ public class EmiReloadManager {
 
 	public static void clear() {
 		synchronized (EmiReloadManager.class) {
+			loadedResourcesMask = 0;
 			clear = true;
 			status = 0;
 			reloadWorry = Long.MAX_VALUE;
@@ -86,6 +102,7 @@ public class EmiReloadManager {
 	}
 
 	public static void step(Text text, long worry) {
+		EmiLog.info(text.getString());
 		reloadStep = text;
 		reloadWorry = System.currentTimeMillis() + worry;
 	}
@@ -120,12 +137,43 @@ public class EmiReloadManager {
 					EmiStackProviders.clear();
 					EmiRecipeFiller.clear();
 					EmiHidden.clear();
-                    EmiTags.ADAPTERS_BY_CLASS.map().clear();
-                    EmiTags.ADAPTERS_BY_REGISTRY.clear();
+					EmiTags.ADAPTERS_BY_CLASS.map().clear();
+					EmiTags.ADAPTERS_BY_REGISTRY.clear();
 					if (clear) {
 						clear = false;
 						continue;
 					}
+					Minecraft client = Minecraft.getMinecraft();
+					if (client.theWorld == null) {
+						EmiReloadLog.warn("World is null");
+						break;
+					} else if (CraftingManager.getInstance() == null) {
+						EmiReloadLog.warn("Recipe Manager is null");
+						break;
+					}
+					List<EmiPluginContainer> plugins = Lists.newArrayList();
+					plugins.addAll(EmiAgnos.getPlugins().stream()
+						.sorted((a, b) -> Integer.compare(entrypointPriority(a), entrypointPriority(b))).collect(java.util.stream.Collectors.toList()));
+
+//					if (EmiAgnos.isModLoaded("jei")) {
+//						plugins.add(new EmiPluginContainer(new JemiPlugin(), "jemi"));
+//					}
+					EmiInitRegistry initRegistry = new EmiInitRegistryImpl();
+					for (EmiPluginContainer container : plugins) {
+						step(EmiPort.literal("Initializing plugin from " + container.id()), 5_000);
+						long start = System.currentTimeMillis();
+						try {
+							container.plugin().initialize(initRegistry);
+						} catch (Throwable e) {
+							EmiReloadLog.warn("Exception initializing plugin provided by " + container.id(), e);
+							if (restart) {
+								continue outer;
+							}
+							continue;
+						}
+						EmiLog.info("Initialized plugin from " + container.id() + " in " + (System.currentTimeMillis() - start) + "ms");
+					}
+//					EmiHidden.reload();
 
 					step(EmiPort.literal("Processing tags"));
 					EmiTags.reload();
@@ -137,9 +185,6 @@ public class EmiReloadManager {
 						continue;
 					}
 					EmiRegistry registry = new EmiRegistryImpl();
-					List<EmiPluginContainer> plugins = Lists.newArrayList();
-					plugins.addAll(EmiAgnos.getPlugins().stream()
-						.sorted(Comparator.comparingInt(ReloadWorker::entrypointPriority)).collect(java.util.stream.Collectors.toList()));
 
 					for (EmiPluginContainer container : plugins) {
 						step(EmiPort.literal("Loading plugin from " + container.id()), 10_000);
@@ -153,8 +198,7 @@ public class EmiReloadManager {
 							}
 							continue;
 						}
-						EmiLog.info("Reloaded plugin from " + container.id() + " in "
-							+ (System.currentTimeMillis() - start) + "ms");
+						EmiLog.info("Reloaded plugin from " + container.id() + " in " + (System.currentTimeMillis() - start) + "ms");
 						if (restart) {
 							continue outer;
 						}
@@ -202,7 +246,7 @@ public class EmiReloadManager {
 			thread = null;
 		}
 
-		private static int entrypointPriority(EmiPluginContainer container) {
+		private final static int entrypointPriority(EmiPluginContainer container) {
 			return container.id().equals("emi") ? 0 : 1;
 		}
 	}

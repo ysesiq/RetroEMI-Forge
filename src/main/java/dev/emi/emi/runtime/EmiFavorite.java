@@ -1,23 +1,27 @@
 package dev.emi.emi.runtime;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.render.EmiTooltipComponents;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.FluidEmiStack;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.HelpLevel;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.screen.StackBatcher.Batchable;
 import dev.emi.emi.screen.tooltip.RecipeTooltipComponent;
-import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class EmiFavorite implements EmiIngredient, Batchable {
 	protected final EmiIngredient stack;
@@ -86,6 +90,20 @@ public class EmiFavorite implements EmiIngredient, Batchable {
 			list.add(new RecipeTooltipComponent(recipe, true));
 		}
 		return list;
+	}
+
+	public boolean strictEquals(EmiIngredient other) {
+		List<EmiStack> as = this.getEmiStacks();
+		List<EmiStack> bs = other.getEmiStacks();
+		if (as.size() != bs.size()) {
+			return false;
+		}
+		for (int i = 0; i < as.size(); i++) {
+			if (!as.get(i).isEqual(bs.get(i), EmiPort.compareStrict())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

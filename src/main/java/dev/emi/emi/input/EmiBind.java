@@ -1,20 +1,22 @@
 package dev.emi.emi.input;
 
-import com.github.bsideup.jabel.Desugar;
-import com.google.common.collect.Lists;
-import dev.emi.emi.EmiPort;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.github.bsideup.jabel.Desugar;
+import com.google.common.collect.Lists;
+
+import dev.emi.emi.EmiPort;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+
 public class EmiBind {
+	public static final EmiBind LEFT_CLICK = new EmiBind("", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
 	public static final int MAX_BINDS = 4;
 	public final String translationKey;
 	public final List<ModifiedKey> defaultKeys;
@@ -57,8 +59,7 @@ public class EmiBind {
 	public Text getBindText() {
 		if (!isBound()) {
 			return EmiPort.literal("[]", Formatting.GOLD);
-		}
-		else {
+		} else {
 			ModifiedKey bind = boundKeys.get(0);
 			for (ModifiedKey key : boundKeys) {
 				if (key.key.getCategory() == InputUtil.Type.MOUSE) {
@@ -66,7 +67,9 @@ public class EmiBind {
 					break;
 				}
 			}
-			return EmiPort.literal("[", Formatting.GOLD).append(bind.getKeyText(Formatting.GOLD)).append(EmiPort.literal("]", Formatting.GOLD));
+			return EmiPort.literal("[", Formatting.GOLD)
+				.append(bind.getKeyText(Formatting.GOLD))
+				.append(EmiPort.literal("]", Formatting.GOLD));
 		}
 	}
 
@@ -107,8 +110,7 @@ public class EmiBind {
 					if (boundKey.key.getCategory() == InputUtil.Type.SCANCODE && boundKey.key.getCode() == scanCode) {
 						return true;
 					}
-				}
-				else {
+				} else {
 					if (boundKey.key.getCategory() == InputUtil.Type.KEYSYM && boundKey.key.getCode() == keyCode) {
 						return true;
 					}
@@ -140,11 +142,9 @@ public class EmiBind {
 				for (int i = 0; i < parts.length - 1; i++) {
 					if (parts[i].equals("ctrl") || parts[i].equals("control")) {
 						modifiers |= EmiInput.CONTROL_MASK;
-					}
-					else if (parts[i].equals("alt")) {
+					} else if (parts[i].equals("alt")) {
 						modifiers |= EmiInput.ALT_MASK;
-					}
-					else if (parts[i].equals("shift")) {
+					} else if (parts[i].equals("shift")) {
 						modifiers |= EmiInput.SHIFT_MASK;
 					}
 				}

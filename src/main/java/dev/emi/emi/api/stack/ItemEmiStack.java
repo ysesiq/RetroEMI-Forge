@@ -3,6 +3,7 @@ package dev.emi.emi.api.stack;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dev.emi.emi.EmiUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,7 +112,7 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
 
     @Override
     public ResourceLocation getId() {
-        return new ResourceLocation(GameRegistry.findUniqueIdentifierFor(item).toString());
+        return EmiPort.id(EmiPort.getItemRegistry().getNameForObject(item));
     }
 
     @Override
@@ -216,6 +217,11 @@ public class ItemEmiStack extends EmiStack implements StackBatcher.Batchable {
             return EmiPort.literal("");
         }
         return Text.translatable(getItemStack().getUnlocalizedName() + ".name");
+    }
+
+    @Override
+    public int getSubtype() {
+        return this.subtype;
     }
 
 	static class ItemEntry {

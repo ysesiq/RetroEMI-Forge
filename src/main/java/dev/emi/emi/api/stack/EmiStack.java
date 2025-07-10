@@ -137,6 +137,8 @@ public abstract class EmiStack implements EmiIngredient {
 
 	public abstract Text getName();
 
+	public abstract int getSubtype();
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof EmiStack stack) {

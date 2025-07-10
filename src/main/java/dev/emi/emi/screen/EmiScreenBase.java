@@ -42,7 +42,7 @@ public class EmiScreenBase {
 //                        extra = 177;
 //                    }
 //                }
-                Bounds bounds = new Bounds(hsa.getXSize() - extra, hsa.getYSize(), hsa.getGuiLeft() + extra, hsa.getGuiTop());
+                Bounds bounds = new Bounds(hsa.getGuiLeft() - extra, hsa.getYSize(), hsa.getXSize() + extra, hsa.getGuiTop());
                 return new EmiScreenBase(screen, bounds);
 //            }
         } else if (screen instanceof RecipeScreen rs) {

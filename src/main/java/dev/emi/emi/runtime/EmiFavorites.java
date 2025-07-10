@@ -1,14 +1,16 @@
 package dev.emi.emi.runtime;
 
+import java.util.AbstractList;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.emi.emi.bom.BoM;
-import dev.emi.emi.bom.ChanceMaterialCost;
-import dev.emi.emi.bom.FlatMaterialCost;
-import dev.emi.emi.bom.MaterialNode;
+
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -17,18 +19,17 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.JsonHelper;
+import dev.emi.emi.bom.BoM;
+import dev.emi.emi.bom.ChanceMaterialCost;
+import dev.emi.emi.bom.FlatMaterialCost;
+import dev.emi.emi.bom.MaterialNode;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-
-import java.util.AbstractList;
-import java.util.List;
-import java.util.Map;
+import net.minecraft.util.JsonHelper;
 
 public class EmiFavorites {
 	public static List<EmiFavorite> favorites = Lists.newArrayList();
-	public static List<EmiFavorite> syntheticFavorites = Lists.newArrayList();
+	public static List<EmiFavorite.Synthetic> syntheticFavorites = Lists.newArrayList();
 	public static List<EmiFavorite> favoriteSidebar = new CompoundList<>(favorites, syntheticFavorites);
 
 	public static JsonArray save() {
@@ -54,7 +55,7 @@ public class EmiFavorites {
 				JsonObject json = el.getAsJsonObject();
 				EmiRecipe recipe = null;
 				if (JsonHelper.hasString(json, "recipe")) {
-					recipe = EmiApi.getRecipeManager().getRecipe(new ResourceLocation(JsonHelper.getString(json, "recipe")));
+					recipe = EmiApi.getRecipeManager().getRecipe(EmiPort.id(JsonHelper.getString(json, "recipe")));
 				}
 				if (JsonHelper.hasElement(json, "stack")) {
 					EmiIngredient ingredient = EmiIngredientSerializer.getDeserialized(json.get("stack"));
@@ -83,7 +84,7 @@ public class EmiFavorites {
 
 	private static int indexOf(EmiIngredient stack) {
 		for (int i = 0; i < favorites.size(); i++) {
-			if (favorites.get(i).equals(stack) && favorites.get(i).getRecipe() == EmiApi.getRecipeContext(stack)) {
+			if (favorites.get(i).strictEquals(stack) && favorites.get(i).getRecipe() == EmiApi.getRecipeContext(stack)) {
 				return i;
 			}
 		}
@@ -127,7 +128,7 @@ public class EmiFavorites {
 			}
 			for (int i = 0; i < favorites.size(); i++) {
 				EmiFavorite fav = favorites.get(i);
-				if (fav.getRecipe() == null && fav.getStack().equals(stack)) {
+				if (fav.getRecipe() == null && fav.strictEquals(stack)) {
 					favorites.remove(i--);
 				}
 			}
@@ -160,12 +161,12 @@ public class EmiFavorites {
 			if (stack instanceof EmiStack es && context != null && context.getId() != null) {
 				es = es.copy();
 				if (es instanceof ItemEmiStack ies) {
-					ies.getItemStack().stackSize = (1);
+					ies.getItemStack().stackSize = 1;
 				}
 				if (!es.isEmpty()) {
 					for (int i = 0; i < favorites.size(); i++) {
 						EmiFavorite fav = favorites.get(i);
-						if (fav.getRecipe() == context && fav.getStack().equals(es)) {
+						if (fav.getRecipe() == context && fav.strictEquals(es)) {
 							return;
 						}
 					}
@@ -177,7 +178,7 @@ public class EmiFavorites {
 				}
 				for (int i = 0; i < favorites.size(); i++) {
 					EmiFavorite fav = favorites.get(i);
-					if (fav.getRecipe() == null && fav.getStack().equals(stack)) {
+					if (fav.getRecipe() == null && fav.strictEquals(stack)) {
 						return;
 					}
 				}
@@ -191,6 +192,7 @@ public class EmiFavorites {
 		syntheticFavorites.clear();
 		if (BoM.tree != null && BoM.craftingMode) {
 			BoM.tree.calculateCost();
+			Map<EmiIngredient, FlatMaterialCost> originalCosts = Maps.newHashMap(BoM.tree.cost.costs);
 			Map<EmiIngredient, ChanceMaterialCost> chancedCosts = Maps.newHashMap(BoM.tree.cost.chanceCosts);
 			BoM.tree.calculateProgress(inv);
 			Object2LongMap<EmiRecipe> batches = new Object2LongLinkedOpenHashMap<>();
@@ -266,9 +268,9 @@ public class EmiFavorites {
 	}
 
 	private static class CompoundList<T> extends AbstractList<T> {
-		private List<T> a, b;
+		private List<? extends T> a, b;
 
-		public CompoundList(List<T> a, List<T> b) {
+		public CompoundList(List<? extends T> a, List<? extends T> b) {
 			this.a = a;
 			this.b = b;
 		}
