@@ -1,4 +1,4 @@
-package dev.emi.emi.mixin.early.minecraft.accessor;
+package dev.emi.emi.mixin.accessor;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;

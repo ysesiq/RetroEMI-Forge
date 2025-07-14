@@ -8,7 +8,7 @@ import dev.emi.emi.config.IndexSource;
 import dev.emi.emi.data.EmiAlias;
 import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.IndexStackData;
-import dev.emi.emi.mixin.early.minecraft.accessor.ItemBlockAccessor;
+import dev.emi.emi.mixin.accessor.ItemBlockAccessor;
 import dev.emi.emi.runtime.EmiHidden;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.api.stack.EmiIngredient;

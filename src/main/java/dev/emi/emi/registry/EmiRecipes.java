@@ -146,10 +146,11 @@ public class EmiRecipes {
 				}
 				byCategory.computeIfAbsent(category, a -> Lists.newArrayList()).add(recipe);
 				if (id != null) {
-					if (byId.containsKey(id)) {
+					if (byId.containsKey(id) && !id.getResourceDomain().equals("shaped_ore") && !id.getResourceDomain().equals("shapeless_ore")) {
 						duplicateIds.put(id, duplicateIds.getOrDefault(id, 1) + 1);
-					}
-					byId.put(id, recipe);
+					} else {
+                        byId.put(id, recipe);
+                    }
 				}
 			}
 

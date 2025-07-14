@@ -34,6 +34,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SyntheticIdentifier;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import org.apache.http.config.Registry;
@@ -173,7 +174,7 @@ public final class EmiPort {
 	}
 
     public static ResourceLocation getId(IRecipe recipe) {
-        return EmiRecipes.recipeIds.get(recipe);
+        return SyntheticIdentifier.generateId(recipe);
     }
 
 	public static @Nullable IRecipe getRecipe(ResourceLocation id) {
@@ -207,10 +208,13 @@ public final class EmiPort {
     }
 
     public static ResourceLocation id(String id) {
-        String[] parts = id.split(":");
-        String mod = parts[0];//Avoid mods being forced to lowercase and not being able to get them
-        String name = parts[1];
-        return new ResourceLocation(mod, name);
+        if (id.contains(":")) {
+            String[] parts = id.split(":");
+            String mod = parts[0];//Avoid mods being forced to lowercase and not being able to get them
+            String name = parts[1];
+            return new ResourceLocation(mod, name);
+        }
+        return new ResourceLocation(id);
     }
 
     public static ResourceLocation id(String namespace, String path) {

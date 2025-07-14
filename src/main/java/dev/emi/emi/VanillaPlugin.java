@@ -2,7 +2,6 @@ package dev.emi.emi;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.rewindmc.retroemi.ItemStacks;
 import dev.emi.emi.api.EmiInitRegistry;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.config.EffectLocation;
@@ -11,10 +10,9 @@ import dev.emi.emi.config.FluidUnit;
 import dev.emi.emi.handler.CookingRecipeHandler;
 import dev.emi.emi.handler.CraftingRecipeHandler;
 import dev.emi.emi.handler.InventoryRecipeHandler;
-import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
-import dev.emi.emi.mixin.early.minecraft.accessor.ShapedRecipesAccessor;
+import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.accessor.ShapedRecipesAccessor;
 import dev.emi.emi.platform.EmiAgnos;
-import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.recipe.*;
 import dev.emi.emi.recipe.forge.EmiShapedOreRecipe;
 import dev.emi.emi.recipe.forge.EmiShapelessOreRecipe;
@@ -36,19 +34,14 @@ import dev.emi.emi.api.render.EmiRenderable;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockTallGrass;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.entity.EntityList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tag.ItemKey;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.SyntheticIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerFurnace;
@@ -68,7 +61,6 @@ import net.xylose.emi.REMIForge;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -167,7 +159,7 @@ public class VanillaPlugin implements EmiPlugin {
 						if (EmiConfig.effectLocation == EffectLocation.TOP) {
 							int size = collection.size();
 							top = ((GuiContainerAccessor) inv).getGuiTop() - 34;
-							if (((Object) screen) instanceof GuiContainerCreative) {
+							if (screen instanceof GuiContainerCreative) {
 								top -= 28;
 								if (EmiAgnos.isForge()) {
 									top -= 22;
@@ -263,9 +255,9 @@ public class VanillaPlugin implements EmiPlugin {
         for (var recipe : ((Map<ItemStack, ItemStack>)FurnaceRecipes.smelting().getSmeltingList()).entrySet()) {
             ItemStack in = recipe.getKey();
             ItemStack out = recipe.getValue();
-            String id = in + "." + out;
+            String id = in.getUnlocalizedName() + "." + in.getItemDamage() + "/" + out.getUnlocalizedName() + "." + in.getItemDamage();
             float xp = FurnaceRecipes.smelting().func_151398_b(out);
-            addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("minecraft", "furnace/" + id), in, out, xp, SMELTING, 1, false));
+            addRecipeSafe(registry, () -> new EmiCookingRecipe(new ResourceLocation("smelting", "furnace/" + id), in, out, xp, SMELTING, 1, false));
         }
 
         safely("repair", () -> addRepair(registry, hiddenItems));
@@ -347,7 +339,7 @@ public class VanillaPlugin implements EmiPlugin {
         for (ItemStack stack : stacks) {
             if (stack.getItemDamage() != 2 && stack.getItemDamage() != 3) {
                 addRecipeSafe(registry, () -> basicWorld(EmiStack.of(stack).setRemainder(EmiStack.of(stack)), EmiStack.of(Items.dye, 1, 15), EmiStack.of(stack),
-                    synthetic("world/flower_duping", EmiUtil.subId(stack.getItem())), false));
+                    synthetic("world/flower_duping", EmiUtil.subId(EmiPort.id(stack.getItem() + "." +  stack.getItemDamage()))), false));
             }
         }
     }
@@ -360,7 +352,7 @@ public class VanillaPlugin implements EmiPlugin {
             if (item instanceof ItemHoe hoe) {
                 EmiIngredient hoes = damagedTool(EmiStack.of(hoe), 1);
                 EmiIngredient dirt = EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(EmiStack.of(Blocks.dirt), EmiStack.of(Blocks.grass)));
-                ResourceLocation id = synthetic("world/tilling", EmiUtil.subId(Blocks.dirt));
+                ResourceLocation id = synthetic("world/tilling", EmiUtil.subId(EmiPort.id(hoe.getUnlocalizedName() + "." + Blocks.dirt)));
                 addRecipeSafe(registry, () -> basicWorld(dirt, hoes, EmiStack.of(Blocks.farmland), id));
             }
         }
@@ -461,7 +453,7 @@ public class VanillaPlugin implements EmiPlugin {
         }, item -> {
             if (!hiddenItems.contains(item.item())) {
                 int time = fuelMap.get(item);
-                registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item.toStack()), time, synthetic("fuel/item", EmiUtil.subId(item.item()))));
+                registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item.toStack()), time, synthetic("fuel/item", EmiUtil.subId(EmiPort.id(item.toStack().getUnlocalizedName() + "@" + Item.getIdFromItem(item.item()) + "." +  item.toStack().getItemDamage())))));
             }
         });
     }
@@ -499,7 +491,7 @@ public class VanillaPlugin implements EmiPlugin {
     }
 
 	private static ResourceLocation synthetic(String type, String name) {
-		return EmiPort.id("emi", "/" + type + "/" + name);
+		return EmiPort.id(type, "/" + name);
 	}
 
 	private static void safely(String name, Runnable runnable) {

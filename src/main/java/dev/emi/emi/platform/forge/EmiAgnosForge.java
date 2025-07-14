@@ -3,27 +3,25 @@ package dev.emi.emi.platform.forge;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.rewindmc.retroemi.InputPair;
 import com.rewindmc.retroemi.Prototype;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.ModMetadata;
-import dev.emi.emi.*;
-import dev.emi.emi.api.EmiPluginRegistry;
+import cpw.mods.fml.common.*;
+import cpw.mods.fml.common.discovery.ITypeDiscoverer;
+import cpw.mods.fml.common.discovery.asm.ASMModParser;
+import cpw.mods.fml.common.discovery.asm.ModAnnotation;
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.stack.FluidEmiStack;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionHelper;
 import net.minecraft.tag.ItemKey;
-import net.minecraft.util.StringTranslate;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
+import net.xylose.emi.REMIForge;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -43,8 +41,6 @@ import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
-import com.rewindmc.retroemi.EmiMultiPlugin;
-import com.rewindmc.retroemi.NamedEmiPlugin;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.SyntheticIdentifier;
@@ -53,16 +49,12 @@ import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 public class EmiAgnosForge extends EmiAgnos {
 	static {
@@ -135,54 +127,37 @@ public class EmiAgnosForge extends EmiAgnos {
         return authors;
     }
 
-    @Override
-    protected List<EmiPluginContainer> getPluginsAgnos() {
-        return EmiPluginRegistry.getPlugins();
-    }
-
-//    protected List<EmiPluginContainer> getPluginsAgnos() {
-//        List<EmiPluginContainer> containers = Lists.newArrayList();
-//        for (ModContainer mod : Loader.instance().getActiveModList()) {
-//            ModMetadata metadata = mod.getMetadata();
-//            if (metadata.containsKey("emiPlugin")) {
-//                String pluginClassName = (String) metadata.get("emiPlugin");
-//                try {
-//                    Class<?> clazz = Class.forName(pluginClassName);
-//                    if (EmiPlugin.class.isAssignableFrom(clazz)) {
-//                        @SuppressWarnings("unchecked")
-//                        Class<? extends EmiPlugin> pluginClass = (Class<? extends EmiPlugin>) clazz;
-//                        EmiPlugin plugin = pluginClass.newInstance();
-//                        containers.add(new EmiPluginContainer(plugin, mod.getModId()));
-//                    } else {
-//                        EmiLog.error("EmiEntrypoint " + pluginClassName + " does not implement EmiPlugin");
-//                    }
-//                } catch (Throwable t) {
-//                    EmiLog.error("Exception constructing entrypoint:", t);
-//                }
-//            }
-//        }
-//        return containers;
-//    }
-
-	private Stream<EmiPluginContainer> createPlugin(String clazzName, String id) {
-		try {
-			var clazz = Class.forName(clazzName);
-			if (!EmiPlugin.class.isAssignableFrom(clazz) && !EmiMultiPlugin.class.isAssignableFrom(clazz)) {
-				EmiLog.warn("Registered emi entrypoint for nilmod {} does not implement EmiPlugin");
-				return null;
+	@Override
+	protected List<EmiPluginContainer> getPluginsAgnos() {
+		List<EmiPluginContainer> containers = Lists.newArrayList();
+		Type entrypointType = Type.getType(EmiEntrypoint.class);
+		for (ModContainer mod : Loader.instance().getActiveModList()) {
+			try {
+				if (mod instanceof DummyModContainer || (mod instanceof InjectedModContainer container && container.wrappedContainer instanceof DummyModContainer)) {
+					continue;
+				}
+				JarFile jar = new JarFile(mod.getSource());
+				for (JarEntry entry : Collections.list(jar.entries())) {
+					if (ITypeDiscoverer.classFile.matcher(entry.getName()).matches()) {
+						ASMModParser parser = new ASMModParser(jar.getInputStream(entry));
+						for (ModAnnotation annot : parser.getAnnotations().stream().filter(annot -> annot.getASMType().equals(entrypointType)).collect(Collectors.toList())) {
+							Class<?> clazz = Class.forName(annot.getMember());
+							if (EmiPlugin.class.isAssignableFrom(clazz)) {
+								Class<? extends EmiPlugin> pluginClass = clazz.asSubclass(EmiPlugin.class);
+								EmiPlugin plugin = pluginClass.getConstructor().newInstance();
+								String id = mod.getModId();
+								containers.add(new EmiPluginContainer(plugin, id));
+							} else {
+								EmiLog.error("EmiEntrypoint " + annot.getMember() + " does not implement EmiPlugin");
+							}
+						}
+					}
+				}
+			} catch (Throwable t) {
+				EmiLog.error("Exception constructing entrypoint:", t);
 			}
-			if (!Runnable.class.isAssignableFrom(clazz)) {
-				EmiLog.warn("Registered emi entrypoint for nilmod {} does not implement Runnable (this is required for NilLoader entrypoint compliance)");
-				return null;
-			}
-			var inst = clazz.getConstructor().newInstance();
-			Stream<EmiPlugin> stream = inst instanceof EmiPlugin ep ? Stream.of(ep) : Stream.empty();
-			if (inst instanceof EmiMultiPlugin emp) stream = Stream.concat(stream, emp.getChildPlugins());
-			return stream.map(ep -> new EmiPluginContainer(ep, ep instanceof NamedEmiPlugin n ? id + "/" + n.getName() : id));
-		} catch (Throwable t) {
-			EmiLog.warn("Unexpected error while attempting to create plugin for nilmod {}");
-			return null;
 		}
+		return containers;
 	}
 
 	@Override
@@ -224,8 +199,8 @@ public class EmiAgnosForge extends EmiAgnos {
 		for (Map.Entry<InputPair, Prototype> en : recipes.entrySet()) {
 			InputPair i = en.getKey();
 			registry.addRecipe(new EmiBrewingRecipe(EmiStack.of(i.potion()), EmiStack.of(i.ingredient()), EmiStack.of(en.getValue()),
-					new ResourceLocation("brewing", "/" + SyntheticIdentifier.describe(i.potion()) + "/" + SyntheticIdentifier.describe(i.ingredient()) + "/" +
-							SyntheticIdentifier.describe(en.getValue()))));
+					new ResourceLocation("brewing", "/" + i.potion().toStack().getItemDamage() + "/" + i.ingredient().toStack().getUnlocalizedName() + "/" +
+                        en.getValue().toStack().getItemDamage())));
 		}
 		// Vanilla potion entries have different meta from brewable potions (!)
 		// Remove all those uncraftable potions from the index

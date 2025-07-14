@@ -1,10 +1,11 @@
 package com.rewindmc.retroemi;
 
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.mixin.early.minecraft.accessor.CraftingManagerAccessor;
-import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.accessor.CraftingManagerAccessor;
+import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiSidebars;
 import dev.emi.emi.screen.EmiScreenManager;
@@ -73,7 +74,7 @@ public class REMIMixinHooks {
 				List<IRecipe> list = ((CraftingManagerAccessor) CraftingManager.getInstance()).getRecipes();
 				for (var r : list) {
 					if (r.matches(inv, client.theWorld)) {
-						ResourceLocation id = new SyntheticIdentifier(r);
+						ResourceLocation id = EmiPort.getId(r);
 						EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 						if (recipe != null) {
 							EmiSidebars.craft(recipe);

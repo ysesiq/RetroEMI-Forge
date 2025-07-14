@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.NumericIdentifier;
@@ -52,6 +53,10 @@ public class EmiUtil {
 
     public static String subId(Fluid fluid) {
         return subId(new ResourceLocation(fluid.getName()));
+    }
+
+    public static String subId(ItemStack stack) {
+        return subId(new ResourceLocation(stack.getDisplayName()));
     }
 
 //    public static <T> Stream<TagKey.Type> values(TagKey<T> key) {

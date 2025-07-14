@@ -3,7 +3,7 @@ package com.rewindmc.retroemi;
 import cpw.mods.fml.common.FMLCommonHandler;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreen;

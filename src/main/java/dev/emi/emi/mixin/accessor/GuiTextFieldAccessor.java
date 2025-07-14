@@ -1,4 +1,4 @@
-package dev.emi.emi.mixin.early.minecraft.accessor;
+package dev.emi.emi.mixin.accessor;
 
 import net.minecraft.client.gui.GuiTextField;
 import org.spongepowered.asm.mixin.Mixin;

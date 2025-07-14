@@ -1,7 +1,7 @@
 package dev.emi.emi.screen;
 
 import dev.emi.emi.api.widget.Bounds;
-import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;

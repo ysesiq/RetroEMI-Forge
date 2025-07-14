@@ -7,7 +7,7 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.mixin.early.minecraft.accessor.InventoryCraftingAccessor;
+import dev.emi.emi.mixin.accessor.InventoryCraftingAccessor;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class EmiShapedRecipe extends EmiCraftingRecipe {
 
     public EmiShapedRecipe(ShapedRecipes recipe) {
-        super(padIngredients(recipe), EmiStack.of(EmiPort.getOutput(recipe)), new SyntheticIdentifier(recipe), false);
+        super(padIngredients(recipe), EmiStack.of(EmiPort.getOutput(recipe)), EmiPort.getId(recipe), false);
         setRemainders(input, recipe);
     }
 

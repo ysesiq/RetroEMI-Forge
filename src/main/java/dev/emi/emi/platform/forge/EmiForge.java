@@ -8,7 +8,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import dev.emi.emi.data.EmiData;
-import dev.emi.emi.mixin.early.minecraft.accessor.PlayerControllerMPAccessor;
+import dev.emi.emi.data.EmiResourceReloadListener;
+import dev.emi.emi.mixin.accessor.PlayerControllerMPAccessor;
 import dev.emi.emi.network.*;
 import dev.emi.emi.platform.EmiClient;
 import dev.emi.emi.platform.EmiMain;
@@ -77,7 +78,7 @@ public class EmiForge {
 
         public static void init() {
             EmiClient.init();
-            EmiData.init();
+            EmiData.init(EmiResourceReloadListener::reload);
 
             EmiNetwork.initClient(packet -> ((PlayerControllerMPAccessor) Minecraft.getMinecraft().playerController).getNetClientHandler().addToSendQueue(toVanilla(packet)));
             PacketReader.registerClientPacketReader(EmiNetwork.PING, PingS2CPacket::new);

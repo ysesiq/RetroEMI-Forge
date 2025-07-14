@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.widget.Bounds;
-import dev.emi.emi.mixin.early.minecraft.accessor.GuiContainerAccessor;
+import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Gui;
