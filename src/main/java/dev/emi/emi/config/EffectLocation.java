@@ -4,13 +4,13 @@ import dev.emi.emi.EmiPort;
 import net.minecraft.text.Text;
 
 public enum EffectLocation implements ConfigEnum {
-    TOP("top", false),
-    LEFT_COMPRESSED("left-compressed", true),
-    RIGHT_COMPRESSED("right-compressed", true),
-    LEFT("left", false),
-    RIGHT("right", false),
-    HIDDEN("hidden", false)
-    ;
+	TOP("top", false),
+	LEFT_COMPRESSED("left-compressed", true),
+	RIGHT_COMPRESSED("right-compressed", true),
+	LEFT("left", false),
+	RIGHT("right", false),
+	HIDDEN("hidden", false),
+	;
 
 	public final String name;
 	public final boolean compressed;

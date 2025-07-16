@@ -1,5 +1,7 @@
 package dev.emi.emi.registry;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SideOnly(Side.CLIENT)
 public class EmiStackProvidersClientOnly {
 	@Nullable
 	public static EmiStackInteraction getEmiStackInteraction(Slot s, ItemStack stack) {

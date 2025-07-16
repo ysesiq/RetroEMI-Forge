@@ -1,12 +1,13 @@
 package dev.emi.emi.registry;
 
+import java.util.ListIterator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
 
-import com.rewindmc.retroemi.shim.java.List;
 import dev.emi.emi.api.EmiDragDropHandler;
 import dev.emi.emi.api.EmiExclusionArea;
 import dev.emi.emi.api.EmiRegistry;
@@ -78,9 +79,11 @@ public class EmiRegistryImpl implements EmiRegistry {
 
 	@Override
 	public void addEmiStackAfter(EmiStack stack, Predicate<EmiStack> predicate) {
-		for (int i = 0; i < EmiStackList.stacks.size(); i++) {
-			if (predicate.test(EmiStackList.stacks.get(i))) {
-				EmiStackList.stacks.add(i + 1, stack);
+		ListIterator<EmiStack> listIterator = EmiStackList.stacks.listIterator();
+		while (listIterator.hasNext()) {
+			EmiStack candidate = listIterator.next();
+			if (predicate.test(candidate)) {
+				listIterator.add(stack);
 				return;
 			}
 		}
@@ -139,7 +142,7 @@ public class EmiRegistryImpl implements EmiRegistry {
 
 	@Override
 	public void addAlias(EmiIngredient stack, Text text) {
-		EmiStackList.registryAliases.add(new EmiAlias.Baked(com.rewindmc.retroemi.shim.java.List.of(stack), List.of(text)));
+		EmiStackList.registryAliases.add(new EmiAlias.Baked(com.rewindmc.retroemi.shim.java.List.of(stack), com.rewindmc.retroemi.shim.java.List.of(text)));
 	}
 
 	@Override

@@ -1,36 +1,36 @@
 package dev.emi.emi.chess;
 
-import com.google.common.collect.Lists;
-
 import java.util.Collections;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 class StandardMoveGenerator extends MoveGenerator {
 	public ChessEvaluation eval = new ChessEvaluation();
 	public ChessMove chosenMove;
 	public Thread worker;
-	
+
 	public StandardMoveGenerator(PieceColor color) {
 		super(color);
 	}
-	
+
 	@Override
 	public void ponderMove(ChessBoard board) {
 		chosenMove = null;
 		worker = new Thread(new Worker(board));
 		worker.start();
 	}
-	
+
 	@Override
 	public boolean determinedMove() {
 		return worker != null && !worker.isAlive();
 	}
-	
+
 	@Override
 	public ChessMove getMove() {
 		return chosenMove;
 	}
-	
+
 	public int evaluate(ChessBoard board, PieceColor turn, int depth, int alpha, int beta) {
 		List<ChessMove> moves = board.getAllMoves(turn);
 		for (int i = 0; i < moves.size(); i++) {
@@ -45,8 +45,7 @@ class StandardMoveGenerator extends MoveGenerator {
 				if (turn == PieceColor.BLACK) {
 					value = -value;
 				}
-			}
-			else {
+			} else {
 				value = -evaluate(board, turn.opposite(), depth - 1, -beta, -alpha);
 			}
 			board.unmove(move);
@@ -55,21 +54,20 @@ class StandardMoveGenerator extends MoveGenerator {
 			board.set(move.end(), captured);
 			if (value >= beta) {
 				return value;
-			}
-			else if (value > alpha) {
+			} else if (value > alpha) {
 				alpha = value;
 			}
 		}
 		return alpha;
 	}
-	
+
 	class Worker implements Runnable {
 		private ChessBoard board;
-		
+
 		public Worker(ChessBoard board) {
 			this.board = board;
 		}
-		
+
 		public void run() {
 			int bestEval = Integer.MIN_VALUE + 1;
 			ChessMove bestMove = null;

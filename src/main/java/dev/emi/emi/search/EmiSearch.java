@@ -93,7 +93,7 @@ public class EmiSearch {
 					mods.add(searchStack, id.getResourceDomain().toLowerCase());
 					names.add(searchStack, id.getResourcePath().toLowerCase());
 				}
-                if (stack.getItemStack().getItem() == Items.enchanted_book) {
+                if (stack instanceof ItemEmiStack && stack.getItemStack().getItem() == Items.enchanted_book) {
                     for (var eid : (Iterable<Integer>) EnchantmentHelper.getEnchantments(stack.getItemStack()).keySet()) {
                         var e = Enchantment.enchantmentsList[eid];
                         switch (eid) {

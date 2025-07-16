@@ -1,9 +1,9 @@
 package dev.emi.emi.registry;
 
-import dev.emi.emi.api.stack.Comparison;
-
 import java.util.Collections;
 import java.util.Map;
+
+import dev.emi.emi.api.stack.Comparison;
 
 public class EmiComparisonDefaults {
 	public static Map<Object, Comparison> comparisons = Collections.emptyMap();

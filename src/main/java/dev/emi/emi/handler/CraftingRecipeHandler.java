@@ -1,14 +1,16 @@
 package dev.emi.emi.handler;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
+
+import org.jetbrains.annotations.Nullable;
+
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.Slot;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class CraftingRecipeHandler implements StandardRecipeHandler<ContainerWorkbench> {
 

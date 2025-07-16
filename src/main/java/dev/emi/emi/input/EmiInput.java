@@ -1,8 +1,9 @@
 package dev.emi.emi.input;
 
+import org.lwjgl.glfw.GLFW;
+
 import net.minecraft.util.Util;
 import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
 
 public class EmiInput {
 	public static final int CONTROL_MASK = 1;
@@ -14,11 +15,13 @@ public class EmiInput {
 	}
 
 	public static boolean isAltDown() {
-		return InputUtil.isKeyPressed(GLFW.GLFW_KEY_LEFT_ALT) || InputUtil.isKeyPressed(GLFW.GLFW_KEY_RIGHT_ALT);
+		return InputUtil.isKeyPressed(GLFW.GLFW_KEY_LEFT_ALT)
+			|| InputUtil.isKeyPressed(GLFW.GLFW_KEY_RIGHT_ALT);
 	}
 
 	public static boolean isShiftDown() {
-		return InputUtil.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || InputUtil.isKeyPressed(GLFW.GLFW_KEY_RIGHT_SHIFT);
+		return InputUtil.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)
+			|| InputUtil.isKeyPressed(GLFW.GLFW_KEY_RIGHT_SHIFT);
 	}
 
 	public static int maskFromCode(int keyCode) {
@@ -29,11 +32,9 @@ public class EmiInput {
 		}
 		if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
 			return CONTROL_MASK;
-		}
-		else if (keyCode == GLFW.GLFW_KEY_LEFT_ALT || keyCode == GLFW.GLFW_KEY_RIGHT_ALT) {
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT_ALT || keyCode == GLFW.GLFW_KEY_RIGHT_ALT) {
 			return ALT_MASK;
-		}
-		else if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
 			return SHIFT_MASK;
 		}
 		return 0;

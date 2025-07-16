@@ -1,5 +1,10 @@
 package dev.emi.emi.recipe;
 
+import java.util.List;
+
+import net.minecraft.init.Items;
+import org.jetbrains.annotations.Nullable;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -9,12 +14,10 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class EmiBrewingRecipe implements EmiRecipe {
-	private static final ResourceLocation BACKGROUND = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
+	private static final ResourceLocation BACKGROUND = EmiPort.id("minecraft", "textures/gui/container/brewing_stand.png");
+//	private static final EmiStack BLAZE_POWDER = EmiStack.of(Items.blaze_powder);
 	private final EmiIngredient input, ingredient;
 	private final EmiStack output, input3, output3;
 	private final ResourceLocation id;
@@ -65,6 +68,8 @@ public class EmiBrewingRecipe implements EmiRecipe {
 			return com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.cooking.time", 20))));
 		});
 		widgets.addAnimatedTexture(BACKGROUND, 10, -1, 12, 29, 185, 0, 700, false, true, false);
+//        widgets.addTexture(BACKGROUND, 44, 30, 18, 4, 176, 29);
+//        widgets.addSlot(BLAZE_POWDER, 0, 2).drawBack(false);
 		widgets.addSlot(input, 0, 30).drawBack(false);
 		widgets.addSlot(ingredient, 23, 1).drawBack(false);
 		widgets.addSlot(output, 46, 30).drawBack(false).recipeContext(this);

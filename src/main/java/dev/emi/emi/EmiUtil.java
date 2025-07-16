@@ -21,20 +21,15 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.NumericIdentifier;
 import net.minecraftforge.fluids.Fluid;
-import org.apache.http.config.Registry;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EmiUtil {
 	public static final Random RANDOM = new Random();

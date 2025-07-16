@@ -1,16 +1,18 @@
 package dev.emi.emi.registry;
 
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.emi.emi.runtime.EmiLog;
+
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
+import dev.emi.emi.runtime.EmiLog;
 import net.minecraft.util.JsonHelper;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class EmiIngredientSerializers {
@@ -74,7 +76,7 @@ public class EmiIngredientSerializers {
 					type = "tag";
 				}
 			}
-			return BY_TYPE.get(type).deserialize(element);
+			return ((EmiIngredientSerializer) BY_TYPE.get(type)).deserialize(element);
 		} catch (Exception e) {
 			EmiLog.error("Exception deserializing stack " + element, e);
 			return EmiStack.EMPTY;

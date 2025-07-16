@@ -1,18 +1,5 @@
 package dev.emi.emi.config;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import dev.emi.emi.input.EmiBind;
-import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.platform.EmiAgnos;
-import dev.emi.emi.runtime.EmiLog;
-import net.minecraft.util.Util;
-import dev.emi.emi.com.unascribed.QDCSS;
-import com.rewindmc.retroemi.RetroEMI;
-import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.annotation.ElementType;
@@ -23,6 +10,21 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
+import dev.emi.emi.com.unascribed.qdcss.QDCSS;
+import dev.emi.emi.input.EmiBind;
+import dev.emi.emi.input.EmiInput;
+import dev.emi.emi.platform.EmiAgnos;
+import dev.emi.emi.runtime.EmiLog;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Util;
+import com.rewindmc.retroemi.RetroEMI;
 
 public class EmiConfig {
 	private static final Map<Class<?>, Setter> SETTERS = Maps.newHashMap();
@@ -64,11 +66,15 @@ public class EmiConfig {
 	@ConfigValue("general.search-mod-name-by-default")
 	public static boolean searchModNameByDefault = false;
 
+	@ConfigGroupEnd
 	@Comment("Whether normal search queries should include the stack's tags.")
 	@ConfigValue("general.search-tags-by-default")
 	public static boolean searchTagsByDefault = false;
 
 	// UI
+//	@Comment("Which action should be performed when clicking the recipe book.")
+//	@ConfigValue("ui.recipe-book-action")
+//	public static RecipeBookAction recipeBookAction = RecipeBookAction.TOGGLE_CRAFTABLES;
 
 	@Comment("Where to display status effects in the inventory.")
 	@ConfigValue("ui.effect-location")
@@ -95,6 +101,11 @@ public class EmiConfig {
 	@Comment("The unit to display fluids as.")
 	@ConfigValue("ui.fluid-unit")
 	public static FluidUnit fluidUnit = EmiAgnos.isForge() ? FluidUnit.MILLIBUCKETS : FluidUnit.LITERS;
+
+	@Comment("Whether to use the batched render system. Batching is faster, but may have incompatibilities"
+		+ " with shaders or other mods.")
+	@ConfigValue("ui.use-batched-renderer")
+	public static boolean useBatchedRenderer = true;
 
 	@Comment("Whether to have the search bar in the center of the screen, instead of to the side.")
 	@ConfigValue("ui.center-search-bar")
@@ -126,18 +137,17 @@ public class EmiConfig {
 	@ConfigValue("ui.recipe-tree-button-visibility")
 	public static ButtonVisibility recipeTreeButtonVisibility = ButtonVisibility.AUTO;
 
-    @ConfigGroup("ui.recipe-screen")
-    @Comment("The maximum height the recipe screen will grow to be if space is available in pixels.")
-    @ConfigValue("ui.maximum-recipe-screen-height")
-    public static int maximumRecipeScreenHeight = 256;
-
-    @Comment("The minimum width of the recipe screen in pixels. "
-        + "Controls how many tabs there can be, and where the page switching buttons go. "
-        + "The default is 176, the width of most screens.")
-    @ConfigValue("ui.minimum-recipe-screen-width")
-    public static int minimumRecipeScreenWidth = 176;
-
 	@ConfigGroup("ui.recipe-screen")
+	@Comment("The maximum height the recipe screen will grow to be if space is available in pixels.")
+	@ConfigValue("ui.maximum-recipe-screen-height")
+	public static int maximumRecipeScreenHeight = 256;
+
+	@Comment("The minimum width of the recipe screen in pixels. "
+		+ "Controls how many tabs there can be, and where the page switching buttons go. "
+		+ "The default is 176, the width of most screens.")
+	@ConfigValue("ui.minimum-recipe-screen-width")
+	public static int minimumRecipeScreenWidth = 176;
+
 	@Comment("The amount of vertical margin to give in the recipe screen.")
 	@ConfigValue("ui.vertical-margin")
 	public static int verticalMargin = 20;
@@ -182,16 +192,22 @@ public class EmiConfig {
 	@ConfigGroup("ui.left-sidebar")
 	@Comment("The pages in the left sidebar")
 	@ConfigValue("ui.left-sidebar-pages")
-	public static SidebarPages leftSidebarPages =
-			new SidebarPages(Collections.singletonList(new SidebarPages.SidebarPage(SidebarType.FAVORITES)), SidebarSettings.LEFT);
+	public static SidebarPages leftSidebarPages = new SidebarPages(Collections.singletonList(
+		new SidebarPages.SidebarPage(SidebarType.FAVORITES)
+	), SidebarSettings.LEFT);
 
 	@Comment("The subpanels in the left sidebar")
 	@ConfigValue("ui.left-sidebar-subpanels")
-	public static SidebarSubpanels leftSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.LEFT);
+	public static SidebarSubpanels leftSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.LEFT);
 
 	@Comment("How many columns and rows of ingredients to limit the left sidebar to")
 	@ConfigValue("ui.left-sidebar-size")
-	public static IntGroup leftSidebarSize = new IntGroup("emi.sidebar.size.", com.rewindmc.retroemi.shim.java.List.of("columns", "rows"), new ArrayList<>(Arrays.asList(12, 100)));
+	public static IntGroup leftSidebarSize = new IntGroup(
+		"emi.sidebar.size.",
+		com.rewindmc.retroemi.shim.java.List.of("columns", "rows"),
+        new ArrayList<>(Arrays.asList(12, 100))
+	);
 
 	@Comment("How much space to maintain between the left sidebar and obstructions, in pixels")
 	@ConfigValue("ui.left-sidebar-margins")
@@ -216,17 +232,23 @@ public class EmiConfig {
 	@ConfigGroup("ui.right-sidebar")
 	@Comment("The pages in the right sidebar")
 	@ConfigValue("ui.right-sidebar-pages")
-	public static SidebarPages rightSidebarPages =
-			new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(new SidebarPages.SidebarPage(SidebarType.INDEX), new SidebarPages.SidebarPage(SidebarType.CRAFTABLES)),
-					SidebarSettings.RIGHT);
+	public static SidebarPages rightSidebarPages = new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(
+		new SidebarPages.SidebarPage(SidebarType.INDEX),
+		new SidebarPages.SidebarPage(SidebarType.CRAFTABLES)
+	), SidebarSettings.RIGHT);
 
 	@Comment("The subpanels in the right sidebar")
 	@ConfigValue("ui.right-sidebar-subpanels")
-	public static SidebarSubpanels rightSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.RIGHT);
+	public static SidebarSubpanels rightSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.RIGHT);
 
 	@Comment("How many columns and rows of ingredients to limit the right sidebar to")
 	@ConfigValue("ui.right-sidebar-size")
-	public static IntGroup rightSidebarSize = new IntGroup("emi.sidebar.size.", com.rewindmc.retroemi.shim.java.List.of("columns", "rows"), new ArrayList<>(Arrays.asList(12, 100)));
+	public static IntGroup rightSidebarSize = new IntGroup(
+	    "emi.sidebar.size.",
+	    com.rewindmc.retroemi.shim.java.List.of("columns", "rows"),
+	    new ArrayList<>(Arrays.asList(12, 100))
+	);
 
 	@Comment("How much space to maintain between the right sidebar and obstructions, in pixels")
 	@ConfigValue("ui.right-sidebar-margins")
@@ -250,15 +272,21 @@ public class EmiConfig {
 	@ConfigGroup("ui.top-sidebar")
 	@Comment("The pages in the top sidebar")
 	@ConfigValue("ui.top-sidebar-pages")
-	public static SidebarPages topSidebarPages = new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.TOP);
+	public static SidebarPages topSidebarPages = new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.TOP);
 
 	@Comment("The subpanels in the top sidebar")
 	@ConfigValue("ui.top-sidebar-subpanels")
-	public static SidebarSubpanels topSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.TOP);
+	public static SidebarSubpanels topSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.TOP);
 
 	@Comment("How many columns and rows of ingredients to limit the top sidebar to")
 	@ConfigValue("ui.top-sidebar-size")
-	public static IntGroup topSidebarSize = new IntGroup("emi.sidebar.size.", com.rewindmc.retroemi.shim.java.List.of("columns", "rows"), new ArrayList<>(Arrays.asList(9, 9)));
+	public static IntGroup topSidebarSize = new IntGroup(
+		"emi.sidebar.size.",
+		com.rewindmc.retroemi.shim.java.List.of("columns", "rows"),
+		new ArrayList<>(Arrays.asList(9, 9))
+	);
 
 	@Comment("How much space to maintain between the top sidebar and obstructions, in pixels")
 	@ConfigValue("ui.top-sidebar-margins")
@@ -282,15 +310,21 @@ public class EmiConfig {
 	@ConfigGroup("ui.bottom-sidebar")
 	@Comment("The pages in the bottom sidebar")
 	@ConfigValue("ui.bottom-sidebar-pages")
-	public static SidebarPages bottomSidebarPages = new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.BOTTOM);
+	public static SidebarPages bottomSidebarPages = new SidebarPages(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.BOTTOM);
 
 	@Comment("The subpanels in the bottom sidebar")
 	@ConfigValue("ui.bottom-sidebar-subpanels")
-	public static SidebarSubpanels bottomSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(), SidebarSettings.BOTTOM);
+	public static SidebarSubpanels bottomSidebarSubpanels = new SidebarSubpanels(com.rewindmc.retroemi.shim.java.List.of(
+	), SidebarSettings.BOTTOM);
 
 	@Comment("How many columns and rows of ingredients to limit the bottom sidebar to")
 	@ConfigValue("ui.bottom-sidebar-size")
-	public static IntGroup bottomSidebarSize = new IntGroup("emi.sidebar.size.", com.rewindmc.retroemi.shim.java.List.of("columns", "rows"), new ArrayList<>(Arrays.asList(9, 9)));
+	public static IntGroup bottomSidebarSize = new IntGroup(
+		"emi.sidebar.size.",
+		com.rewindmc.retroemi.shim.java.List.of("columns", "rows"),
+		new ArrayList<>(Arrays.asList(9, 9))
+	);
 
 	@Comment("How much space to maintain between the bottom sidebar and obstructions, in pixels")
 	@ConfigValue("ui.bottom-sidebar-margins")
@@ -314,7 +348,7 @@ public class EmiConfig {
 	@ConfigValue("binds.toggle-visibility")
 	public static EmiBind toggleVisibility = new EmiBind("key.emi.toggle_visibility", EmiInput.CONTROL_MASK, GLFW.GLFW_KEY_O);
 
-	@Comment("Focuse the search bar.")
+	@Comment("Focuses the search bar.")
 	@ConfigValue("binds.focus-search")
 	public static EmiBind focusSearch = new EmiBind("key.emi.focus_search", EmiInput.CONTROL_MASK, GLFW.GLFW_KEY_F);
 
@@ -324,13 +358,15 @@ public class EmiConfig {
 
 	@Comment("Display the recipes for creating a stack.")
 	@ConfigValue("binds.view-recipes")
-	public static EmiBind viewRecipes = new EmiBind("key.emi.view_recipes", new EmiBind.ModifiedKey(InputUtil.Type.KEYSYM.createFromCode(GLFW.GLFW_KEY_R), 0),
-			new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
+	public static EmiBind viewRecipes = new EmiBind("key.emi.view_recipes",
+		new EmiBind.ModifiedKey(InputUtil.Type.KEYSYM.createFromCode(GLFW.GLFW_KEY_R), 0),
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
 
 	@Comment("Display the recipes that can be created using a stack.")
 	@ConfigValue("binds.view-uses")
-	public static EmiBind viewUses = new EmiBind("key.emi.view_uses", new EmiBind.ModifiedKey(InputUtil.Type.KEYSYM.createFromCode(GLFW.GLFW_KEY_U), 0),
-			new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(1), 0));
+	public static EmiBind viewUses = new EmiBind("key.emi.view_uses",
+		new EmiBind.ModifiedKey(InputUtil.Type.KEYSYM.createFromCode(GLFW.GLFW_KEY_U), 0),
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(1), 0));
 
 	@Comment("Favorite the item to display on the side of the screen opposite of recipies for quick access.")
 	@ConfigValue("binds.favorite")
@@ -338,8 +374,8 @@ public class EmiConfig {
 
 	@Comment("Set the default recipe for a given stack in the output of a recipe to that recipe.")
 	@ConfigValue("binds.default-stack")
-	public static EmiBind defaultStack =
-			new EmiBind("key.emi.default_stack", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
+	public static EmiBind defaultStack = new EmiBind("key.emi.default_stack",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
 
 	@Comment("Display the recipe tree for a given stack.")
 	@ConfigValue("binds.view-stack-tree")
@@ -358,26 +394,33 @@ public class EmiConfig {
 	public static EmiBind forward = new EmiBind("key.emi.forward", InputUtil.UNKNOWN_KEY.getCode());
 
 	@ConfigGroup("binds.crafts")
-	@Comment("When on a stack with an associated recipe:\n" + "Move ingredients for a single result.")
+	@Comment("When on a stack with an associated recipe:\n"
+		+ "Move ingredients for a single result.")
 	@ConfigValue("binds.craft-one")
-	public static EmiBind craftOne = new EmiBind("key.emi.craft_one", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
+	public static EmiBind craftOne = new EmiBind("key.emi.craft_one",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
 
-	@Comment("When on a stack with an associated recipe:\n" + "Move ingredients for as many results as possible.")
+	@Comment("When on a stack with an associated recipe:\n"
+		+ "Move ingredients for as many results as possible.")
 	@ConfigValue("binds.craft-all")
-	public static EmiBind craftAll = new EmiBind("key.emi.craft_all", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.SHIFT_MASK));
+	public static EmiBind craftAll = new EmiBind("key.emi.craft_all",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.SHIFT_MASK));
 
-	@Comment("When on a stack with an associated recipe:\n" + "Move ingredients for a single result and put in inventory if possible.")
+	@Comment("When on a stack with an associated recipe:\n"
+		+ "Move ingredients for a single result and put in inventory if possible.")
 	@ConfigValue("binds.craft-one-to-inventory")
 	public static EmiBind craftOneToInventory = new EmiBind("key.emi.craft_one_to_inventory", InputUtil.UNKNOWN_KEY.getCode());
 
-	@Comment("When on a stack with an associated recipe:\n" + "Move ingredients for as many results as possible and put in inventory if possible.")
+	@Comment("When on a stack with an associated recipe:\n"
+		+ "Move ingredients for as many results as possible and put in inventory if possible.")
 	@ConfigValue("binds.craft-all-to-inventory")
 	public static EmiBind craftAllToInventory = new EmiBind("key.emi.craft_all_to_inventory", InputUtil.UNKNOWN_KEY.getCode());
 
-	@Comment("When on a stack with an associated recipe:\n" + "Move ingredients for a single result and put in cursor if possible.")
+	@Comment("When on a stack with an associated recipe:\n"
+		+ "Move ingredients for a single result and put in cursor if possible.")
 	@ConfigValue("binds.craft-one-to-cursor")
-	public static EmiBind craftOneToCursor =
-			new EmiBind("key.emi.craft_one_to_cursor", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
+	public static EmiBind craftOneToCursor = new EmiBind("key.emi.craft_one_to_cursor",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
 
 	@ConfigGroupEnd
 	@Comment("Display the recipe that will be used to craft on a stack with no recipe context.")
@@ -387,18 +430,18 @@ public class EmiConfig {
 	@ConfigGroup("binds.cheats")
 	@Comment("Cheat in one of an item into the inventory.")
 	@ConfigValue("binds.cheat-one-to-inventory")
-	public static EmiBind cheatOneToInventory =
-			new EmiBind("key.emi.cheat_one_to_inventory", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(1), EmiInput.CONTROL_MASK));
+	public static EmiBind cheatOneToInventory = new EmiBind("key.emi.cheat_one_to_inventory",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(1), EmiInput.CONTROL_MASK));
 
 	@Comment("Cheat in a stack of an item into the inventory.")
 	@ConfigValue("binds.cheat-stack-to-inventory")
-	public static EmiBind cheatStackToInventory =
-			new EmiBind("key.emi.cheat_stack_to_inventory", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
+	public static EmiBind cheatStackToInventory = new EmiBind("key.emi.cheat_stack_to_inventory",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
 
 	@Comment("Cheat in one of an item into the cursor.")
 	@ConfigValue("binds.cheat-one-to-cursor")
-	public static EmiBind cheatOneToCursor =
-			new EmiBind("key.emi.cheat_one_to_cursor", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(2), EmiInput.CONTROL_MASK));
+	public static EmiBind cheatOneToCursor = new EmiBind("key.emi.cheat_one_to_cursor",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(2), EmiInput.CONTROL_MASK));
 
 	@Comment("Cheat in a stack of an item into the cursor.")
 	@ConfigValue("binds.cheat-stack-to-cursor")
@@ -407,7 +450,8 @@ public class EmiConfig {
 	@ConfigGroupEnd
 	@Comment("Delete the stack in the cursor when hovering the index")
 	@ConfigValue("binds.delete-cursor-stack")
-	public static EmiBind deleteCursorStack = new EmiBind("key.emi.delete_cursor_stack", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
+	public static EmiBind deleteCursorStack = new EmiBind("key.emi.delete_cursor_stack",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), 0));
 
 	@Comment("Copies the hovered recipe's ID to the clipboard")
 	@ConfigValue("binds.copy-recipe-id")
@@ -415,12 +459,13 @@ public class EmiConfig {
 
 	@Comment("In edit mode, hide the hovered stack")
 	@ConfigValue("binds.hide-stack")
-	public static EmiBind hideStack = new EmiBind("key.emi.hide_stack", new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
+	public static EmiBind hideStack = new EmiBind("key.emi.hide_stack",
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK));
 
 	@Comment("In edit mode, hide stacks with the hovered stack's id")
 	@ConfigValue("binds.hide-stack-by-id")
 	public static EmiBind hideStackById = new EmiBind("key.emi.hide_stack_by_id",
-			new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK | EmiInput.SHIFT_MASK));
+		new EmiBind.ModifiedKey(InputUtil.Type.MOUSE.createFromCode(0), EmiInput.CONTROL_MASK | EmiInput.SHIFT_MASK));
 
 	// Dev
 	@Comment("Whether development functions should be enabled. Not recommended for general play.")
@@ -443,9 +488,9 @@ public class EmiConfig {
 	@ConfigValue("dev.show-recipe-ids")
 	public static boolean showRecipeIds = false;
 
-    @Comment("Whether to display additional widgets added to recipes from other mods.\nThese are typically developer facing and compatibility related, and not useful for players.")
-    @ConfigValue("dev.show-recipe-decorators")
-    public static boolean showRecipeDecorators = EmiAgnos.isDevelopmentEnvironment();
+	@Comment("Whether to display additional widgets added to recipes from other mods.\nThese are typically developer facing and compatibility related, and not useful for players.")
+	@ConfigValue("dev.show-recipe-decorators")
+	public static boolean showRecipeDecorators = EmiAgnos.isDevelopmentEnvironment();
 
 	@Comment("Whether stacks in the index should display a highlight if they have a recipe default.")
 	@ConfigValue("dev.highlight-defaulted")
@@ -551,11 +596,11 @@ public class EmiConfig {
 				String commentText = "";
 				if (comment != null) {
 					commentText += "\t/**\n";
-//					for (String line : RetroEMI.wrapLines(comment.value(), 80)) {
-//						commentText += "\t * ";
-//						commentText += line;
-//						commentText += "\n";
-//					}
+					for (String line : RetroEMI.wrapLines(comment.value(), 80)) {
+						commentText += "\t * ";
+						commentText += line;
+						commentText += "\n";
+					}
 					commentText += "\t */\n";
 				}
 				String text = commentText;
@@ -572,7 +617,8 @@ public class EmiConfig {
 			String group = parts[0];
 			String key = parts[1];
 			for (String value : entry.getValue()) {
-				unparsed.computeIfAbsent(group, g -> Lists.newArrayList()).add("\t/** unparsed */\n\t" + key + ": " + value + ";\n");
+				unparsed.computeIfAbsent(group, g -> Lists.newArrayList()).add("\t/** unparsed */\n\t" + key + ": "
+					+ value + ";\n");
 			}
 		}
 		String ret = "";
@@ -621,11 +667,9 @@ public class EmiConfig {
 		Setter setter = SETTERS.get(type);
 		if (setter != null) {
 			setter.setValue(css, annot, field);
-		}
-		else if (ConfigEnum.class.isAssignableFrom(type)) {
+		} else if (ConfigEnum.class.isAssignableFrom(type)) {
 			SETTERS.get(ConfigEnum.class).setValue(css, annot, field);
-		}
-		else {
+		} else {
 			throw new RuntimeException("[emi] Unknown parsing type: " + type);
 		}
 	}
@@ -638,11 +682,9 @@ public class EmiConfig {
 			for (String line : ((MultiWriter<Object>) MULTI_WRITERS.get(type)).writeValue(field.get(null))) {
 				text += "\t" + key + ": " + line + ";\n";
 			}
-		}
-		else if (WRITERS.containsKey(type)) {
+		} else if (WRITERS.containsKey(type)) {
 			text += "\t" + key + ": " + ((Writer<Object>) WRITERS.get(type)).writeValue(field.get(null)) + ";\n";
-		}
-		else if (ConfigEnum.class.isAssignableFrom(type)) {
+		} else if (ConfigEnum.class.isAssignableFrom(type)) {
 			text += "\t" + key + ": " + ((Writer<Object>) WRITERS.get(ConfigEnum.class)).writeValue(field.get(null)) + ";\n";
 		}
 		return text;
@@ -666,75 +708,82 @@ public class EmiConfig {
 		defineType(boolean.class, (css, annot, field) -> field.setBoolean(null, css.getBoolean(annot).get()));
 		defineType(int.class, (css, annot, field) -> field.setInt(null, css.getInt(annot).get()));
 		defineType(double.class, (css, annot, field) -> field.setDouble(null, css.getDouble(annot).get()));
-		defineType(String.class, (css, annot, field) -> {
-			String s = css.get(annot).get();
-            s = s.substring(1, s.length() - 1);
-			field.set(null, s);
-		}, (String field) -> "\"" + field + "\"");
-		defineMultiType(EmiBind.class, (css, annot, field) -> {
-			List<String> strings = Lists.newArrayList(css.getAll(annot));
-			for (int i = 0; i < strings.size(); i++) {
-				String s = strings.get(i);
-				strings.set(i, s.substring(1, s.length() - 1));
-			}
-			((EmiBind) field.get(null)).setKey(strings);
-		}, (EmiBind field) -> {
-			List<String> list = Lists.newArrayList();
-			for (EmiBind.ModifiedKey key : field.boundKeys) {
-				if (!key.isUnbound() || field.boundKeys.size() == 1) {
-					list.add("\"" + key.toName() + "\"");
+		defineType(String.class,
+			(css, annot, field) -> {
+				String s = css.get(annot).get();
+				s = s.substring(1, s.length() - 1);
+				field.set(null, s);
+			},
+			(String field) -> "\"" + field + "\"");
+		defineMultiType(EmiBind.class,
+			(css, annot, field) -> {
+				List<String> strings = Lists.newArrayList(css.getAll(annot));
+				for (int i = 0; i < strings.size(); i++) {
+					String s = strings.get(i);
+					strings.set(i, s.substring(1, s.length() - 1));
 				}
-			}
-			return list;
-		});
-		defineType(ScreenAlign.class, (css, annot, field) -> {
-			String[] parts = css.get(annot).get().split(",");
-			if (parts.length == 2) {
-				((ScreenAlign) field.get(null)).horizontal = ScreenAlign.Horizontal.fromName(parts[0].trim());
-				((ScreenAlign) field.get(null)).vertical = ScreenAlign.Vertical.fromName(parts[1].trim());
-			}
-			else {
-				((ScreenAlign) field.get(null)).horizontal = ScreenAlign.Horizontal.CENTER;
-				((ScreenAlign) field.get(null)).vertical = ScreenAlign.Vertical.CENTER;
-			}
-		}, (ScreenAlign field) -> field.horizontal.getName() + ", " + field.vertical.getName());
-		defineType(SidebarPages.class, (css, annot, field) -> {
-			String[] parts = css.get(annot).get().split(",");
-			SidebarPages pages = (SidebarPages) field.get(null);
-			pages.pages.clear();
-			for (String s : parts) {
-				pages.pages.add(new SidebarPages.SidebarPage(SidebarType.fromName(s.trim().toLowerCase())));
-			}
-			pages.unique();
-		}, (SidebarPages field) -> {
-			if (field.pages.isEmpty()) {
-				return "none";
-			}
-			else {
-				return field.pages.stream().map(p -> p.type.getName()).collect(Collectors.joining(", "));
-			}
-		});
-		defineType(SidebarSubpanels.class, (css, annot, field) -> {
-			String[] parts = css.get(annot).get().split(",");
-			SidebarSubpanels subpanels = (SidebarSubpanels) field.get(null);
-			subpanels.subpanels.clear();
-			for (String s : parts) {
-				String[] subparts = s.trim().split("\\s+");
-				SidebarType type = SidebarType.fromName(subparts[0].toLowerCase());
-				int rows = subparts.length > 1 ? Integer.parseInt(subparts[1]) : 1;
-				if (rows >= 1) {
-					subpanels.subpanels.add(new SidebarSubpanels.Subpanel(type, rows));
+				((EmiBind) field.get(null)).setKey(strings);
+			},
+			(EmiBind field) -> {
+				List<String> list = Lists.newArrayList();
+				for (EmiBind.ModifiedKey key : field.boundKeys) {
+					if (!key.isUnbound() || field.boundKeys.size() == 1) {
+						list.add("\"" + key.toName() + "\"");
+					}
 				}
-			}
-			subpanels.unique();
-		}, (SidebarSubpanels field) -> {
-			if (field.subpanels.isEmpty()) {
-				return "none";
-			}
-			else {
-				return field.subpanels.stream().map(p -> p.type.getName() + " " + p.rows).collect(Collectors.joining(", "));
-			}
-		});
+				return list;
+			});
+		defineType(ScreenAlign.class,
+			(css, annot, field) -> {
+				String[] parts = css.get(annot).get().split(",");
+				if (parts.length == 2) {
+					((ScreenAlign) field.get(null)).horizontal = ScreenAlign.Horizontal.fromName(parts[0].trim());
+					((ScreenAlign) field.get(null)).vertical = ScreenAlign.Vertical.fromName(parts[1].trim());
+				} else {
+					((ScreenAlign) field.get(null)).horizontal = ScreenAlign.Horizontal.CENTER;
+					((ScreenAlign) field.get(null)).vertical = ScreenAlign.Vertical.CENTER;
+				}
+			},
+			(ScreenAlign field) -> field.horizontal.getName() + ", " + field.vertical.getName());
+		defineType(SidebarPages.class,
+			(css, annot, field) -> {
+				String[] parts = css.get(annot).get().split(",");
+				SidebarPages pages = (SidebarPages) field.get(null);
+				pages.pages.clear();
+				for (String s : parts) {
+					pages.pages.add(new SidebarPages.SidebarPage(SidebarType.fromName(s.trim().toLowerCase())));
+				}
+				pages.unique();
+			},
+			(SidebarPages field) -> {
+				if (field.pages.isEmpty()) {
+					return "none";
+				} else {
+					return field.pages.stream().map(p -> p.type.getName()).collect(Collectors.joining(", "));
+				}
+			});
+		defineType(SidebarSubpanels.class,
+			(css, annot, field) -> {
+				String[] parts = css.get(annot).get().split(",");
+				SidebarSubpanels subpanels = (SidebarSubpanels) field.get(null);
+				subpanels.subpanels.clear();
+				for (String s : parts) {
+					String[] subparts = s.trim().split("\\s+");
+					SidebarType type = SidebarType.fromName(subparts[0].toLowerCase());
+					int rows = subparts.length > 1 ? Integer.parseInt(subparts[1]) : 1;
+					if (rows >= 1) {
+						subpanels.subpanels.add(new SidebarSubpanels.Subpanel(type, rows));
+					}
+				}
+				subpanels.unique();
+			},
+			(SidebarSubpanels field) -> {
+				if (field.subpanels.isEmpty()) {
+					return "none";
+				} else {
+					return field.subpanels.stream().map(p -> p.type.getName() + " " + p.rows).collect(Collectors.joining(", "));
+				}
+			});
 		defineType(IntGroup.class, (css, annot, field) -> {
 			((IntGroup) field.get(null)).deserialize(css.get(annot).get());
 		}, (IntGroup group) -> group.serialize());
@@ -759,7 +808,7 @@ public class EmiConfig {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			EmiLog.error("Error reflecting config", e);
 		}
 		DEFAULT_CONFIG = getSavedConfig();
 	}

@@ -4,7 +4,11 @@ import dev.emi.emi.EmiPort;
 import net.minecraft.text.Text;
 
 public enum SidebarSide implements ConfigEnum {
-	NONE("none"), LEFT("left"), RIGHT("right"), TOP("top"), BOTTOM("bottom"),
+	NONE("none"),
+	LEFT("left"),
+	RIGHT("right"),
+	TOP("top"),
+	BOTTOM("bottom"),
 	;
 
 	private final String name;

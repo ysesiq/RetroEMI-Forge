@@ -190,7 +190,7 @@ public final class EmiPort {
 
 	public static void registerReloadListeners(IReloadableResourceManager manager) {
 		manager.registerReloadListener(new RecipeDefaultLoader());
-		manager.registerReloadListener(new EmiRemoveFromIndex());
+//		manager.registerReloadListener(new EmiRemoveFromIndex());
 		manager.registerReloadListener(new EmiTagExclusionsLoader());
 	}
 

@@ -1,6 +1,7 @@
 package net.xylose.emi;
 
 import dev.emi.emi.EmiPort;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.RegistryNamespaced;
 
@@ -32,5 +33,9 @@ public class REMIForge {
             }
         }
         return itemList;
+    }
+
+    public static int getScaledHeight(Minecraft client) {
+        return client.displayHeight / EmiPort.getGuiScale(client);
     }
 }

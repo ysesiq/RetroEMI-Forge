@@ -1,23 +1,24 @@
 package dev.emi.emi.recipe.special;
 
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
 import net.minecraft.init.Items;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.DyeItem;
 import net.minecraft.util.DyeColor;
-
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
 	private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(DyeItem::byColor).collect(Collectors.toList());
@@ -29,9 +30,11 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
 	private static final List<Item> EFFECTS = com.rewindmc.retroemi.shim.java.List.of(Items.diamond, Items.glowstone_dust);
 
 	public EmiFireworkStarRecipe(ResourceLocation id) {
-		super(com.rewindmc.retroemi.shim.java.List.of(EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
+		super(com.rewindmc.retroemi.shim.java.List.of(
+				EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
 						EmiIngredient.of(SHAPES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
-						EmiIngredient.of(EFFECTS.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())), EmiStack.of(Items.gunpowder)),
+						EmiIngredient.of(EFFECTS.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
+						EmiStack.of(Items.gunpowder)),
 				EmiStack.of(Items.firework_charge), id);
 	}
 
@@ -39,8 +42,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
 	public SlotWidget getInputWidget(int slot, int x, int y) {
 		if (slot == 0) {
 			return new SlotWidget(EmiStack.of(Items.gunpowder), x, y);
-		}
-		else {
+		} else {
 			final int s = slot - 1;
 			return new GeneratedSlotWidget(r -> {
 				List<ItemStack> items = getItems(r);
@@ -71,8 +73,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
 		int amount = random.nextInt(4);
 		if (amount < 2) {
 			items.add(new ItemStack(EFFECTS.get(amount)));
-		}
-		else if (amount == 2) {
+		} else if (amount == 2) {
 			items.add(new ItemStack(EFFECTS.get(0)));
 			items.add(new ItemStack(EFFECTS.get(1)));
 		}

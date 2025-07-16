@@ -4,7 +4,9 @@ import dev.emi.emi.EmiPort;
 import net.minecraft.text.Text;
 
 public enum SidebarTheme implements ConfigEnum {
-	TRANSPARENT("transparent", 0, 0), VANILLA("vanilla", 9, 9), MODERN("modern", 0, 0),
+	TRANSPARENT("transparent", 0, 0),
+	VANILLA("vanilla", 9, 9),
+	MODERN("modern", 0, 0),
 	;
 
 	private final String name;

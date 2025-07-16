@@ -1,42 +1,32 @@
 package dev.emi.emi.recipe.special;
 
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.DyeableItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiArmorDyeRecipe extends EmiPatternCraftingRecipe {
-	public static final List<Item> DYEABLE_ITEMS =
-    ((Set<String>) Item.itemRegistry.getKeys())
-        .stream()
-            .map(name -> (Item) Item.itemRegistry.getObject(name))
-        .filter(i -> i != null)
-        .filter(i -> i instanceof ItemArmor a && a.getArmorMaterial() == ItemArmor.ArmorMaterial.CLOTH)
-        .collect(Collectors.toList());
-    private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(c -> DyeItem.byColor(c)).collect(java.util.stream.Collectors.toList());
-
+	private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(c -> DyeItem.byColor(c)).collect(Collectors.toList());
 	private final Item armor;
 
 	public EmiArmorDyeRecipe(Item armor, ResourceLocation id) {
 		super(com.rewindmc.retroemi.shim.java.List.of(
-				EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
-				EmiStack.of(armor)), EmiStack.of(armor), id);
+			EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
+			EmiStack.of(armor)), EmiStack.of(armor), id);
 		this.armor = armor;
 	}
 
@@ -44,8 +34,7 @@ public class EmiArmorDyeRecipe extends EmiPatternCraftingRecipe {
 	public SlotWidget getInputWidget(int slot, int x, int y) {
 		if (slot == 0) {
 			return new SlotWidget(EmiStack.of(armor), x, y);
-		}
-		else {
+		} else {
 			final int s = slot - 1;
 			return new GeneratedSlotWidget(r -> {
 				List<DyeItem> dyes = getDyes(r);

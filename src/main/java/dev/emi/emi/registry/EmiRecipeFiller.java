@@ -1,11 +1,15 @@
 package dev.emi.emi.registry;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import dev.emi.emi.handler.CoercedRecipeHandler;
-import dev.emi.emi.runtime.EmiSidebars;
+
 import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.EmiFillAction;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -15,7 +19,12 @@ import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.handler.CoercedRecipeHandler;
 import dev.emi.emi.mixin.accessor.SlotCraftingAccessor;
+import dev.emi.emi.runtime.EmiLog;
+import dev.emi.emi.runtime.EmiSidebars;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -28,13 +37,6 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import com.rewindmc.retroemi.ItemStacks;
 import com.rewindmc.retroemi.RetroEMI;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 public class EmiRecipeFiller {
 	public static Map<Class<? extends Container>, List<EmiRecipeHandler<?>>> handlers = Maps.newHashMap();
@@ -81,7 +83,7 @@ public class EmiRecipeFiller {
 			if ((type != null || screenHandler instanceof ContainerPlayer) && handlers.containsKey(type)) {
 				return (List<EmiRecipeHandler<T>>) (List<?>) handlers.get(type);
 			}
-			for (Slot slot : (List<Slot>)screen.inventorySlots.inventorySlots) {
+			for (Slot slot : (List<Slot>) screen.inventorySlots.inventorySlots) {
 				if (slot instanceof SlotCrafting crs) {
 					var inv = ((SlotCraftingAccessor) crs).getCraftMatrix();
 					if (inv != null && inv.getSizeInventory() > 0) {
@@ -111,21 +113,21 @@ public class EmiRecipeFiller {
 		return ret;
 	}
 
-	public static <T extends Container> boolean performFill(EmiRecipe recipe, GuiContainer screen, EmiFillAction action, int amount) {
+	public static <T extends Container> boolean performFill(EmiRecipe recipe, GuiContainer screen,
+			EmiCraftContext.Type type, EmiCraftContext.Destination destination, int amount) {
 		EmiRecipeHandler<T> handler = getFirstValidHandler(recipe, screen);
 		if (handler != null && handler.supportsRecipe(recipe)) {
 			EmiPlayerInventory inv = handler.getInventory(screen);
-			EmiCraftContext<T> context = new EmiCraftContext<T>(screen, inv, EmiCraftContext.Type.FILL_BUTTON, switch (action) {
-				case FILL -> EmiCraftContext.Destination.NONE;
-				case QUICK_MOVE -> EmiCraftContext.Destination.INVENTORY;
-				case CURSOR -> EmiCraftContext.Destination.CURSOR;
-			}, amount);
+			EmiCraftContext<T> context = new EmiCraftContext<T>(screen, inv, type, destination, amount);
 			if (handler.canCraft(recipe, context)) {
 				EmiSidebars.craft(recipe);
-				return handler.craft(recipe, context);
+				boolean crafted = handler.craft(recipe, context);
+				if (crafted) {
+					Minecraft.getMinecraft().displayGuiScreen(screen);
+				}
+				return crafted;
 			}
 		}
-
 		return false;
 	}
 
@@ -177,10 +179,9 @@ public class EmiRecipeFiller {
 					if (biggest == null || i >= craftingSlots.size()) {
 						return null;
 					}
-
 					Slot slot = craftingSlots.get(i);
 					if (recipe instanceof EmiCraftingRecipe craft && craft.shapeless && i > 1 && screen instanceof GuiInventory) {
-						slot = craftingSlots.get(i+1);
+						slot = craftingSlots.get(i + 1);
 					}
 					if (slot == null) {
 						return null;
@@ -235,7 +236,7 @@ public class EmiRecipeFiller {
 				return desired;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			EmiLog.error("Error collecting stacks", e);
 		}
 		return null;
 	}
@@ -312,12 +313,11 @@ public class EmiRecipeFiller {
 				}
 				Slot crafting = slots.get(i);
 				if (recipe instanceof EmiCraftingRecipe craf && craf.shapeless && i > 1 && screen instanceof GuiInventory) {
-					crafting = slots.get(i+1);
+					crafting = slots.get(i + 1);
 				}
 				if (crafting == null) {
 					return false;
 				}
-
 				int needed = stack.stackSize;
 				for (Slot input : inputs) {
 					if (slots.contains(input) || input.getStack() == null) {

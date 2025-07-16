@@ -1,14 +1,15 @@
 package dev.emi.emi.registry;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import dev.emi.emi.api.EmiDragDropHandler;
-import dev.emi.emi.api.stack.EmiIngredient;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.DrawContext;
-
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import dev.emi.emi.api.EmiDragDropHandler;
+import dev.emi.emi.api.stack.EmiIngredient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiScreen;
 
 public class EmiDragDropHandlers {
 	public static Map<Class<?>, List<EmiDragDropHandler<?>>> fromClass = Maps.newHashMap();

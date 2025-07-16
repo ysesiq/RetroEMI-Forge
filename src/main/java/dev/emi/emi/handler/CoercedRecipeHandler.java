@@ -1,6 +1,9 @@
 package dev.emi.emi.handler;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
@@ -10,8 +13,6 @@ import dev.emi.emi.mixin.accessor.SlotAccessor;
 import dev.emi.emi.mixin.accessor.SlotCraftingAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.*;
-
-import java.util.List;
 
 public class CoercedRecipeHandler<T extends Container> implements StandardRecipeHandler<T> {
 	private SlotCrafting output;

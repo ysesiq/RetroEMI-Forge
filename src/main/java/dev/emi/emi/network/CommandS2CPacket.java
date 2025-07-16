@@ -1,10 +1,10 @@
 package dev.emi.emi.network;
 
-import dev.emi.emi.bom.BoM;
-import dev.emi.emi.registry.EmiCommands;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.bom.BoM;
+import dev.emi.emi.registry.EmiCommands;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.network.PacketByteBuf;
@@ -18,15 +18,13 @@ public class CommandS2CPacket implements EmiPacket {
 		this.id = id;
 	}
 
-
 	public CommandS2CPacket(PacketByteBuf buf) {
 		type = buf.readByte();
 		if (type == EmiCommands.VIEW_RECIPE || type == EmiCommands.TREE_GOAL || type == EmiCommands.TREE_RESOLUTION) {
 			String path = buf.readString();
 			String domain = buf.readString();
 			id = new ResourceLocation(path, domain);
-		}
-		else {
+		} else {
 			id = null;
 		}
 	}
@@ -47,17 +45,14 @@ public class CommandS2CPacket implements EmiPacket {
 			if (recipe != null) {
 				EmiApi.displayRecipe(recipe);
 			}
-		}
-		else if (type == EmiCommands.VIEW_TREE) {
+		} else if (type == EmiCommands.VIEW_TREE) {
 			EmiApi.viewRecipeTree();
-		}
-		else if (type == EmiCommands.TREE_GOAL) {
+		} else if (type == EmiCommands.TREE_GOAL) {
 			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 			if (recipe != null) {
 				BoM.setGoal(recipe);
 			}
-		}
-		else if (type == EmiCommands.TREE_RESOLUTION) {
+		} else if (type == EmiCommands.TREE_RESOLUTION) {
 			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 			if (recipe != null && BoM.tree != null) {
 				for (EmiStack stack : recipe.getOutputs()) {

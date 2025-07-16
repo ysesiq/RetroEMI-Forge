@@ -1,5 +1,11 @@
 package dev.emi.emi.registry;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.network.CommandS2CPacket;
 import dev.emi.emi.network.EmiNetwork;
 import net.minecraft.command.CommandBase;
@@ -7,9 +13,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class EmiCommands extends CommandBase {
 	public static final byte VIEW_RECIPE = 0x01;
@@ -40,33 +43,27 @@ public class EmiCommands extends CommandBase {
 						ResourceLocation id = new ResourceLocation(userInputStrings[2]);
 						send(player, VIEW_RECIPE, id);
 					}
-				}
-				else if (userInputStrings[1].equals("tree")) {
+				} else if (userInputStrings[1].equals("tree")) {
 					send(player, VIEW_TREE, null);
 				}
-			}
-			else if (userInputStrings[0].equals("tree")) {
+			} else if (userInputStrings[0].equals("tree")) {
 				if (userInputStrings[1].equals("goal")) {
 					if (userInputStrings[2].isEmpty()) {
 						throw new WrongUsageException("commands.emi.id", new Object[0]);
-					}
-					else {
+					} else {
 						ResourceLocation id = new ResourceLocation(userInputStrings[2]);
 						send(player, TREE_GOAL, id);
 					}
-				}
-				else if (userInputStrings[1].equals("resolution")) {
+				} else if (userInputStrings[1].equals("resolution")) {
 					if (userInputStrings[2].isEmpty()) {
 						throw new WrongUsageException("commands.emi.id", new Object[0]);
-					}
-					else {
+					} else {
 						ResourceLocation id = new ResourceLocation(userInputStrings[2]);
 						send(player, TREE_RESOLUTION, id);
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			throw new WrongUsageException("commands.emi.usage", new Object[0]);
 		}
 	}
@@ -84,15 +81,14 @@ public class EmiCommands extends CommandBase {
 		if (userInputStrings.length == 2) {
 			if (userInputStrings[0].equals("view")) {
 				return getListOfStringsMatchingLastWord(userInputStrings, "recipe", "tree");
-			}
-			else if (userInputStrings[0].equals("tree")) {
+			} else if (userInputStrings[0].equals("tree")) {
 				return getListOfStringsMatchingLastWord(userInputStrings, "goal", "resolution");
 			}
 		}
 		if (userInputStrings.length == 3) {
 			if (!userInputStrings[1].equals("tree")) {
-				//List<EmiRecipe> recipeList = EmiApi.getRecipeManager().getRecipes();
-				//return getListOfStringsMatchingLastWord(userInputStrings, "");
+				List<EmiRecipe> recipeList = EmiApi.getRecipeManager().getRecipes();
+				return getListOfStringsMatchingLastWord(userInputStrings, "");
 			}
 		}
 		return null;

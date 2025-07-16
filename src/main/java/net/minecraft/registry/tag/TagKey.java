@@ -1,4 +1,4 @@
-package net.minecraft.tag;
+package net.minecraft.registry.tag;
 
 import com.google.common.collect.BiMap;
 import cpw.mods.fml.common.Loader;

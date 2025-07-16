@@ -12,14 +12,12 @@ record ChessMove(int start, int end, int type) {
 			ChessMove m = COMPUTED[i];
 			if (m != null) {
 				return m;
-			}
-			else {
+			} else {
 				m = new ChessMove(start, end, type);
 				COMPUTED[i] = m;
 				return m;
 			}
-		}
-		else {
+		} else {
 			return new ChessMove(start, end, type);
 		}
 	}

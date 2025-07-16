@@ -1,6 +1,13 @@
 package dev.emi.emi.network;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.runtime.EmiLog;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -10,11 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
 import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.network.PacketByteBuf;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class FillRecipeC2SPacket implements EmiPacket {
 	private final int syncId;
@@ -44,8 +46,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
 		}
 		if (buf.readBoolean()) {
 			output = buf.readVarInt();
-		}
-		else {
+		} else {
 			output = -1;
 		}
 		int size = buf.readVarInt();
@@ -67,8 +68,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
 		if (output != -1) {
 			buf.writeBoolean(true);
 			buf.writeVarInt(output);
-		}
-		else {
+		} else {
 			buf.writeBoolean(false);
 		}
 		buf.writeVarInt(stacks.size());
@@ -101,8 +101,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
 		for (int i : this.crafting) {
 			if (i >= 0 && i < handler.inventorySlots.size()) {
 				crafting.add(handler.getSlot(i));
-			}
-			else {
+			} else {
 				crafting.add(null);
 			}
 		}
@@ -133,13 +132,11 @@ public class FillRecipeC2SPacket implements EmiPacket {
 							RetroEMI.offerOrDrop(player, stack);
 						}
 						return;
-					}
-					else {
+					} else {
 						Slot s = crafting.get(i);
 						if (s != null && s.isItemValid(stack) && stack.stackSize <= s.getSlotStackLimit()) {
 							s.putStack(stack);
-						}
-						else {
+						} else {
 							RetroEMI.offerOrDrop(player, stack);
 						}
 					}
@@ -147,13 +144,11 @@ public class FillRecipeC2SPacket implements EmiPacket {
 				if (output != null) {
 					if (action == 1) {
 						handler.slotClick(output.slotNumber, 0, 0, player);
-					}
-					else if (action == 2) {
+					} else if (action == 2) {
 						handler.slotClick(output.slotNumber, 0, 1, player);
 					}
 				}
-			}
-			finally {
+			} finally {
 				for (ItemStack stack : rubble) {
 					RetroEMI.offerOrDrop(player, stack);
 				}
@@ -214,8 +209,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
 					grabbed += r.stackSize;
 					rubble.remove(i);
 					i--;
-				}
-				else {
+				} else {
 					grabbed = amount;
 					r.stackSize = (r.stackSize - wanted);
 				}
@@ -234,8 +228,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
 				if (st.stackSize <= wanted) {
 					grabbed += st.stackSize;
 					s.putStack(ItemStacks.EMPTY);
-				}
-				else {
+				} else {
 					grabbed = amount;
 					st.stackSize = (st.stackSize - wanted);
 				}

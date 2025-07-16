@@ -69,19 +69,4 @@ public class EmiRecipeSorting {
 		}
 		return Integer.compare(a.size(), b.size());
 	}
-
-	private static int getIndex(EmiStack stack) {
-		return EmiStackList.keyIndices.getOrDefault(stack, Integer.MAX_VALUE);
-	}
-
-	private static <T extends EmiIngredient> List<T> filterEmpty(List<T> list) {
-		List<T> stacks = Lists.newArrayList();
-		for (int i = 0; i < list.size(); i++) {
-			T stack = list.get(i);
-			if (!stack.isEmpty()) {
-				stacks.add(stack);
-			}
-		}
-		return stacks;
-	}
 }

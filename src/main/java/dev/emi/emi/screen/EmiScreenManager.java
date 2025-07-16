@@ -1,41 +1,84 @@
 package dev.emi.emi.screen;
 
+import java.awt.*;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import cpw.mods.fml.common.FMLCommonHandler;
+import com.rewindmc.retroemi.ItemStacks;
+import com.rewindmc.retroemi.RetroEMI;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiPlayerInventory;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.handler.EmiCraftContext;
+import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
+import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.render.EmiTooltipComponents;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.EmiStackInteraction;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.chess.EmiChess;
-import dev.emi.emi.config.*;
+import dev.emi.emi.config.EmiConfig;
+import dev.emi.emi.config.HeaderType;
+import dev.emi.emi.config.HelpLevel;
+import dev.emi.emi.config.Margins;
+import dev.emi.emi.config.ScreenAlign;
+import dev.emi.emi.config.ScreenAlign.Horizontal;
+import dev.emi.emi.config.SidebarPages;
+import dev.emi.emi.config.SidebarSettings;
+import dev.emi.emi.config.SidebarSide;
+import dev.emi.emi.config.SidebarSubpanels;
+import dev.emi.emi.config.SidebarTheme;
+import dev.emi.emi.config.SidebarType;
 import dev.emi.emi.input.EmiBind;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.mixin.accessor.GuiTextFieldAccessor;
+import dev.emi.emi.mixin.accessor.PlayerControllerMPAccessor;
 import dev.emi.emi.network.CreateItemC2SPacket;
 import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.platform.EmiClient;
-import dev.emi.emi.registry.*;
-import dev.emi.emi.runtime.*;
+import dev.emi.emi.registry.EmiDragDropHandlers;
+import dev.emi.emi.registry.EmiExclusionAreas;
+import dev.emi.emi.registry.EmiRecipeFiller;
+import dev.emi.emi.registry.EmiRecipes;
+import dev.emi.emi.registry.EmiStackProviders;
+import dev.emi.emi.runtime.EmiDrawContext;
+import dev.emi.emi.runtime.EmiFavorite;
+import dev.emi.emi.runtime.EmiFavorites;
+import dev.emi.emi.runtime.EmiHidden;
+import dev.emi.emi.runtime.EmiHistory;
+import dev.emi.emi.runtime.EmiLog;
+import dev.emi.emi.runtime.EmiProfiler;
+import dev.emi.emi.runtime.EmiReloadLog;
+import dev.emi.emi.runtime.EmiReloadManager;
+import dev.emi.emi.runtime.EmiSidebars;
 import dev.emi.emi.screen.tooltip.RecipeTooltipComponent;
 import dev.emi.emi.screen.widget.EmiSearchWidget;
 import dev.emi.emi.screen.widget.SidebarButtonWidget;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
 import dev.emi.emi.search.EmiSearch;
-import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.EmiFillAction;
-import dev.emi.emi.api.recipe.EmiPlayerInventory;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.stack.EmiStackInteraction;
 import net.minecraft.item.Item;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.util.Formatting;
-import net.xylose.emi.REMIForge;
-import dev.emi.emi.mixin.accessor.PlayerControllerMPAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,27 +88,13 @@ import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import com.rewindmc.retroemi.ItemStacks;
-import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.lwjgl.opengl.GL11.*;
+import net.xylose.emi.REMIForge;
 
 public class EmiScreenManager {
 	private static final int PADDING_SIZE = 1;
@@ -76,8 +105,7 @@ public class EmiScreenManager {
 	private static int lastWidth, lastHeight;
 	private static List<Bounds> lastExclusion;
 	//	private static StackBatcher.ClaimedCollection batchers = new StackBatcher.ClaimedCollection();
-	private static List<SidebarPanel> panels =
-        com.rewindmc.retroemi.shim.java.List.of(
+	private static List<SidebarPanel> panels =  com.rewindmc.retroemi.shim.java.List.of(
             new SidebarPanel(SidebarSide.LEFT, EmiConfig.leftSidebarPages),
             new SidebarPanel(SidebarSide.RIGHT, EmiConfig.rightSidebarPages),
 			new SidebarPanel(SidebarSide.TOP, EmiConfig.topSidebarPages),
@@ -661,7 +689,7 @@ public class EmiScreenManager {
 
 	private static void renderWidgets(EmiDrawContext context, int mouseX, int mouseY, float delta, EmiScreenBase base) {
 		context.resetColor(); // hijacked screen may leak state
-		glDisable(GL_LIGHTING); // weather rendering leaks state
+		GL11.glDisable(GL11.GL_LIGHTING); // weather rendering leaks state
 		context.push();
 		context.matrices().translate(0, 0, 100);
 		emi.render(context.raw(), mouseX, mouseY, delta);
@@ -1267,26 +1295,22 @@ public class EmiScreenManager {
 		if (!(stack instanceof SidebarEmiStackInteraction)) {
 			return false;
 		}
-		EmiFillAction action = null;
+		EmiCraftContext.Destination destination = null;
 		boolean all = false;
 		if (function.apply(EmiConfig.craftAllToInventory)) {
-			action = EmiFillAction.QUICK_MOVE;
+			destination = EmiCraftContext.Destination.INVENTORY;
 			all = true;
-		}
-		else if (function.apply(EmiConfig.craftOneToInventory)) {
-			action = EmiFillAction.QUICK_MOVE;
-		}
-		else if (function.apply(EmiConfig.craftOneToCursor)) {
-			action = EmiFillAction.CURSOR;
-		}
-		else if (function.apply(EmiConfig.craftAll)) {
-			action = EmiFillAction.FILL;
+		} else if (function.apply(EmiConfig.craftOneToInventory)) {
+			destination = EmiCraftContext.Destination.INVENTORY;
+		} else if (function.apply(EmiConfig.craftOneToCursor)) {
+			destination = EmiCraftContext.Destination.CURSOR;
+		} else if (function.apply(EmiConfig.craftAll)) {
+			destination = EmiCraftContext.Destination.NONE;
 			all = true;
+		} else if (function.apply(EmiConfig.craftOne)) {
+			destination = EmiCraftContext.Destination.NONE;
 		}
-		else if (function.apply(EmiConfig.craftOne)) {
-			action = EmiFillAction.FILL;
-		}
-		if (action != null) {
+		if (destination != null) {
 			EmiRecipe context = contextSupplier.get();
 			if (context != null) {
 				if (EmiConfig.miscraftPrevention) {
@@ -1313,8 +1337,9 @@ public class EmiScreenManager {
 					}
 					amount = Math.min(amount, batches);
 				}
-				if (EmiRecipeFiller.performFill(context, EmiApi.getHandledScreen(), action, amount)) {
-					Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+				if (EmiRecipeFiller.performFill(context, EmiApi.getHandledScreen(), EmiCraftContext.Type.CRAFTABLE, destination, amount)) {
+                    Minecraft.getMinecraft().getSoundHandler()
+                        .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
 					return true;
 				}
 			}

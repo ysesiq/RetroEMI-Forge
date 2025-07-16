@@ -4,7 +4,9 @@ import dev.emi.emi.EmiPort;
 import net.minecraft.text.Text;
 
 public enum HelpLevel implements ConfigEnum {
-	VERBOSE("verbose"), NORMAL("normal"), NONE("none"),
+	VERBOSE("verbose"),
+	NORMAL("normal"),
+	NONE("none"),
 	;
 
 	public final String name;

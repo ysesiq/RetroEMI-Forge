@@ -1,6 +1,11 @@
 package dev.emi.emi.handler;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -14,9 +19,6 @@ import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.Slot;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class InventoryRecipeHandler implements StandardRecipeHandler<ContainerPlayer> {
 	public static final Text TOO_SMALL = EmiPort.translatable("emi.too_small");

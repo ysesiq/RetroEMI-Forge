@@ -1,8 +1,15 @@
 package dev.emi.emi.registry;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiStackProvider;
+import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.EmiStackInteraction;
 import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
@@ -11,9 +18,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import com.rewindmc.retroemi.ItemStacks;
-
-import java.util.List;
-import java.util.Map;
 
 public class EmiStackProviders {
 	public static Map<Class<?>, List<EmiStackProvider<?>>> fromClass = Maps.newHashMap();

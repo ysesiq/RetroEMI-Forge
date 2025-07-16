@@ -8,23 +8,17 @@ import dev.emi.emi.api.stack.*;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.TagExclusions;
 import dev.emi.emi.platform.EmiAgnos;
-import dev.emi.emi.runtime.EmiHidden;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiReloadLog;
 import dev.emi.emi.util.InheritanceMap;
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringTranslate;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
-import org.apache.http.config.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class EmiTags {
@@ -300,34 +294,34 @@ public class EmiTags {
 		return map.values().stream().collect(Collectors.toList());
 	}
 
-    private static<T> TagKey<T> betterTag(TagKey<T> a, TagKey<T> b) {
-        if (hasTranslation(a) != hasTranslation(b)) {
-            return hasTranslation(a) ? a : b;
-        }
-        if (hasCustomModel(a) != hasCustomModel(b)) {
-            return hasCustomModel(a) ? a : b;
-        }
-        String an = a.id().getResourceDomain();
-        String bn = b.id().getResourceDomain();
-        if (!an.equals(bn)) {
-            if (an.equals("minecraft")) {
-                return a;
-            } else if (bn.equals("minecraft")) {
-                return b;
-            } else if (an.equals("c")) {
-                return a;
-            } else if (bn.equals("c")) {
-                return b;
-            } else if (an.equals("fabric")) {
-                return EmiAgnos.isModLoaded("forge") ? b : a;
-            } else if (bn.equals("fabric")) {
-                return EmiAgnos.isModLoaded("forge") ? a : b;
-            } else if (an.equals("forge")) {
-                return EmiAgnos.isModLoaded("forge") ? a : b;
-            } else if (bn.equals("forge")) {
-                return EmiAgnos.isModLoaded("forge") ? b : a;
-            }
-        }
-        return a.id().toString().length() <= b.id().toString().length() ? a : b;
-    }
+	private static<T> TagKey<T> betterTag(TagKey<T> a, TagKey<T> b) {
+		if (hasTranslation(a) != hasTranslation(b)) {
+			return hasTranslation(a) ? a : b;
+		}
+		if (hasCustomModel(a) != hasCustomModel(b)) {
+			return hasCustomModel(a) ? a : b;
+		}
+		String an = a.id().getResourceDomain();
+		String bn = b.id().getResourceDomain();
+		if (!an.equals(bn)) {
+			if (an.equals("minecraft")) {
+				return a;
+			} else if (bn.equals("minecraft")) {
+				return b;
+			} else if (an.equals("c")) {
+				return a;
+			} else if (bn.equals("c")) {
+				return b;
+			} else if (an.equals("fabric")) {
+				return EmiAgnos.isModLoaded("forge") ? b : a;
+			} else if (bn.equals("fabric")) {
+				return EmiAgnos.isModLoaded("forge") ? a : b;
+			} else if (an.equals("forge")) {
+				return EmiAgnos.isModLoaded("forge") ? a : b;
+			} else if (bn.equals("forge")) {
+				return EmiAgnos.isModLoaded("forge") ? b : a;
+			}
+		}
+		return a.id().toString().length() <= b.id().toString().length() ? a : b;
+	}
 }

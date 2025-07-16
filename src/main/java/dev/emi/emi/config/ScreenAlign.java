@@ -13,7 +13,9 @@ public class ScreenAlign {
 	}
 
 	public static enum Horizontal implements ConfigEnum {
-		LEFT("left"), CENTER("center"), RIGHT("right"),
+		LEFT("left"),
+		CENTER("center"),
+		RIGHT("right"),
 		;
 
 		private final String name;
@@ -43,7 +45,9 @@ public class ScreenAlign {
 	}
 
 	public static enum Vertical implements ConfigEnum {
-		TOP("top"), CENTER("center"), BOTTOM("bottom"),
+		TOP("top"),
+		CENTER("center"),
+		BOTTOM("bottom"),
 		;
 
 		private final String name;

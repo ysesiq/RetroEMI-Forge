@@ -3,9 +3,7 @@ package dev.emi.emi.api.stack;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dev.emi.emi.EmiUtil;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
@@ -15,7 +13,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.config.EmiConfig;
@@ -30,7 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tag.ItemKey;
+import net.minecraft.registry.tag.ItemKey;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.ItemStacks;
 import com.rewindmc.retroemi.RetroEMI;

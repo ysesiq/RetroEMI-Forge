@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import dev.emi.emi.screen.BoMScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +33,6 @@ import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiFavorite;
 import dev.emi.emi.runtime.EmiHistory;
 import dev.emi.emi.runtime.EmiSidebars;
-import dev.emi.emi.screen.BoMScreen;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.RecipeScreen;
 import net.minecraft.client.Minecraft;

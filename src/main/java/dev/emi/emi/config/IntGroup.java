@@ -1,11 +1,13 @@
 package dev.emi.emi.config;
 
-import dev.emi.emi.EmiPort;
-import net.minecraft.text.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import dev.emi.emi.EmiPort;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.text.Text;
 
 public class IntGroup {
 	public final String baseTranslation;

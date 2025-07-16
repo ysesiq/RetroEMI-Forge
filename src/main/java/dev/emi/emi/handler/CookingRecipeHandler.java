@@ -1,13 +1,14 @@
 package dev.emi.emi.handler;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.Slot;
-
-import java.util.List;
 
 public class CookingRecipeHandler<T extends ContainerFurnace> implements StandardRecipeHandler<T> {
 	private final EmiRecipeCategory category;

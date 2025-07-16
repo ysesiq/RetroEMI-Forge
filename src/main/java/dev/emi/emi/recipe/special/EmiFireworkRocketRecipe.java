@@ -1,36 +1,40 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
-import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.widget.GeneratedSlotWidget;
-import dev.emi.emi.api.widget.SlotWidget;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.DyeItem;
-import net.minecraft.util.DyeColor;
-
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Lists;
+
+import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.widget.GeneratedSlotWidget;
+import dev.emi.emi.api.widget.SlotWidget;
+import net.minecraft.init.Items;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.ResourceLocation;
+
 public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
 	private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(DyeItem::byColor).collect(Collectors.toList());
 
 	public EmiFireworkRocketRecipe(ResourceLocation id) {
-		super(com.rewindmc.retroemi.shim.java.List.of(EmiStack.of(Items.paper), EmiStack.of(Items.firework_charge), EmiStack.of(Items.gunpowder)), EmiStack.of(Items.fireworks), id);
+		super(com.rewindmc.retroemi.shim.java.List.of(
+				EmiStack.of(Items.paper),
+						EmiStack.of(Items.firework_charge),
+						EmiStack.of(Items.gunpowder)),
+				EmiStack.of(Items.fireworks), id);
 	}
 
 	@Override
 	public SlotWidget getInputWidget(int slot, int x, int y) {
 		if (slot == 0) {
 			return new SlotWidget(EmiStack.of(Items.paper), x, y);
-		}
-		else {
+		} else {
 			final int s = slot - 1;
 			return new GeneratedSlotWidget(r -> {
 				List<EmiStack> items = getItems(r);
@@ -58,8 +62,7 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
 		for (EmiStack item : items) {
 			if (item.getId() == EmiStack.of(Items.firework_charge).getId()) {
 				explosions.appendTag(item.getNbt().getTagList("Explosion", 0));
-			}
-			else if (item.isEqual(EmiStack.of(Items.gunpowder))) {
+			} else if (item.isEqual(EmiStack.of(Items.gunpowder))) {
 				gunpowder++;
 			}
 		}
@@ -104,6 +107,7 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
 		int items = 0;
 
 		int amount = random.nextInt(5);
+
 		explosion.setByte("Type", (byte) amount);
 
 		if (!(amount == 0)) {
@@ -115,12 +119,10 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
 		if (amount == 0) {
 			explosion.setByte("Flicker", (byte) 1);
 			items++;
-		}
-		else if (amount == 1) {
+		} else if (amount == 1) {
 			explosion.setByte("Trail", (byte) 1);
 			items++;
-		}
-		else if (amount == 2) {
+		} else if (amount == 2) {
 			explosion.setByte("Trail", (byte) 1);
 			explosion.setByte("Flicker", (byte) 1);
 			items = items + 2;

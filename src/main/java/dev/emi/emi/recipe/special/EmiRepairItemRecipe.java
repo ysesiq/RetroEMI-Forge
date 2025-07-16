@@ -1,6 +1,13 @@
 package dev.emi.emi.recipe.special;
 
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
+
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
@@ -9,21 +16,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class EmiRepairItemRecipe extends EmiPatternCraftingRecipe {
-
-    public static final List<Item> TOOLS =
-        ((Set<String>) Item.itemRegistry.getKeys())
-            .stream()
-            .map(name -> (Item) Item.itemRegistry.getObject(name))
-            .filter(item -> item != null && item.isRepairable())
-            .collect(Collectors.toList());
+    public static final List<Item> TOOLS =  ((Set<String>) Item.itemRegistry.getKeys()).stream().map(name -> (Item) Item.itemRegistry.getObject(name))
+            .filter(item -> item != null && item.isRepairable()).collect(Collectors.toList());
     private final Item tool;
 
 	public EmiRepairItemRecipe(Item tool, ResourceLocation id) {
-		super(com.rewindmc.retroemi.shim.java.List.of(EmiStack.of(tool), EmiStack.of(tool)), EmiStack.of(tool), id);
+		super(com.rewindmc.retroemi.shim.java.List.of(
+				EmiStack.of(tool),
+				EmiStack.of(tool)),
+				EmiStack.of(tool), id);
 		this.tool = tool;
 	}
 

@@ -10,7 +10,7 @@ import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.widget.config.EmiNameWidget;
 import dev.emi.emi.screen.widget.config.ListWidget;
 import net.minecraft.client.Minecraft;
-import dev.emi.emi.com.unascribed.QDCSS;
+import dev.emi.emi.com.unascribed.qdcss.QDCSS;
 import com.rewindmc.retroemi.REMIScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;

@@ -7,18 +7,16 @@ import cpw.mods.fml.common.*;
 import cpw.mods.fml.common.discovery.ITypeDiscoverer;
 import cpw.mods.fml.common.discovery.asm.ASMModParser;
 import cpw.mods.fml.common.discovery.asm.ModAnnotation;
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.stack.FluidEmiStack;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.tag.ItemKey;
+import net.minecraft.registry.tag.ItemKey;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.xylose.emi.REMIForge;
 import org.objectweb.asm.Type;
 
 import com.google.common.collect.Lists;
@@ -43,7 +41,6 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.text.WordUtils;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
-import net.minecraft.util.SyntheticIdentifier;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -127,7 +124,26 @@ public class EmiAgnosForge extends EmiAgnos {
         return authors;
     }
 
-	@Override
+    @Override
+    protected List<String> getModsWithPluginsAgnos() {
+//        List<String> mods = Lists.newArrayList();
+//        Type entrypointType = Type.getType(EmiEntrypoint.class);
+//        for (ModFileScanData data : ModList.get().getAllScanData()) {
+//            for (ModFileScanData.AnnotationData annot : data.getAnnotations()) {
+//                try {
+//                    if (entrypointType.equals(annot.annotationType())) {
+//                        mods.add(data.getIModInfoData().get(0).getMods().get(0).getModId());
+//                    }
+//                } catch (Throwable t) {
+//                    EmiLog.error("Exception constructing entrypoint:", t);
+//                }
+//            }
+//        }
+//        return mods;
+        return com.rewindmc.retroemi.shim.java.List.of();
+    }
+
+    @Override
 	protected List<EmiPluginContainer> getPluginsAgnos() {
 		List<EmiPluginContainer> containers = Lists.newArrayList();
 		Type entrypointType = Type.getType(EmiEntrypoint.class);
@@ -346,5 +362,12 @@ public class EmiAgnosForge extends EmiAgnos {
             }
         }
         return fuelMap;
+    }
+
+    @Override
+    protected boolean isEnchantableAgnos(ItemStack stack, Enchantment enchantment) {
+        ItemStack enchantedBook = new ItemStack(Items.enchanted_book);
+        EnchantmentHelper.setEnchantments(Collections.singletonMap(enchantment.effectId, enchantment.getMaxLevel()), enchantedBook);
+        return stack.getItem().isBookEnchantable(stack, enchantedBook);
     }
 }

@@ -20,7 +20,7 @@ import dev.emi.emi.api.render.EmiTooltipComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StringTranslate;
-import dev.emi.emi.com.unascribed.QDCSS;
+import dev.emi.emi.com.unascribed.qdcss.QDCSS;
 import com.rewindmc.retroemi.REMIScreen;
 import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.client.gui.DrawContext;

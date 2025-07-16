@@ -1,11 +1,11 @@
 package dev.emi.emi.config;
 
-import java.util.List;
+import com.rewindmc.retroemi.shim.java.List;
 
 public class Margins extends IntGroup {
 
 	public Margins(int top, int right, int bottom, int left) {
-		super("emi.sidebar.margins.", com.rewindmc.retroemi.shim.java.List.of("top", "right", "bottom", "left"), com.rewindmc.retroemi.shim.java.List.of(top, right, bottom, left));
+		super("emi.sidebar.margins.", List.of("top", "right", "bottom", "left"), List.of(top, right, bottom, left));
 	}
 
 	public int top() {

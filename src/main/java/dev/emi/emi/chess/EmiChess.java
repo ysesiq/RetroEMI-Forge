@@ -1,13 +1,18 @@
 package dev.emi.emi.chess;
 
+import java.util.List;
+import java.util.UUID;
+
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.config.SidebarType;
 import dev.emi.emi.network.EmiChessPacket;
 import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.screen.EmiScreenManager;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.Minecraft;
@@ -16,8 +21,6 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
-
-import java.util.List;
 
 // Yes, this is a thing that exists
 public class EmiChess {
@@ -109,21 +112,17 @@ public class EmiChess {
 					}
 					restart();
 				}
-			}
-			else {
+			} else {
 				int pending = chess.pendingPromotion;
 				int dir = position > 31 ? -8 : 8;
 				if (pending != -1) {
 					if (position == pending) {
 						chess.doMove(new ChessMove(chess.promotionStart, chess.pendingPromotion, 3));
-					}
-					else if (position == pending + dir) {
+					} else if (position == pending + dir) {
 						chess.doMove(new ChessMove(chess.promotionStart, chess.pendingPromotion, 4));
-					}
-					else if (position == pending + dir * 2) {
+					} else if (position == pending + dir * 2) {
 						chess.doMove(new ChessMove(chess.promotionStart, chess.pendingPromotion, 5));
-					}
-					else if (position == pending + dir * 3) {
+					} else if (position == pending + dir * 3) {
 						chess.doMove(new ChessMove(chess.promotionStart, chess.pendingPromotion, 6));
 					}
 					chess.pendingPromotion = -1;
@@ -143,8 +142,7 @@ public class EmiChess {
 						if (piece.type() == PieceType.PAWN) {
 							invitePlayer();
 						}
-					}
-					else {
+					} else {
 						if (piece.type() == PieceType.KING) {
 							if (chess.pending != null) {
 								chess.opponent = chess.pending;
@@ -170,8 +168,7 @@ public class EmiChess {
 				if (move.type() > 2) {
 					get().promotionStart = move.start();
 					get().pendingPromotion = move.end();
-				}
-				else {
+				} else {
 					chess.doMove(move);
 				}
 				get().started = true;
@@ -206,39 +203,33 @@ public class EmiChess {
 			if (EmiScreenManager.hasSidebarAvailable(SidebarType.CHESS)) {
 				chess.pending = uuid;
                 client.thePlayer.addChatMessage(new ChatComponentText(EmiPort.translatable("emi.chess.multiplayer.invited", player.getCommandSenderName()).asString()));
-			}
-			else {
+			} else {
 				sendNetwork(uuid, -4, 0, 0);
 			}
-		}
-		else if (type == -2) {
+		} else if (type == -2) {
 			if (chess.started) {
 				sendNetwork(uuid, -3, 0, 0);
-			}
-			else {
+			} else {
 				if (uuid.equals(chess.opponent)) {
 					client.thePlayer.addChatMessage(new ChatComponentText(EmiPort.translatable("emi.chess.multiplayer.accepted", player.getCommandSenderName()).asString()));
 					chess.generator = new NetworkedMoveGenerator(PieceColor.BLACK);
 				}
 			}
-		}
-		else if (type == -3) {
+		} else if (type == -3) {
 			if (uuid.equals(chess.opponent)) {
 				client.thePlayer.addChatMessage(new ChatComponentText(EmiPort.translatable("emi.chess.multiplayer.cancelled", player.getCommandSenderName()).asString()));
 				restart();
 			}
-		}
-		else if (type == -4) {
+		} else if (type == -4) {
 			if (uuid.equals(chess.opponent)) {
 				client.thePlayer.addChatMessage(new ChatComponentText(EmiPort.translatable("emi.chess.multiplayer.unavailable", player.getCommandSenderName()).asString()));
 			}
-		}
-		else if (chess.generator instanceof NetworkedMoveGenerator nmg && chess.opponent.equals(uuid)) {
+		} else if (chess.generator instanceof NetworkedMoveGenerator nmg && chess.opponent.equals(uuid)) {
 			ChessMove desired = ChessMove.of(start, end, type);
 			if (chess.turn == chess.generator.color) {
 				ChessBoard board = getBoard();
 				for (ChessMove move : board.getLegal(board.getMoves(start))) {
-					if (move == desired) {
+					if (move.equals(desired)) {
 						nmg.move = desired;
 						return;
 					}

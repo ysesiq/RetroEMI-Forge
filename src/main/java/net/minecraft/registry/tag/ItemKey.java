@@ -1,4 +1,4 @@
-package net.minecraft.tag;
+package net.minecraft.registry.tag;
 
 import com.github.bsideup.jabel.Desugar;
 import net.minecraft.item.Item;

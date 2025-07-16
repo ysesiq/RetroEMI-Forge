@@ -1,29 +1,31 @@
 package dev.emi.emi.recipe.special;
 
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
 import net.minecraft.init.Items;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.DyeItem;
 import net.minecraft.util.DyeColor;
-
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiFireworkStarFadeRecipe extends EmiPatternCraftingRecipe {
 	private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(DyeItem::byColor).collect(Collectors.toList());
 
 	public EmiFireworkStarFadeRecipe(ResourceLocation id) {
-		super(com.rewindmc.retroemi.shim.java.List.of(EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())), EmiStack.of(Items.firework_charge)),
-				EmiStack.of(Items.firework_charge), id);
+		super(com.rewindmc.retroemi.shim.java.List.of(
+			EmiIngredient.of(DYES.stream().map(i -> (EmiIngredient) EmiStack.of(i)).collect(Collectors.toList())),
+			EmiStack.of(Items.firework_charge)), EmiStack.of(Items.firework_charge), id);
 	}
 
 	@Override
@@ -63,6 +65,7 @@ public class EmiFireworkStarFadeRecipe extends EmiPatternCraftingRecipe {
 		int items = 0;
 
 		int amount = random.nextInt(5);
+
 		explosion.setByte("Type", (byte) amount);
 
 		if (!(amount == 0)) {
@@ -74,12 +77,10 @@ public class EmiFireworkStarFadeRecipe extends EmiPatternCraftingRecipe {
 		if (amount == 0) {
 			explosion.setByte("Flicker", (byte) 1);
 			items++;
-		}
-		else if (amount == 1) {
+		} else if (amount == 1) {
 			explosion.setByte("Trail", (byte) 1);
 			items++;
-		}
-		else if (amount == 2) {
+		} else if (amount == 2) {
 			explosion.setByte("Trail", (byte) 1);
 			explosion.setByte("Flicker", (byte) 1);
 			items = items + 2;
