@@ -12,12 +12,13 @@ public class EmiRemoveFromIndex implements EmiResourceReloadListener, IResourceM
 
 	public static List<EmiIngredient> removed = Lists.newArrayList();
 	public static List<IndexStackData.Added> added = Lists.newArrayList();
+	public static List<IndexStackData.Filter> filter = Lists.newArrayList();
 	public static IndexStackData entries;
 	private static final ResourceLocation ID = new ResourceLocation("emi", "removed_stacks");
 
 	@Override
 	public void onResourceManagerReload(IResourceManager var1) {
-		entries = new IndexStackData(added, removed);
+		entries = new IndexStackData(false, added, removed, filter);
 	}
 
 	@Override

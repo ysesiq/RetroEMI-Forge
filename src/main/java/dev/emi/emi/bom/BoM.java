@@ -108,7 +108,7 @@ public class BoM {
 			}
 		}
 		JsonObject resolutions = JsonHelper.getObject(object, "resolutions", new JsonObject());
-        for (String key : resolutions.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
+		for (String key : resolutions.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
 			ResourceLocation id = EmiPort.id(key);
 			EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 			if (recipe != null && JsonHelper.hasArray(resolutions, key)) {
@@ -122,7 +122,7 @@ public class BoM {
 			}
 		}
 		JsonObject addedTags = JsonHelper.getObject(object, "tags", new JsonObject());
-        for (String key : addedTags.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
+		for (String key : addedTags.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet())) {
 			EmiIngredient tag = EmiIngredientSerializer.getDeserialized(new JsonPrimitive(key));
 			EmiIngredient stack = EmiIngredientSerializer.getDeserialized(addedTags.get(key));
 			if (!tag.isEmpty() && !stack.isEmpty() && stack.getEmiStacks().size() == 1 && tag.getEmiStacks().containsAll(stack.getEmiStacks())) {

@@ -38,7 +38,7 @@ import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.tag.ItemKey;
+import net.minecraft.registry.tag.ItemKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.enchantment.Enchantment;
@@ -51,7 +51,7 @@ import net.minecraft.item.*;
 import net.minecraft.item.crafting.*;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.RetroEMI;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -317,7 +317,8 @@ public class VanillaPlugin implements EmiPlugin {
                         synthetic("anvil/enchanting", EmiUtil.subId(i) + "/" + e.getName() + "/" + max)));
                 };
                 for (Enchantment e : targetedEnchantments) {
-                    if (e.canApply(defaultStack)) {
+                    if (e.canApply(defaultStack)
+                        && EmiAgnos.isEnchantable(defaultStack, e)) {
                         consumer.accept(e);
                         acceptableEnchantments++;
                     }
