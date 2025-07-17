@@ -1,11 +1,12 @@
 package dev.emi.emi.data;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import net.minecraft.util.ResourceLocation;
-
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
+import net.minecraft.util.ResourceLocation;
 
 public class TagExclusions {
 	public final Set<ResourceLocation> globalExclusions = Sets.newHashSet();

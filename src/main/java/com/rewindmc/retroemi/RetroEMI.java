@@ -1,12 +1,12 @@
 package com.rewindmc.retroemi;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
-import dev.emi.emi.screen.EmiScreen;
 import dev.emi.emi.screen.EmiScreenManager;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -21,6 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.RegistryNamespaced;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringTranslate;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
@@ -193,38 +194,6 @@ public class RetroEMI {
 		glPopMatrix();
 	}
 
-	public static Object emify(GuiScreen screen) {
-		if (screen instanceof EmiScreen es) {
-			return es;
-		}
-		if (screen instanceof GuiContainer hs) {
-			return new EmiScreen() {
-
-				@Override
-				public int emi$getLeft() {
-					return ((GuiContainerAccessor) hs).getGuiLeft();
-				}
-
-				@Override
-				public int emi$getRight() {
-					return ((GuiContainerAccessor) hs).getGuiLeft() + ((GuiContainerAccessor) hs).getXSize();
-				}
-
-				@Override
-				public int emi$getTop() {
-					return ((GuiContainerAccessor) hs).getGuiTop();
-				}
-
-				@Override
-				public int emi$getBottom() {
-					return ((GuiContainerAccessor) hs).getGuiTop() + ((GuiContainerAccessor) hs).getYSize();
-				}
-
-			};
-		}
-		return screen;
-	}
-
 	public static final IntSet heldButtons = new IntOpenHashSet();
 
 	public static boolean handleMouseInput() {
@@ -342,4 +311,38 @@ public class RetroEMI {
 	public static boolean doesRenderIDRenderItemIn3D(int par0) {
 		return par0 == 0 || (par0 == 31 || (par0 == 39 || (par0 == 13 || (par0 == 10 || (par0 == 11 || (par0 == 27 || (par0 == 22 || (par0 == 21 || (par0 == 16 || (par0 == 26 || (par0 == 32 || (par0 == 34 || par0 == 35))))))))))));
 	}
+
+    public static String sanitizeNBT(String nbt) {
+        nbt = nbt.replace(" ", "");
+        if (!nbt.startsWith("{")) {
+            nbt = "{" + nbt;
+        }
+        if (!nbt.endsWith("}")) {
+            nbt = nbt + "}";
+        }
+        return nbt;
+    }
+
+    public static String replaceCharAt(String s, int index, char c) {
+        return s.substring(0, index) + c + s.substring(index + 1);
+    }
+
+    public static List<Item> getAllItems() {
+        List<Item> itemList = new ArrayList<>();
+        RegistryNamespaced itemRegistry = Item.itemRegistry;
+        for (Object o : itemRegistry) {
+            if (o instanceof Item) {
+                itemList.add((Item) o);
+            }
+        }
+        return itemList;
+    }
+
+    public static int getScaledHeight(Minecraft client) {
+        return client.displayHeight / EmiPort.getGuiScale(client);
+    }
+
+    public static int getScaledWidth(Minecraft client) {
+        return client.displayWidth / EmiPort.getGuiScale(client);
+    }
 }

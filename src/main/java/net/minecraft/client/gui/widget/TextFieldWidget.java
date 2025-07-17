@@ -2,13 +2,13 @@ package net.minecraft.client.gui.widget;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.input.EmiInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.MathHelper;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -50,6 +50,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, firstCharacterIndex) -> Text.literal(string).asOrderedText();
 	@Nullable
 	private Text placeholder;
+    private int frameColor = 0;
+    protected Minecraft client = Minecraft.getMinecraft();
 
 	public TextFieldWidget(FontRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);
@@ -377,17 +379,18 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		int i;
+	public void renderWidget(DrawContext raw, int mouseX, int mouseY, float delta) {
+		int color;
 		if (!this.isVisible()) {
 			return;
 		}
 		if (this.drawsBackground()) {
-            i = this.isFocused() ? -1 : -6250336;
-            drawRect(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, i);
-            drawRect(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, -16777216);
+            color = this.isFocused() ? 0xFFFFFFFF : 0xFFA0A0A0;
+            color = this.frameColor == 0 ? color : this.frameColor;
+            drawRect(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
+            drawRect(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, 0xFF000000);
 		}
-		i = this.editable ? this.editableColor : this.uneditableColor;
+		color = this.editable ? this.editableColor : this.uneditableColor;
 		int j = this.selectionStart - this.firstCharacterIndex;
 		int k = this.selectionEnd - this.firstCharacterIndex;
 		String string = this.textRenderer.trimStringToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
@@ -401,7 +404,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		}
 		if (!string.isEmpty()) {
 			String string2 = bl ? string.substring(0, j) : string;
-			n = this.textRenderer.drawStringWithShadow(this.renderTextProvider.apply(string2, this.firstCharacterIndex).asString(), n, m, i);
+			n = this.textRenderer.drawStringWithShadow(this.renderTextProvider.apply(string2, this.firstCharacterIndex).asString(), n, m, color);
 		}
 		boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
 		int o = n;
@@ -412,28 +415,28 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			--n;
 		}
 		if (!string.isEmpty() && bl && j < string.length()) {
-			this.textRenderer.drawStringWithShadow(this.renderTextProvider.apply(string.substring(j), this.selectionStart).asString(), n, m, i);
+			this.textRenderer.drawStringWithShadow(this.renderTextProvider.apply(string.substring(j), this.selectionStart).asString(), n, m, color);
 		}
 		if (this.placeholder != null && string.isEmpty() && !this.isFocused()) {
-			this.textRenderer.drawStringWithShadow(this.placeholder.asString(), n, m, i);
+			this.textRenderer.drawStringWithShadow(this.placeholder.asString(), n, m, color);
 		}
 		if (!bl3 && this.suggestion != null) {
-			this.textRenderer.drawStringWithShadow(this.suggestion, (o - 1), m, -8355712);
+			this.textRenderer.drawStringWithShadow(this.suggestion, (o - 1), m, 0xFFD0D0D0);
 		}
 		if (bl2) {
 			if (bl3) {
-				drawRect(o, m - 1, o + 1, m + 1 + this.textRenderer.FONT_HEIGHT, -3092272);
+				drawRect(o, m - 1, o + 1, m + 1 + this.textRenderer.FONT_HEIGHT, 0xFF808080);
 			} else {
-				this.textRenderer.drawStringWithShadow(HORIZONTAL_CURSOR, o, m, i);
+				this.textRenderer.drawStringWithShadow(HORIZONTAL_CURSOR, o, m, color);
 			}
 		}
 		if (k != j) {
 			int p = l + this.textRenderer.getStringWidth(string.substring(0, k));
-			this.drawSelectionHighlight(matrices, o, m - 1, p - 1, m + 1 + this.textRenderer.FONT_HEIGHT);
+			this.drawSelectionHighlight(raw, o, m - 1, p - 1, m + 1 + this.textRenderer.FONT_HEIGHT);
 		}
 	}
 
-	private void drawSelectionHighlight(MatrixStack matrices, int x1, int y1, int x2, int y2) {
+	private void drawSelectionHighlight(DrawContext raw, int x1, int y1, int x2, int y2) {
 		int i;
 		if (x1 < x2) {
 			i = x1;
@@ -487,6 +490,10 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 	public void setUneditableColor(int uneditableColor) {
 		this.uneditableColor = uneditableColor;
+	}
+
+    public void setFrameColor(int frameColor) {
+		this.frameColor = frameColor;
 	}
 
 	@Override

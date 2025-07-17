@@ -1,6 +1,15 @@
 package dev.emi.emi.screen.widget;
 
+import java.awt.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.runtime.EmiDrawContext;
@@ -17,18 +26,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.lwjgl.opengl.GL11.glRotatef;
 
 public class EmiSearchWidget extends TextFieldWidget {
 	private static final Pattern ESCAPE = Pattern.compile("\\\\.");
+	private List<String> searchHistory = Lists.newArrayList();
+	private int searchHistoryIndex = 0;
 	private List<Pair<Integer, Style>> styles;
 	private long lastClick = 0;
 	private String last = "";
@@ -85,6 +87,7 @@ public class EmiSearchWidget extends TextFieldWidget {
 				this.setSuggestion("");
 				EmiScreenManager.focusSearchSidebarType(EmiConfig.searchSidebarFocus);
 			}
+			EmiScreenManager.updateSearchSidebar();
 			Matcher matcher = EmiSearch.TOKENS.matcher(string);
 			List<Pair<Integer, Style>> styles = Lists.newArrayList();
 			int last = 0;
@@ -146,8 +149,24 @@ public class EmiSearchWidget extends TextFieldWidget {
 
 	@Override
 	public void setFocused(boolean focused) {
+		if (focused == isFocused) {
+			return;
+		}
+		if (!focused) {
+			searchHistoryIndex = 0;
+			String currentSearch = getText();
+			if (!currentSearch.trim().isEmpty() && !currentSearch.isEmpty()) {
+                searchHistory.removeIf(s -> s == null || s.trim().isEmpty());
+				searchHistory.remove(currentSearch);
+				searchHistory.add(0, currentSearch);
+				if (searchHistory.size() > 36) {
+					searchHistory.remove(searchHistory.size() - 1);
+				}
+			}
+		}
 		isFocused = focused;
 		super.setFocused(focused);
+		EmiScreenManager.updateSearchSidebar();
 	}
 
 	@Override
@@ -189,17 +208,27 @@ public class EmiSearchWidget extends TextFieldWidget {
 				setText("");
 				return true;
 			}
-			if ((EmiConfig.focusSearch.matchesKey(keyCode, scanCode) || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)) {
-				this.setFocused(false);
+			if ((EmiConfig.focusSearch.matchesKey(keyCode, scanCode)
+					|| keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_ESCAPE)) {
 				this.setFocused(false);
 				return true;
+			}
+			if (keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN) {
+				int offset = keyCode == GLFW.GLFW_KEY_UP ? 1 : -1;
+				if (searchHistoryIndex + offset >= 0 && searchHistoryIndex + offset < searchHistory.size()) {
+					if (searchHistoryIndex >= 0 && searchHistoryIndex < searchHistory.size()) {
+						searchHistory.set(searchHistoryIndex, getText());
+					}
+					searchHistoryIndex += offset;
+					setText(searchHistory.get(searchHistoryIndex));
+				}
 			}
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public void render(DrawContext raw, int mouseX, int mouseY, float delta) {
+	public void renderWidget(DrawContext raw, int mouseX, int mouseY, float delta) {
 		EmiDrawContext context = EmiDrawContext.wrap(raw);
 		this.setEditable(EmiConfig.enabled);
 		String lower = getText().toLowerCase();
@@ -214,12 +243,12 @@ public class EmiSearchWidget extends TextFieldWidget {
 		lastRender = System.currentTimeMillis();
 		long deg = accumulatedSpin * -180 / 500;
 		MatrixStack view = MatrixStack.INSTANCE;
-
-		view.push();
+		view.pushMatrix();
 		if (deg != 0) {
 			view.translate(this.x + (double) this.width / 2, this.y + (double) this.height / 2, 0);
-			view.multiply(() -> glRotatef(deg, 0, 0, -1));
+			view.multiply(() -> GL11.glRotatef(deg, 0, 0, -1));
 			view.translate(-(this.x + (double) this.width / 2), -(this.y + (double) this.height / 2), 0);
+			EmiPort.applyModelViewMatrix();
 		}
 
 		if (lower.contains("jeb_")) {
@@ -227,21 +256,28 @@ public class EmiSearchWidget extends TextFieldWidget {
 			lastRender = System.currentTimeMillis();
 			float h = ((lastRender & amount) % (float) amount) / (float) amount;
 			int rgb = Color.HSBtoRGB(h, 1, 1);
-//			context.setColor(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, ((rgb >> 0) & 0xFF) / 255f);
-			tessellator.setColorRGBA((int) (((rgb >> 16) & 0xFF) / 255f), (int) (((rgb >> 8) & 0xFF) / 255f), (int) (((rgb >> 0) & 0xFF) / 255f), 1);
-		}
+			context.setColor(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, ((rgb >> 0) & 0xFF) / 255f);
+            this.setEditableColor(rgb);
+            this.setUneditableColor(rgb);
+            this.setFrameColor(rgb);
+		} else {
+            this.setEditableColor(0xE0E0E0);
+            this.setUneditableColor(0x707070);
+            this.setFrameColor(0);
+        }
 
 		if (EmiConfig.enabled) {
-			super.render(context.raw(), mouseX, mouseY, delta);
+			super.renderWidget(context.raw(), mouseX, mouseY, delta);
 			if (highlight) {
 				int border = 0xffeeee00;
-				context.fill(this.x - 2, this.y - 2, this.width + 3, 1, border);
-				context.fill(this.x - 2, this.y + this.height + 1, this.width + 3, 1, border);
-				context.fill(this.x - 2, this.y - 2, 1, this.height + 3, border);
-				context.fill(this.x + this.width + 1, this.y - 2, 1, this.height + 4, border);
+				context.fill(this.x - 1, this.y - 1, this.width + 2, 1, border);
+				context.fill(this.x - 1, this.y + this.height, this.width + 2, 1, border);
+				context.fill(this.x - 1, this.y - 1, 1, this.height + 2, border);
+				context.fill(this.x + this.width, this.y - 1, 1, this.height + 2, border);
 			}
 		}
-		GL11.glColor4f(1, 1, 1, 1);
-		view.pop();
+		context.resetColor();
+		view.popMatrix();
+		EmiPort.applyModelViewMatrix();
 	}
 }

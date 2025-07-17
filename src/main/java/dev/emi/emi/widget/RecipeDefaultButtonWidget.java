@@ -1,18 +1,20 @@
 package dev.emi.emi.widget;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.bom.BoM;
+import dev.emi.emi.bom.BoM.DefaultStatus;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.HelpLevel;
 import dev.emi.emi.runtime.EmiHistory;
 import dev.emi.emi.screen.RecipeScreen;
 import dev.emi.emi.screen.tooltip.IngredientTooltipComponent;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-
-import java.util.List;
 
 public class RecipeDefaultButtonWidget extends RecipeButtonWidget {
 
@@ -63,10 +65,9 @@ public class RecipeDefaultButtonWidget extends RecipeButtonWidget {
 
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int button) {
-		if (BoM.getRecipeStatus(recipe) == BoM.DefaultStatus.FULL) {
+		if (BoM.getRecipeStatus(recipe) == DefaultStatus.FULL) {
 			BoM.removeRecipe(recipe);
-		}
-		else {
+		} else {
 			BoM.addRecipe(recipe);
 		}
 		this.playButtonSound();

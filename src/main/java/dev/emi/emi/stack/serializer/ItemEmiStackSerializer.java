@@ -17,8 +17,8 @@ public class ItemEmiStackSerializer implements EmiStackSerializer<ItemEmiStack> 
 
 	@Override
 	public EmiStack create(ResourceLocation id, NBTTagCompound nbt, long amount, int subtype) {
-        ItemStack stack = new ItemStack(EmiPort.getItemRegistry().getObject(id.toString()), 1, subtype);
-        stack.setTagCompound(nbt);
-        return EmiStack.of(stack, amount);
+		ItemStack stack = new ItemStack(EmiPort.getItemRegistry().getObject(id.toString()), 1, subtype);
+		stack.setTagCompound(nbt);
+		return EmiStack.of(stack, amount);
 	}
 }

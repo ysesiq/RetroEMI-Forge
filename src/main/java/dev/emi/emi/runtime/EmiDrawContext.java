@@ -1,5 +1,7 @@
 package dev.emi.emi.runtime;
 
+import org.lwjgl.opengl.GL11;
+
 import dev.emi.emi.api.stack.EmiIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -9,10 +11,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import org.lwjgl.opengl.GL11;
-
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
 
 public class EmiDrawContext {
 	private final Minecraft client =  Minecraft.getMinecraft();
@@ -25,7 +23,7 @@ public class EmiDrawContext {
 		return INSTANCE;
 	}
 
-	public static EmiDrawContext wrap(DrawContext ctx) {
+	public static EmiDrawContext wrap(DrawContext context) {
 		return INSTANCE;
 	}
 
@@ -38,47 +36,39 @@ public class EmiDrawContext {
 	}
 
 	public void push() {
-		glPushMatrix();
+		GL11.glPushMatrix();
 	}
 
 	public void pop() {
-		glPopMatrix();
+		GL11.glPopMatrix();
 	}
 
 	public void drawTexture(ResourceLocation texture, int x, int y, int u, int v, int w, int h) {
-		GL11.glDisable(GL11.GL_LIGHTING);
 		drawTexture(texture, x, y, w, h, u, v, w, h, 256, 256);
 	}
 
 	public void drawTexture(ResourceLocation texture, int x, int y, int z, float u, float v, int w, int h) {
-		GL11.glDisable(GL11.GL_LIGHTING);
 		drawTexture(texture, x, y, z, u, v, w, h, 256, 256);
 	}
 
 	public void drawTexture(ResourceLocation texture, int x, int y, int z, float u, float v, int w, int h, int textureWidth, int textureHeight) {
-		GL11.glDisable(GL11.GL_LIGHTING);
 		drawTexture(texture, x, y, z, w, h, u, v, w, h, textureWidth, textureHeight);
 	}
 
 	public void drawTexture(ResourceLocation texture, int x, int y, int w, int h, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-		GL11.glDisable(GL11.GL_LIGHTING);
 		drawTexture(texture, x, y, 0, w, h, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
 	}
 
-	public void drawTexture(ResourceLocation texture, int x, int y, int z,
-			int w, int h,
-			float u, float v,
-			int rW, int rH,
-			int textureWidth, int textureHeight) {
+	public void drawTexture(ResourceLocation texture, int x, int y, int z, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
 		client.getTextureManager().bindTexture(texture);
 		float uM = 1 / (float) textureWidth;
 		float vM = 1 / (float) textureHeight;
 		Tessellator tess = Tessellator.instance;
 		tess.startDrawingQuads();
-		tess.addVertexWithUV(x + 0, y + h, z, (u +  0) * uM, (v + rH) * vM);
-		tess.addVertexWithUV(x + w, y + h, z, (u + rW) * uM, (v + rH) * vM);
-		tess.addVertexWithUV(x + w, y + 0, z, (u + rW) * uM, (v +  0) * vM);
-		tess.addVertexWithUV(x + 0, y + 0, z, (u +  0) * uM, (v +  0) * vM);
+		tess.addVertexWithUV(x, y + height, z, (u +  0) * uM, (v + regionHeight) * vM);
+		tess.addVertexWithUV(x + width, y + height, z, (u + regionWidth) * uM, (v + regionHeight) * vM);
+		tess.addVertexWithUV(x + width, y, z, (u + regionWidth) * uM, (v +  0) * vM);
+		tess.addVertexWithUV(x, y, z, (u +  0) * uM, (v +  0) * vM);
 		tess.draw();
 	}
 

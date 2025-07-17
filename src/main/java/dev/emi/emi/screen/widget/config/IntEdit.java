@@ -1,15 +1,15 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
+import java.util.regex.Pattern;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-
-import java.util.function.IntConsumer;
-import java.util.function.IntSupplier;
-import java.util.regex.Pattern;
 
 public class IntEdit {
 	private static final Pattern NUMBER = Pattern.compile("^-?[0-9]*$");
@@ -24,12 +24,10 @@ public class IntEdit {
 			try {
 				if (string.trim().isEmpty()) {
 					setter.accept(0);
-				}
-				else {
+				} else {
 					setter.accept(Integer.parseInt(string));
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 		});
 		text.setTextPredicate(s -> {
@@ -53,8 +51,7 @@ public class IntEdit {
 	public int getInc() {
 		if (EmiInput.isShiftDown()) {
 			return 10;
-		}
-		else if (EmiInput.isControlDown()) {
+		} else if (EmiInput.isControlDown()) {
 			return 5;
 		}
 		return 1;

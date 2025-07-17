@@ -1,23 +1,25 @@
 package dev.emi.emi.screen;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeDecorator;
+import dev.emi.emi.api.widget.RecipeFillButtonWidget;
+import dev.emi.emi.api.widget.TextWidget;
+import dev.emi.emi.api.widget.TextWidget.Alignment;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.registry.EmiRecipes;
+import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.widget.RecipeDefaultButtonWidget;
 import dev.emi.emi.widget.RecipeScreenshotButtonWidget;
 import dev.emi.emi.widget.RecipeTreeButtonWidget;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.widget.RecipeFillButtonWidget;
-import dev.emi.emi.api.widget.TextWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeDisplay {
 	public static final int DISPLAY_PADDING = 8;
@@ -70,28 +72,29 @@ public class RecipeDisplay {
 		if (recipe != null) {
 			try {
 				recipe.addWidgets(widgets);
-                if (EmiConfig.showRecipeDecorators) {
-                    for (EmiRecipeDecorator decorator : EmiRecipes.decorators) {
-                        decorator.decorateRecipe(recipe, widgets);
-                    }
-                }
-                if (EmiConfig.devMode) {
-                    widgets.decorateDevMode();
-                }
+				if (EmiConfig.showRecipeDecorators) {
+					for (EmiRecipeDecorator decorator : EmiRecipes.decorators) {
+						decorator.decorateRecipe(recipe, widgets);
+					}
+				}
+				if (EmiConfig.devMode) {
+					widgets.decorateDevMode();
+				}
 				addButtons(widgets, leftButtons, 0 - 4 - 13, -14);
 				addButtons(widgets, rightButtons, width + 5, 14);
 			} catch (Throwable t) {
+				EmiLog.error("Error constructing recipe widgets", t);
 				widgets = new WidgetGroup(recipe, wx, wy, wWidth, wHeight);
-				widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.render")), wWidth / 2, wHeight / 2 - 5,
-						Formatting.RED.getColorValue(), true).horizontalAlign(TextWidget.Alignment.CENTER));
+				widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.render")),
+					wWidth / 2, wHeight / 2 - 5, Formatting.RED.getColorValue(), true).horizontalAlign(Alignment.CENTER));
 				if (exception != null) {
 					List<Text> text = EmiUtil.getStackTrace(exception).stream().map(s -> (Text) EmiPort.literal(s)).collect(Collectors.toList());
 					widgets.addTooltipText(text, 0, 0, wWidth, wHeight);
 				}
 			}
 		} else {
-			widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.initialize")), wWidth / 2, wHeight / 2 - 5,
-					Formatting.RED.getColorValue(), true).horizontalAlign(TextWidget.Alignment.CENTER));
+			widgets.add(new TextWidget(EmiPort.ordered(EmiPort.translatable("emi.error.recipe.initialize")),
+				wWidth / 2, wHeight / 2 - 5, Formatting.RED.getColorValue(), true).horizontalAlign(Alignment.CENTER));
 			if (exception != null) {
 				List<Text> text = EmiUtil.getStackTrace(exception).stream().map(s -> (Text) EmiPort.literal(s)).collect(Collectors.toList());
 				widgets.addTooltipText(text, 0, 0, wWidth, wHeight);
@@ -141,6 +144,9 @@ public class RecipeDisplay {
 	}
 
 	private static enum ButtonType {
-		FILL, TREE, DEFAULT, SCREENSHOT
+		FILL,
+		TREE,
+		DEFAULT,
+		SCREENSHOT
 	}
 }

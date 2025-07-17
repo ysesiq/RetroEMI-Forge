@@ -1,23 +1,26 @@
 package dev.emi.emi;
 
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glEnable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import dev.emi.emi.api.stack.Comparison;
-import dev.emi.emi.data.EmiRemoveFromIndex;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.RecipeDefaultLoader;
-import dev.emi.emi.registry.EmiRecipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,28 +29,15 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SyntheticIdentifier;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import org.apache.http.config.Registry;
-
-import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
 
 /**
  * Multiversion quarantine, to avoid excessive git pain
@@ -141,19 +131,19 @@ public final class EmiPort {
 		glEnable(GL_TEXTURE_2D);
 	}
 
-    public static FMLControlledNamespacedRegistry<Item> getItemRegistry() {
-        return GameData.getItemRegistry();
-    }
+	public static FMLControlledNamespacedRegistry<Item> getItemRegistry() {
+		return GameData.getItemRegistry();
+	}
 
-    public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
-        return GameData.getBlockRegistry();
-    }
+	public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
+		return GameData.getBlockRegistry();
+	}
 
-    public static Map<String, Fluid> getFluidRegistry() {
-        return FluidRegistry.getRegisteredFluids();
-    }
+	public static Map<String, Fluid> getFluidRegistry() {
+		return FluidRegistry.getRegisteredFluids();
+	}
 
-    public static Enchantment[] getEnchantmentRegistry() {
+	public static Enchantment[] getEnchantmentRegistry() {
 		return Enchantment.enchantmentsList;
 	}
 
@@ -194,34 +184,34 @@ public final class EmiPort {
 		manager.registerReloadListener(new EmiTagExclusionsLoader());
 	}
 
-    public static Comparison compareStrict() {
-        return Comparison.compareComponents();
-    }
+	public static Comparison compareStrict() {
+		return Comparison.compareComponents();
+	}
 
 //	public static ItemStack setPotion(ItemStack stack, Potion potion) {
 //		stack.apply(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT, getPotionRegistry().getEntry(potion), PotionContentsComponent::with);
 //		return stack;
 //	}
 
-    public static NBTTagCompound emptyExtraData() {
-        return null;
-    }
+	public static NBTTagCompound emptyExtraData() {
+		return null;
+	}
 
-    public static ResourceLocation id(String id) {
-        if (id.contains(":")) {
-            String[] parts = id.split(":");
-            String mod = parts[0];//Avoid mods being forced to lowercase and not being able to get them
-            String name = parts[1];
-            return new ResourceLocation(mod, name);
-        }
-        return new ResourceLocation(id);
-    }
+	public static ResourceLocation id(String id) {
+		if (id.contains(":")) {
+			String[] parts = id.split(":");
+			String mod = parts[0];//Avoid mods being forced to lowercase and not being able to get them
+			String name = parts[1];
+			return new ResourceLocation(mod, name);
+		}
+		return new ResourceLocation(id);
+	}
 
-    public static ResourceLocation id(String namespace, String path) {
-        return new ResourceLocation(namespace, path);
-    }
+	public static ResourceLocation id(String namespace, String path) {
+		return new ResourceLocation(namespace, path);
+	}
 
-    public static void applyModelViewMatrix() {
-        RenderSystem.applyModelViewMatrix();
-    }
+	public static void applyModelViewMatrix() {
+		RenderSystem.applyModelViewMatrix();
+	}
 }

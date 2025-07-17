@@ -1,36 +1,5 @@
 package dev.emi.emi.screen;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.EmiRenderHelper;
-import dev.emi.emi.config.*;
-import dev.emi.emi.config.EmiConfig.Comment;
-import dev.emi.emi.config.EmiConfig.ConfigGroup;
-import dev.emi.emi.config.EmiConfig.ConfigGroupEnd;
-import dev.emi.emi.config.EmiConfig.ConfigValue;
-import dev.emi.emi.input.EmiBind;
-import dev.emi.emi.input.EmiBind.ModifiedKey;
-import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.runtime.EmiDrawContext;
-import dev.emi.emi.screen.widget.SizedButtonWidget;
-import dev.emi.emi.screen.widget.config.*;
-import dev.emi.emi.search.EmiSearch;
-import dev.emi.emi.api.render.EmiTooltipComponents;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.StringTranslate;
-import dev.emi.emi.com.unascribed.qdcss.QDCSS;
-import com.rewindmc.retroemi.REMIScreen;
-import com.rewindmc.retroemi.RetroEMI;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +7,59 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
+import com.rewindmc.retroemi.REMIScreen;
+import com.rewindmc.retroemi.RetroEMI;
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.api.render.EmiTooltipComponents;
+import dev.emi.emi.com.unascribed.qdcss.QDCSS;
+import dev.emi.emi.config.ConfigEnum;
+import dev.emi.emi.config.EmiConfig;
+import dev.emi.emi.config.EmiConfig.Comment;
+import dev.emi.emi.config.EmiConfig.ConfigGroup;
+import dev.emi.emi.config.EmiConfig.ConfigGroupEnd;
+import dev.emi.emi.config.EmiConfig.ConfigValue;
+import dev.emi.emi.config.IntGroup;
+import dev.emi.emi.config.ScreenAlign;
+import dev.emi.emi.config.SidebarPages;
+import dev.emi.emi.config.SidebarSubpanels;
+import dev.emi.emi.input.EmiBind;
+import dev.emi.emi.input.EmiBind.ModifiedKey;
+import dev.emi.emi.input.EmiInput;
+import dev.emi.emi.runtime.EmiDrawContext;
+import dev.emi.emi.runtime.EmiLog;
+import dev.emi.emi.screen.widget.SizedButtonWidget;
+import dev.emi.emi.screen.widget.config.BooleanWidget;
+import dev.emi.emi.screen.widget.config.ConfigEntryWidget;
+import dev.emi.emi.screen.widget.config.ConfigJumpButton;
+import dev.emi.emi.screen.widget.config.ConfigSearch;
+import dev.emi.emi.screen.widget.config.EmiBindWidget;
+import dev.emi.emi.screen.widget.config.EmiNameWidget;
+import dev.emi.emi.screen.widget.config.EnumWidget;
+import dev.emi.emi.screen.widget.config.GroupNameWidget;
+import dev.emi.emi.screen.widget.config.IntGroupWidget;
+import dev.emi.emi.screen.widget.config.IntWidget;
+import dev.emi.emi.screen.widget.config.ListWidget;
+import dev.emi.emi.screen.widget.config.ScreenAlignWidget;
+import dev.emi.emi.screen.widget.config.SidebarPagesWidget;
+import dev.emi.emi.screen.widget.config.SidebarSubpanelsWidget;
+import dev.emi.emi.screen.widget.config.SubGroupNameWidget;
+import dev.emi.emi.search.EmiSearch;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.StringTranslate;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 
 public class ConfigScreen extends REMIScreen {
 	private static final int maxWidth = 240;
@@ -184,16 +206,14 @@ public class ConfigScreen extends REMIScreen {
 							public Boolean getValue() {
 								try {
 									return field.getBoolean(null);
-								} catch (Exception e) {
-								}
+								} catch(Exception e) {}
 								return false;
 							}
 
 							public void setValue(Boolean value) {
 								try {
 									field.setBoolean(null, value);
-								} catch (Exception e) {
-								}
+								} catch (Exception e) {}
 							}
 						});
 					} else if (field.getType() == int.class) {
@@ -202,16 +222,14 @@ public class ConfigScreen extends REMIScreen {
 							public Integer getValue() {
 								try {
 									return field.getInt(null);
-								} catch (Exception e) {
-								}
+								} catch(Exception e) {}
 								return -1;
 							}
 
 							public void setValue(Integer value) {
 								try {
 									field.setInt(null, value);
-								} catch (Exception e) {
-								}
+								} catch (Exception e) {}
 							}
 						});
 					} else if (field.getType() == EmiBind.class) {
@@ -248,7 +266,7 @@ public class ConfigScreen extends REMIScreen {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			EmiLog.error("Error initializing config screen", e);
 		}
 
 		this.addSelectableChild(list);
@@ -259,12 +277,19 @@ public class ConfigScreen extends REMIScreen {
 	}
 
 	private void addJumpButtons() {
-		List<String> jumps =
-				Lists.newArrayList("general", "general.search", "ui", "ui.left-sidebar", "ui.right-sidebar", "ui.top-sidebar", "ui.bottom-sidebar", "binds",
-						"binds.crafts", "binds.cheats", "dev");
-		List<List<String>> removes =
-            com.rewindmc.retroemi.shim.java.List.of(com.rewindmc.retroemi.shim.java.List.of("binds.cheats"), com.rewindmc.retroemi.shim.java.List.of("general.search"), com.rewindmc.retroemi.shim.java.List.of("ui.top-sidebar", "ui.bottom-sidebar"),
-                com.rewindmc.retroemi.shim.java.List.of("binds.crafts"), com.rewindmc.retroemi.shim.java.List.of("ui.left-sidebar", "ui.right-sidebar"));
+		List<String> jumps = Lists.newArrayList(
+			"general", "general.search",
+			"ui", "ui.left-sidebar", "ui.right-sidebar", "ui.top-sidebar", "ui.bottom-sidebar",
+			"binds", "binds.crafts", "binds.cheats",
+			"dev"
+		);
+		List<List<String>> removes = com.rewindmc.retroemi.shim.java.List.of(
+			com.rewindmc.retroemi.shim.java.List.of("binds.cheats"),
+			com.rewindmc.retroemi.shim.java.List.of("general.search"),
+			com.rewindmc.retroemi.shim.java.List.of("ui.top-sidebar", "ui.bottom-sidebar"),
+			com.rewindmc.retroemi.shim.java.List.of("binds.crafts"),
+			com.rewindmc.retroemi.shim.java.List.of("ui.left-sidebar", "ui.right-sidebar")
+		);
 		int space = list.getLogicalHeight() - 10;
 		for (List<String> r : removes) {
 			if (jumps.size() * 16 > space) {
@@ -281,8 +306,9 @@ public class ConfigScreen extends REMIScreen {
 			} else {
 				u += 16;
 			}
-			this.addDrawableChild(new ConfigJumpButton(2 + (newGroup ? 0 : 8), y, u, v, w -> jump(s),
-                com.rewindmc.retroemi.shim.java.List.of(EmiPort.translatable("config.emi.group." + s.replace('-', '_')))));
+			this.addDrawableChild(new ConfigJumpButton(
+				2 + (newGroup ? 0 : 8), y, u, v, w -> jump(s),
+				com.rewindmc.retroemi.shim.java.List.of(EmiPort.translatable("config.emi.group." + s.replace('-', '_')))));
 			y += 16;
 		}
 	}
@@ -376,8 +402,7 @@ public class ConfigScreen extends REMIScreen {
 				pushModifier(0);
 				if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 					activeBind.setBind(activeBindOffset, new ModifiedKey(InputUtil.UNKNOWN_KEY, 0));
-				}
-				else {
+				} else {
 					activeBind.setBind(activeBindOffset, new ModifiedKey(InputUtil.Type.KEYSYM.createFromCode(keyCode), activeModifiers));
 				}
 				activeBind = null;

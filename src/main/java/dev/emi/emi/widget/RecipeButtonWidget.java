@@ -1,10 +1,10 @@
 package dev.emi.emi.widget;
 
 import dev.emi.emi.EmiRenderHelper;
-import dev.emi.emi.runtime.EmiDrawContext;
-import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.Widget;
+import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
@@ -25,8 +25,7 @@ public class RecipeButtonWidget extends Widget {
 	public int getTextureOffset(int mouseX, int mouseY) {
 		if (getBounds().contains(mouseX, mouseY)) {
 			return 12;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}

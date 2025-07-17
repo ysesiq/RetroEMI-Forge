@@ -1,7 +1,14 @@
 package dev.emi.emi.screen;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.rewindmc.retroemi.REMIScreen;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.com.unascribed.qdcss.QDCSS;
 import dev.emi.emi.config.ConfigPresets;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.EmiConfig.ConfigGroup;
@@ -10,17 +17,11 @@ import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.widget.config.EmiNameWidget;
 import dev.emi.emi.screen.widget.config.ListWidget;
 import net.minecraft.client.Minecraft;
-import dev.emi.emi.com.unascribed.qdcss.QDCSS;
-import com.rewindmc.retroemi.REMIScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-
-import java.lang.reflect.Field;
-import java.util.List;
 
 public class ConfigPresetScreen extends REMIScreen {
 	private final ConfigScreen last;
@@ -63,8 +64,7 @@ public class ConfigPresetScreen extends REMIScreen {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 		this.addSelectableChild(list);
 		updateChanges();
@@ -94,12 +94,10 @@ public class ConfigPresetScreen extends REMIScreen {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.close();
 			return true;
-		}
-		else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
+		} else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
 			this.close();
 			return true;
-		}
-		else if (keyCode == GLFW.GLFW_KEY_TAB) {
+		} else if (keyCode == GLFW.GLFW_KEY_TAB) {
 			return false;
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
@@ -140,7 +138,8 @@ public class ConfigPresetScreen extends REMIScreen {
 		}
 
 		@Override
-		public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
+		public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY,
+				boolean hovered, float delta) {
 			button.y = y;
 			button.x = x + width / 2 - button.getWidth() / 2;
 			button.render(raw, mouseX, mouseY, delta);

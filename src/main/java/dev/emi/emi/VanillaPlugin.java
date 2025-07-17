@@ -1,8 +1,43 @@
 package dev.emi.emi;
 
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.ANVIL_REPAIRING;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.BREWING;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.CRAFTING;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.FUEL;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.INFO;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.SMELTING;
+import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.WORLD_INTERACTION;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import com.rewindmc.retroemi.RetroEMI;
+import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiInitRegistry;
+import dev.emi.emi.api.EmiPlugin;
+import dev.emi.emi.api.EmiRegistry;
+import dev.emi.emi.api.recipe.EmiCraftingRecipe;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.recipe.EmiRecipeSorting;
+import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
+import dev.emi.emi.api.render.EmiRenderable;
+import dev.emi.emi.api.render.EmiTexture;
+import dev.emi.emi.api.stack.Comparison;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiRegistryAdapter;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.FluidEmiStack;
+import dev.emi.emi.api.stack.ItemEmiStack;
+import dev.emi.emi.api.stack.ListEmiIngredient;
+import dev.emi.emi.api.stack.TagEmiIngredient;
+import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.config.EffectLocation;
 import dev.emi.emi.config.EmiConfig;
@@ -13,26 +48,30 @@ import dev.emi.emi.handler.InventoryRecipeHandler;
 import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.mixin.accessor.ShapedRecipesAccessor;
 import dev.emi.emi.platform.EmiAgnos;
-import dev.emi.emi.recipe.*;
+import dev.emi.emi.recipe.EmiAnvilRecipe;
+import dev.emi.emi.recipe.EmiCookingRecipe;
+import dev.emi.emi.recipe.EmiFuelRecipe;
+import dev.emi.emi.recipe.EmiShapedRecipe;
+import dev.emi.emi.recipe.EmiShapelessRecipe;
+import dev.emi.emi.recipe.EmiTagRecipe;
 import dev.emi.emi.recipe.forge.EmiShapedOreRecipe;
 import dev.emi.emi.recipe.forge.EmiShapelessOreRecipe;
-import dev.emi.emi.recipe.special.*;
+import dev.emi.emi.recipe.special.EmiAnvilEnchantRecipe;
+import dev.emi.emi.recipe.special.EmiAnvilRepairItemRecipe;
+import dev.emi.emi.recipe.special.EmiArmorDyeRecipe;
+import dev.emi.emi.recipe.special.EmiFireworkRocketRecipe;
+import dev.emi.emi.recipe.special.EmiFireworkStarFadeRecipe;
+import dev.emi.emi.recipe.special.EmiFireworkStarRecipe;
+import dev.emi.emi.recipe.special.EmiMapCloningRecipe;
+import dev.emi.emi.recipe.special.EmiRepairItemRecipe;
 import dev.emi.emi.registry.EmiTags;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiReloadLog;
-import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.stack.serializer.FluidEmiStackSerializer;
 import dev.emi.emi.stack.serializer.ItemEmiStackSerializer;
 import dev.emi.emi.stack.serializer.ListEmiIngredientSerializer;
 import dev.emi.emi.stack.serializer.TagEmiIngredientSerializer;
-import dev.emi.emi.api.EmiEntrypoint;
-import dev.emi.emi.api.EmiPlugin;
-import dev.emi.emi.api.EmiRegistry;
-import dev.emi.emi.api.recipe.*;
-import dev.emi.emi.api.render.EmiRenderable;
-import dev.emi.emi.api.render.EmiTexture;
-import dev.emi.emi.api.stack.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
@@ -50,22 +89,12 @@ import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.*;
 import net.minecraft.util.ResourceLocation;
-import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import net.xylose.emi.REMIForge;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.*;
 
 @EmiEntrypoint
 public class VanillaPlugin implements EmiPlugin {
@@ -202,7 +231,7 @@ public class VanillaPlugin implements EmiPlugin {
             EmiPort.getDisabledItems()
         ).collect(Collectors.toSet());
 
-        List<Item> dyeableItems = REMIForge.getAllItems().stream().filter(i -> i instanceof ItemArmor armor && armor.getArmorMaterial() == ItemArmor.ArmorMaterial.CLOTH).collect(Collectors.toList());
+        List<Item> dyeableItems = RetroEMI.getAllItems().stream().filter(i -> i instanceof ItemArmor armor && armor.getArmorMaterial() == ItemArmor.ArmorMaterial.CLOTH).collect(Collectors.toList());
 
         for (Item i : EmiRepairItemRecipe.TOOLS) {
 			if (!hiddenItems.contains(i)) {
@@ -288,7 +317,7 @@ public class VanillaPlugin implements EmiPlugin {
                 registry.addEmiStack(EmiStack.of(Items.enchanted_book.getEnchantedItemStack(new EnchantmentData(enchantment, i))));
             }
         }
-        for (Item i : REMIForge.getAllItems()) {
+        for (Item i : RetroEMI.getAllItems()) {
             if (hiddenItems.contains(i)) {
                 continue;
             }
@@ -349,7 +378,7 @@ public class VanillaPlugin implements EmiPlugin {
 //		EmiIngredient hoes = damagedTool(getPreferredTag(com.rewindmc.retroemi.shim.java.List.of(
 //				"minecraft:hoes", "c:hoes", "c:tools/hoes", "fabric:hoes", "forge:tools/hoes"
 //			), EmiStack.of(Items.iron_hoe)), 1);
-        for (Item item : REMIForge.getAllItems()) {
+        for (Item item : RetroEMI.getAllItems()) {
             if (item instanceof ItemHoe hoe) {
                 EmiIngredient hoes = damagedTool(EmiStack.of(hoe), 1);
                 EmiIngredient dirt = EmiIngredient.of(com.rewindmc.retroemi.shim.java.List.of(EmiStack.of(Blocks.dirt), EmiStack.of(Blocks.grass)));
@@ -442,54 +471,54 @@ public class VanillaPlugin implements EmiPlugin {
 		return fallback;
 	}
 
-    private static void addFuel(EmiRegistry registry, Set<Item> hiddenItems) {
-        Map<ItemKey, Integer> fuelMap = EmiAgnos.getFuelMap();
-        compressRecipesToTags(fuelMap.keySet().stream().collect(Collectors.toSet()), (a, b) -> {
-            return Integer.compare(fuelMap.get(a), fuelMap.get(b));
-        }, tag -> {
-            EmiIngredient stack = EmiIngredient.of(tag);
-            Item item = stack.getEmiStacks().get(0).getItemStack().getItem();
-            int time = fuelMap.get(item);
-            registry.addRecipe(new EmiFuelRecipe(stack, time, synthetic("fuel/tag", EmiUtil.subId(tag.id()))));
-        }, item -> {
-            if (!hiddenItems.contains(item.item())) {
-                int time = fuelMap.get(item);
-                registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item.toStack()), time, synthetic("fuel/item", EmiUtil.subId(EmiPort.id(item.toStack().getUnlocalizedName() + "@" + Item.getIdFromItem(item.item()) + "." +  item.toStack().getItemDamage())))));
-            }
-        });
-    }
+	private static void addFuel(EmiRegistry registry, Set<Item> hiddenItems) {
+		Map<ItemKey, Integer> fuelMap = EmiAgnos.getFuelMap();
+		compressRecipesToTags(fuelMap.keySet().stream().collect(Collectors.toSet()), (a, b) -> {
+			return Integer.compare(fuelMap.get(a), fuelMap.get(b));
+		}, tag -> {
+			EmiIngredient stack = EmiIngredient.of(tag);
+			Item item = stack.getEmiStacks().get(0).getItemStack().getItem();
+			int time = fuelMap.get(item);
+			registry.addRecipe(new EmiFuelRecipe(stack, time, synthetic("fuel/tag", EmiUtil.subId(tag.id()))));
+		}, item -> {
+			if (!hiddenItems.contains(item.item())) {
+				int time = fuelMap.get(item);
+				registry.addRecipe(new EmiFuelRecipe(EmiStack.of(item.toStack()), time, synthetic("fuel/item", EmiUtil.subId(EmiPort.id(item.toStack().getUnlocalizedName() + "@" + Item.getIdFromItem(item.item()) + "." +  item.toStack().getItemDamage())))));
+			}
+		});
+	}
 
-    private static void compressRecipesToTags(Set<ItemKey> stacks, Comparator<ItemKey> comparator, Consumer<TagKey<ItemKey>> tagConsumer, Consumer<ItemKey> itemConsumer) {
-        Set<ItemKey> handled = Sets.newHashSet();
-        outer:
-        for (TagKey<ItemKey> key : (List<TagKey<ItemKey>>) (List<?>) EmiTags.getTags(TagKey.Type.ITEM)) {
-            List<ItemKey> items = key.getAll();
-            if (items.size() < 2) {
-                continue;
-            }
+	private static void compressRecipesToTags(Set<ItemKey> stacks, Comparator<ItemKey> comparator, Consumer<TagKey<ItemKey>> tagConsumer, Consumer<ItemKey> itemConsumer) {
+		Set<ItemKey> handled = Sets.newHashSet();
+		outer:
+		for (TagKey<ItemKey> key : (List<TagKey<ItemKey>>) (List<?>) EmiTags.getTags(TagKey.Type.ITEM)) {
+			List<ItemKey> items = key.getAll();
+			if (items.size() < 2) {
+				continue;
+			}
             ItemKey base = items.get(0);
-            if (!stacks.contains(base)) {
-                continue;
-            }
-            for (int i = 1; i < items.size(); i++) {
-                ItemKey item = items.get(i);
-                if (!stacks.contains(item) || comparator.compare(base, item) != 0) {
-                    continue outer;
-                }
-            }
-            if (handled.containsAll(items)) {
-                continue;
-            }
-            handled.addAll(items);
-            tagConsumer.accept(key);
-        }
-        for (ItemKey item : stacks) {
-            if (handled.contains(item)) {
-                continue;
-            }
-            itemConsumer.accept(item);
-        }
-    }
+			if (!stacks.contains(base)) {
+				continue;
+			}
+			for (int i = 1; i < items.size(); i++) {
+				ItemKey item = items.get(i);
+				if (!stacks.contains(item) || comparator.compare(base, item) != 0) {
+					continue outer;
+				}
+			}
+			if (handled.containsAll(items)) {
+				continue;
+			}
+			handled.addAll(items);
+			tagConsumer.accept(key);
+		}
+		for (ItemKey item : stacks) {
+			if (handled.contains(item)) {
+				continue;
+			}
+			itemConsumer.accept(item);
+		}
+	}
 
 	private static ResourceLocation synthetic(String type, String name) {
 		return EmiPort.id(type, "/" + name);

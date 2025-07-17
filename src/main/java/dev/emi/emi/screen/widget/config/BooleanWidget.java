@@ -1,20 +1,20 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import dev.emi.emi.EmiPort;
-import dev.emi.emi.screen.ConfigScreen;
+import dev.emi.emi.screen.ConfigScreen.Mutator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class BooleanWidget extends ConfigEntryWidget {
-	private final ConfigScreen.Mutator<Boolean> mutator;
+	private final Mutator<Boolean> mutator;
 	private ButtonWidget button;
 
-	public BooleanWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, ConfigScreen.Mutator<Boolean> mutator) {
+	public BooleanWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, Mutator<Boolean> mutator) {
 		super(name, tooltip, search, 20);
 		this.mutator = mutator;
 
@@ -28,8 +28,7 @@ public class BooleanWidget extends ConfigEntryWidget {
 	public Text getText() {
 		if (mutator.get()) {
 			return EmiPort.literal("true", Formatting.GREEN);
-		}
-		else {
+		} else {
 			return EmiPort.literal("false", Formatting.RED);
 		}
 	}

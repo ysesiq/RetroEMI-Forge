@@ -1,11 +1,11 @@
 package dev.emi.emi.data;
 
+import java.util.Comparator;
+import java.util.function.Supplier;
+
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.render.EmiRenderable;
-
-import java.util.Comparator;
-import java.util.function.Supplier;
 
 public class EmiRecipeCategoryProperties {
 	public int order;

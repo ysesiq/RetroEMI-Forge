@@ -1,22 +1,23 @@
 package dev.emi.emi.screen.tooltip;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.bom.ChanceMaterialCost;
 import dev.emi.emi.bom.FlatMaterialCost;
 import dev.emi.emi.bom.MaterialTree;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiDrawContext;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.stack.EmiIngredient;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RecipeCostTooltipComponent implements EmiTooltipComponent {
 	private static final Text COST = EmiPort.translatable("emi.cost_per");
@@ -37,14 +38,14 @@ public class RecipeCostTooltipComponent implements EmiTooltipComponent {
 
 	public void addNodes() {
 		double batches = tree.batches;
-        List<FlatMaterialCost> costs = Stream.concat(
-            tree.cost.costs.values().stream(),
-            tree.cost.chanceCosts.values().stream()
-        ).sorted((a, b) -> Integer.compare(
-            EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
-            EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))
-        )).collect(Collectors.toList());
-        for (FlatMaterialCost cost : costs) {
+		List<FlatMaterialCost> costs = Stream.concat(
+			tree.cost.costs.values().stream(),
+			tree.cost.chanceCosts.values().stream()
+		).sorted((a, b) -> Integer.compare(
+			EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
+			EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))
+		)).collect(Collectors.toList());
+		for (FlatMaterialCost cost : costs) {
 			if (cost instanceof ChanceMaterialCost cmc) {
 				nodes.add(new Node(cost.ingredient, cost.amount / batches * cmc.chance, true));
 			} else {
@@ -112,8 +113,7 @@ public class RecipeCostTooltipComponent implements EmiTooltipComponent {
 			this.stack = stack;
 			if (chanced) {
 				text = EmiPort.append(EmiPort.literal("≈"), EmiRenderHelper.getAmountText(stack, amount)).formatted(Formatting.GOLD);
-			}
-			else {
+			} else {
 				text = EmiRenderHelper.getAmountText(stack, amount);
 			}
 		}

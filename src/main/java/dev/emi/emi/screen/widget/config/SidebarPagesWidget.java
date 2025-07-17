@@ -1,22 +1,23 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.SidebarPages;
 import dev.emi.emi.config.SidebarType;
-import dev.emi.emi.screen.ConfigScreen;
+import dev.emi.emi.screen.ConfigScreen.Mutator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class SidebarPagesWidget extends ConfigEntryWidget {
 	private List<ButtonWidget> buttons = Lists.newArrayList();
-	private ConfigScreen.Mutator<SidebarPages> mutator;
+	private Mutator<SidebarPages> mutator;
 
-	public SidebarPagesWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, ConfigScreen.Mutator<SidebarPages> mutator) {
+	public SidebarPagesWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, Mutator<SidebarPages> mutator) {
 		super(name, tooltip, search, 0);
 		this.mutator = mutator;
 		setChildren(buttons);

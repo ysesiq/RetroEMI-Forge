@@ -8,11 +8,11 @@ public class MatrixStack {
 
 	public MatrixStack() {}
 
-	public void push() {
+	public void pushMatrix() {
 		glPushMatrix();
 	}
 
-	public void pop() {
+	public void popMatrix() {
 		glPopMatrix();
 	}
 

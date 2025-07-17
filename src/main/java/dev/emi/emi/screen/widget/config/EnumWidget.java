@@ -1,5 +1,12 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.ConfigEnum;
 import dev.emi.emi.screen.ConfigEnumScreen;
@@ -9,13 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EnumWidget extends ConfigEntryWidget {
 	private final Mutator<ConfigEnum> mutator;

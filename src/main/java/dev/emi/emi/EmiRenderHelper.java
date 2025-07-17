@@ -1,6 +1,15 @@
 package dev.emi.emi;
 
+import java.text.DecimalFormat;
+import java.util.List;
+
+import net.minecraftforge.fluids.Fluid;
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import com.rewindmc.retroemi.RetroEMI;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
@@ -10,15 +19,15 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.api.widget.WidgetHolder;
+import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.runtime.EmiDrawContext;
+import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreenManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.ResourceLocation;
-import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -27,23 +36,19 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vec2i;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.lwjgl.opengl.GL11;
-
-import java.text.DecimalFormat;
-import java.util.List;
-
-import static org.lwjgl.opengl.GL11.*;
+import net.minecraft.util.ResourceLocation;
 
 public class EmiRenderHelper {
-	public static final DecimalFormat TEXT_FORMAT = new DecimalFormat("0.##");
+	public static final DecimalFormat TEXT_FORMAT = new DecimalFormat("#,###.##");
 	public static final Text EMPTY_TEXT = EmiPort.literal("");
-	public static final ResourceLocation WIDGETS = new ResourceLocation("emi", "textures/gui/widgets.png");
-	public static final ResourceLocation BUTTONS = new ResourceLocation("emi", "textures/gui/buttons.png");
-	public static final ResourceLocation BACKGROUND = new ResourceLocation("emi", "textures/gui/background.png");
-	public static final ResourceLocation GRID = new ResourceLocation("emi", "textures/gui/grid.png");
-	public static final ResourceLocation DASH = new ResourceLocation("emi", "textures/gui/dash.png");
-	public static final ResourceLocation CONFIG = new ResourceLocation("emi", "textures/gui/config.png");
-	public static final ResourceLocation PIECES = new ResourceLocation("emi", "textures/gui/pieces.png");
+	public static final Minecraft CLIENT = Minecraft.getMinecraft();
+	public static final ResourceLocation WIDGETS = EmiPort.id("emi", "textures/gui/widgets.png");
+	public static final ResourceLocation BUTTONS = EmiPort.id("emi", "textures/gui/buttons.png");
+	public static final ResourceLocation BACKGROUND = EmiPort.id("emi", "textures/gui/background.png");
+	public static final ResourceLocation GRID = EmiPort.id("emi", "textures/gui/grid.png");
+	public static final ResourceLocation DASH = EmiPort.id("emi", "textures/gui/dash.png");
+	public static final ResourceLocation CONFIG = EmiPort.id("emi", "textures/gui/config.png");
+	public static final ResourceLocation PIECES = EmiPort.id("emi", "textures/gui/pieces.png");
 
 	public static void drawNinePatch(EmiDrawContext context, ResourceLocation texture, int x, int y, int w, int h, int u, int v, int cornerLength, int centerLength) {
 		int cor = cornerLength;
@@ -75,9 +80,9 @@ public class EmiRenderHelper {
 
 	public static void drawTintedSprite(MatrixStack matrices, String sheet, int icon, int color, int x, int y, int xOff, int yOff, int width, int height) {
 		EmiPort.setPositionColorTexShader();
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		Minecraft.getMinecraft().renderEngine.getTexture(new ResourceLocation("minecraft", sheet));
-		glEnable(GL_BLEND);
+		RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+		Minecraft.getMinecraft().renderEngine.getTexture(EmiPort.id		("minecraft", sheet));
+		RenderSystem.enableBlend();
 
 		float r = ((color >> 16) & 255) / 256f;
 		float g = ((color >> 8) & 255) / 256f;
@@ -88,7 +93,7 @@ public class EmiRenderHelper {
 		float minV = (float) (icon / 16 * 16 + 0) / 256.0F;
 		float maxV = (float) (icon / 16 * 16 + 16) / 256.0F;
 
-		glColor4f(r, g, b, 1);
+		RenderSystem.setShaderColor(r, g, b, 1);
 
 		Tessellator tess = Tessellator.instance;
 		tess.startDrawingQuads();
@@ -107,7 +112,7 @@ public class EmiRenderHelper {
 		tess.addVertexWithUV(xMax, yMin, 1, uMax, vMin);
 		tess.addVertexWithUV(xMin, yMin, 1, uMin, vMin);
 		tess.draw();
-		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	public static void drawScroll(EmiDrawContext context, int x, int y, int width, int height, int progress, int total, int color) {
@@ -133,13 +138,12 @@ public class EmiRenderHelper {
 	}
 
 	public static Text getPageText(int page, int total, int maxWidth) {
-		Text text;
-		text = EmiPort.translatable("emi.page", page, total);
-		if (Minecraft.getMinecraft().fontRenderer.getStringWidth(text.asString()) > maxWidth) {
+		Text text = EmiPort.translatable("emi.page", page, total);
+		if (CLIENT.fontRenderer.getStringWidth(text.asString()) > maxWidth) {
 			text = EmiPort.translatable("emi.page.short", page, total);
-			if (Minecraft.getMinecraft().fontRenderer.getStringWidth(text.asString()) > maxWidth) {
+			if (CLIENT.fontRenderer.getStringWidth(text.asString()) > maxWidth) {
 				text = EmiPort.literal("" + page);
-				if (Minecraft.getMinecraft().fontRenderer.getStringWidth(text.asString()) > maxWidth) {
+				if (CLIENT.fontRenderer.getStringWidth(text.asString()) > maxWidth) {
 					text = EmiPort.literal("");
 				}
 			}
@@ -150,7 +154,7 @@ public class EmiRenderHelper {
 	public static void drawLeftTooltip(GuiScreen screen, EmiDrawContext context, List<TooltipComponent> components, int x, int y) {
 		drawTooltip(screen, context, components, x, y, screen.width / 2 - 16,
 			(screen2, mouseX, mouseY, tooltipWidth, tooltipHeight) -> {
-				Vec2i pos = new Vec2i( mouseX+12, mouseY-12);
+				Vec2i pos = new Vec2i( mouseX + 12, mouseY - 12);
 				pos.x = Math.max(pos.x - 24 - tooltipWidth, 4);
 				if (pos.y + tooltipHeight + 3 > screen.height) {
 					pos.y = screen.height - tooltipHeight - 3;
@@ -168,42 +172,42 @@ public class EmiRenderHelper {
 	}
 
 	public static void drawTooltip(GuiScreen screen, EmiDrawContext context, List<TooltipComponent> components, int x, int y, int maxWidth, TooltipPositioner positioner) {
+		if (components.isEmpty()) {
+			return;
+		}
 		y = Math.max(16, y);
 		// Some mods assume this list will be mutable, oblige them
 		List<TooltipComponent> mutable = Lists.newArrayList();
 		int wrapWidth = Math.max(components.stream()
-			.map(c -> c instanceof TextTooltipComponent ? 0 : c.getWidth(Minecraft.getMinecraft().fontRenderer))
+			.map(c -> c instanceof TextTooltipComponent ? 0 : c.getWidth(CLIENT.fontRenderer))
 			.max(Integer::compare).orElse(0), maxWidth);
 		for (TooltipComponent comp : components) {
-			if (comp instanceof TextTooltipComponent ottc && ottc.getWidth(Minecraft.getMinecraft().fontRenderer) > wrapWidth) {
+			if (comp instanceof TextTooltipComponent ottc && ottc.getWidth(CLIENT.fontRenderer) > wrapWidth) {
 				try {
-					for (String line : (List<String>) Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(ottc.getText(), wrapWidth)) {
+					for (String line : (List<String>) CLIENT.fontRenderer.listFormattedStringToWidth(ottc.getText(), wrapWidth)) {
 						mutable.add(TooltipComponent.of(Text.literal(line)));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					EmiLog.error("Error converting text", e);
 					mutable.add(comp);
 				}
 			} else {
 				mutable.add(comp);
 			}
 		}
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
+		RenderSystem.enableDepthTest();
+		GL11.glDisable(GL11.GL_LIGHTING);
 		EmiPort.setPositionTexShader();
 		context.resetColor();
-
 		RetroEMI.renderModernTooltip(screen, mutable, x, y, maxWidth, positioner);
 	}
 
 	public static void drawSlotHightlight(EmiDrawContext context, int x, int y, int w, int h) {
 		context.push();
 		context.matrices().translate(0, 0, 200);
-		GL11.glColorMask(true, true, true, false);
-		glDepthMask(false);
+		RenderSystem.colorMask(true, true, true, false);
 		context.fill(x, y, w, h, -2130706433);
-		GL11.glColorMask(true, true, true, true);
-		glDepthMask(true);
+		RenderSystem.colorMask(true, true, true, true);
 		context.pop();
 	}
 
@@ -215,20 +219,28 @@ public class EmiRenderHelper {
 		if (stack.isEmpty() || amount == 0) {
 			return EMPTY_TEXT;
 		}
-		return EmiPort.literal("" + amount);
+		if (stack.getEmiStacks().get(0).getKey() instanceof Fluid) {
+			return getFluidAmount(amount);
+		}
+		return EmiPort.literal(TEXT_FORMAT.format(amount));
 	}
 
 	public static Text getAmountText(EmiIngredient stack, double amount) {
 		if (stack.isEmpty() || amount == 0) {
 			return EMPTY_TEXT;
 		}
+		if (stack.getEmiStacks().get(0).getKey() instanceof Fluid) {
+			return EmiConfig.fluidUnit.translate(amount);
+		}
 		return EmiPort.literal(TEXT_FORMAT.format(amount));
 	}
 
-
+	public static Text getFluidAmount(long amount) {
+		return EmiConfig.fluidUnit.translate(amount);
+	}
 
 	public static int getAmountOverflow(Text amount) {
-		int width = Minecraft.getMinecraft().fontRenderer.getStringWidth(amount.asString());
+		int width = CLIENT.fontRenderer.getStringWidth(amount.asString());
 		if (width > 14) {
 			return width - 14;
 		} else {
@@ -239,24 +251,23 @@ public class EmiRenderHelper {
 	public static void renderAmount(EmiDrawContext context, int x, int y, Text amount) {
 		context.push();
 		context.matrices().translate(0, 0, 200);
-		int tx = x + 17 - Math.min(14, Minecraft.getMinecraft().fontRenderer.getStringWidth(amount.asString()));
+		int tx = x + 17 - Math.min(14, CLIENT.fontRenderer.getStringWidth(amount.asString()));
 		context.drawTextWithShadow(amount, tx, y + 9, -1);
 		context.pop();
 	}
 
 	public static void renderIngredient(EmiIngredient ingredient, EmiDrawContext context, int x, int y) {
-		glEnable(GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
 		context.push();
 		context.matrices().translate(0, 0, 200);
-		Minecraft mc = Minecraft.getMinecraft();
-		mc.renderEngine.bindTexture(WIDGETS);
+		RenderSystem.setShaderTexture(0, EmiRenderHelper.WIDGETS);
 		context.drawTexture(WIDGETS, x, y, 8, 252, 4, 4);
 		context.pop();
 	}
 
 	public static void renderTag(EmiIngredient ingredient, EmiDrawContext context, int x, int y) {
 		if (ingredient.getEmiStacks().size() > 1) {
-			glEnable(GL_DEPTH_TEST);
+			RenderSystem.enableDepthTest();
 			context.push();
 			context.matrices().translate(0, 0, 200);
 			context.drawTexture(WIDGETS, x, y + 12, 0, 252, 4, 4);
@@ -273,7 +284,7 @@ public class EmiRenderHelper {
 				} else {
 					context.push();
 					context.matrices().translate(0, 0, 200);
-					glEnable(GL_DEPTH_TEST);
+					RenderSystem.enableDepthTest();
 					context.drawTexture(WIDGETS, x + 12, y, 4, 252, 4, 4);
 					context.pop();
 				}
@@ -283,7 +294,7 @@ public class EmiRenderHelper {
 	}
 
 	public static void renderCatalyst(EmiIngredient ingredient, EmiDrawContext context, int x, int y) {
-		glEnable(GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
 		context.push();
 		context.matrices().translate(0, 0, 200);
 		context.drawTexture(WIDGETS, x + 12, y, 12, 252, 4, 4);
@@ -294,7 +305,7 @@ public class EmiRenderHelper {
 	public static void renderRecipeFavorite(EmiIngredient ingredient, EmiDrawContext context, int x, int y) {
 		context.push();
 		context.matrices().translate(0, 0, 200);
-		glEnable(GL_DEPTH_TEST);
+		RenderSystem.enableDepthTest();
 		context.drawTexture(WIDGETS, x + 12, y, 16, 252, 4, 4);
 		context.pop();
 		return;
@@ -331,8 +342,7 @@ public class EmiRenderHelper {
 			context.matrices().translate(x + 4, y + 4, 0);
 
 			recipe.addWidgets(holder);
-			Minecraft minecraft = Minecraft.getMinecraft();
-			float delta = minecraft.timer.renderPartialTicks;
+			float delta = CLIENT.timer.renderPartialTicks;
 			for (Widget widget : widgets) {
 				widget.render(context.raw(), -1000, -1000, delta);
 			}
@@ -353,15 +363,15 @@ public class EmiRenderHelper {
 			context.pop();
 
 			// Force translucency to match that of the recipe background
-			glDisable(GL_BLEND);
-			GL11.glColorMask(false, false, false, true);
-			glDisable(GL_DEPTH_TEST);
+			RenderSystem.disableBlend();
+			RenderSystem.colorMask(false, false, false, true);
+			RenderSystem.disableDepthTest();
 			renderRecipeBackground(recipe, context, x, y);
-			glEnable(GL_DEPTH_TEST);
-			GL11.glColorMask(true, true, true, true);
+			RenderSystem.enableDepthTest();
+			RenderSystem.colorMask(true, true, true, true);
 			// Blend should be off by default
 		} catch (Throwable e) {
-			e.printStackTrace();
+			EmiLog.error("Error rendering recipe", e);
 		}
 	}
 }

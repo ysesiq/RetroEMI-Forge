@@ -1,14 +1,15 @@
 package dev.emi.emi.screen;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
-import dev.emi.emi.config.EmiConfig;
-import dev.emi.emi.config.SidebarSide;
+
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import dev.emi.emi.config.EmiConfig;
+import dev.emi.emi.config.SidebarSide;
 
 public class RecipeTab {
 	private static final int RECIPE_PADDING = 10;
@@ -22,8 +23,7 @@ public class RecipeTab {
 		displays = recipes.stream().map(r -> {
 			try {
 				return new RecipeDisplay(r);
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				return new RecipeDisplay(t);
 			}
 		}).collect(Collectors.toList());

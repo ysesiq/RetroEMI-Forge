@@ -1,22 +1,23 @@
 package dev.emi.emi.screen;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.lwjgl.glfw.GLFW;
+
 import com.github.bsideup.jabel.Desugar;
+import com.rewindmc.retroemi.REMIScreen;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.widget.config.EmiNameWidget;
 import dev.emi.emi.screen.widget.config.ListWidget;
 import net.minecraft.client.Minecraft;
-import com.rewindmc.retroemi.REMIScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 public class ConfigEnumScreen<T> extends REMIScreen {
 	private final ConfigScreen last;
@@ -72,12 +73,10 @@ public class ConfigEnumScreen<T> extends REMIScreen {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.close();
 			return true;
-		}
-		else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
+		} else if (this.client.gameSettings.keyBindInventory.getKeyCode() == (keyCode)) {
 			this.close();
 			return true;
-		}
-		else if (keyCode == GLFW.GLFW_KEY_TAB) {
+		} else if (keyCode == GLFW.GLFW_KEY_TAB) {
 			return false;
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
@@ -105,7 +104,8 @@ public class ConfigEnumScreen<T> extends REMIScreen {
 		}
 
 		@Override
-		public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
+		public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY,
+				boolean hovered, float delta) {
 			button.y = y;
 			button.x = x + width / 2 - button.getWidth() / 2;
 			button.render(raw, mouseX, mouseY, delta);

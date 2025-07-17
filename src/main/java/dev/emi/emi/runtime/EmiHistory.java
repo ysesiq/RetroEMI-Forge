@@ -1,13 +1,14 @@
 package dev.emi.emi.runtime;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.api.EmiApi;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 public class EmiHistory {
 	private static final List<GuiScreen> HISTORIES = Lists.newArrayList();
@@ -35,8 +36,9 @@ public class EmiHistory {
 		int i = HISTORIES.size() - 1;
 		GuiContainer screen = EmiApi.getHandledScreen();
 		if (i >= 0) {
+			GuiScreen popped = HISTORIES.remove(i);
 			FORWARD_HISTORIES.add(client.currentScreen);
-			client.displayGuiScreen(HISTORIES.remove(i));
+			client.displayGuiScreen(popped);
 		} else if (screen != null) {
 			client.displayGuiScreen(screen);
 		}

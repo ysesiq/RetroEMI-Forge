@@ -1,6 +1,10 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.SidebarSubpanels;
 import dev.emi.emi.config.SidebarType;
@@ -9,9 +13,6 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 public class SidebarSubpanelsWidget extends ConfigEntryWidget {
 	private List<ButtonWidget> buttons = Lists.newArrayList();
@@ -58,7 +59,8 @@ public class SidebarSubpanelsWidget extends ConfigEntryWidget {
 	public List<TooltipComponent> getTooltip(int mouseX, int mouseY) {
 		for (IntEdit edit : rows) {
 			if (edit.contains(mouseX, mouseY)) {
-				return com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(EmiPort.translatable("emi.sidebar.size.rows"))));
+				return com.rewindmc.retroemi.shim.java.List.of(TooltipComponent.of(EmiPort.ordered(
+					EmiPort.translatable("emi.sidebar.size.rows"))));
 			}
 		}
 		return super.getTooltip(mouseX, mouseY);

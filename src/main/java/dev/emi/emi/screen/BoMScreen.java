@@ -217,7 +217,7 @@ public class BoMScreen extends REMIScreen {
 		int my = (int) ((mouseY - height / 2) / scale - offY);
 
 		MatrixStack view = MatrixStack.INSTANCE;
-		view.push();
+		view.pushMatrix();
 		view.translate(width / 2, height / 2, 0);
 		view.scale(scale, scale, 1);
 		view.translate(offX, offY, 0);
@@ -262,7 +262,7 @@ public class BoMScreen extends REMIScreen {
 			context.drawCenteredText(EmiPort.translatable("emi.random_tree_input"), 0, 0);
 		}
 
-		view.pop();
+		view.popMatrix();
 		EmiPort.applyModelViewMatrix();
 
 		if (help.contains(mouseX, mouseY)) {

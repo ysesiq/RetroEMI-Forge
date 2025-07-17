@@ -1,9 +1,30 @@
 package dev.emi.emi.screen;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import com.rewindmc.retroemi.REMIScreen;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.recipe.handler.EmiCraftContext;
+import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
+import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
+import dev.emi.emi.api.widget.RecipeFillButtonWidget;
+import dev.emi.emi.api.widget.SlotWidget;
+import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.SidebarSide;
 import dev.emi.emi.input.EmiInput;
@@ -14,34 +35,16 @@ import dev.emi.emi.runtime.EmiHistory;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.widget.ResolutionButtonWidget;
 import dev.emi.emi.screen.widget.SizedButtonWidget;
-import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.recipe.EmiRecipeCategory;
-import dev.emi.emi.api.recipe.handler.EmiCraftContext;
-import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
-import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.widget.RecipeFillButtonWidget;
-import dev.emi.emi.api.widget.SlotWidget;
-import dev.emi.emi.api.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.util.ResourceLocation;
-import com.rewindmc.retroemi.REMIScreen;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.ResourceLocation;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public class RecipeScreen extends REMIScreen implements EmiScreen {
-	private static final ResourceLocation TEXTURE = new ResourceLocation("emi", "textures/gui/background.png");
+public class RecipeScreen extends REMIScreen {
+	private static final ResourceLocation TEXTURE = EmiPort.id("emi", "textures/gui/background.png");
 	public static @Nullable EmiIngredient resolve = null;
 	private Map<EmiRecipeCategory, List<EmiRecipe>> recipes;
 	public GuiContainer old;
@@ -57,8 +60,8 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 	private int minimumWidth = 176;
 	int backgroundWidth = minimumWidth;
 	int backgroundHeight = 200;
-    int x = (this.width - backgroundWidth) / 2;
-    int y = (this.height - backgroundHeight) / 2;
+	int x = (this.width - backgroundWidth) / 2;
+	int y = (this.height - backgroundHeight) / 2;
 
 	public RecipeScreen(GuiContainer old, Map<EmiRecipeCategory, List<EmiRecipe>> recipes) {
 		super(EmiPort.translatable("screen.emi.recipe"));
@@ -593,31 +596,5 @@ public class RecipeScreen extends REMIScreen implements EmiScreen {
 			right += 22;
 		}
 		return new Bounds(left, top, right - left, bottom - top);
-	}
-
-    @Override
-    public int emi$getLeft() {
-        if (EmiConfig.workstationLocation == SidebarSide.LEFT) {
-            return x - 22;
-        }
-        return x;
-    }
-
-	@Override
-	public int emi$getRight() {
-		if (EmiConfig.workstationLocation == SidebarSide.RIGHT) {
-			return x + backgroundWidth + 22;
-		}
-		return x + backgroundWidth;
-	}
-
-	@Override
-	public int emi$getTop() {
-		return y - 26;
-	}
-
-	@Override
-	public int emi$getBottom() {
-		return y + backgroundHeight;
 	}
 }

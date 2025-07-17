@@ -1,20 +1,20 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.ScreenAlign;
-import dev.emi.emi.screen.ConfigScreen;
+import dev.emi.emi.screen.ConfigScreen.Mutator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 public class ScreenAlignWidget extends ConfigEntryWidget {
-	private final ConfigScreen.Mutator<ScreenAlign> mutator;
+	private final Mutator<ScreenAlign> mutator;
 	private ButtonWidget horizontal, vertical;
 
-	public ScreenAlignWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, ConfigScreen.Mutator<ScreenAlign> mutator) {
+	public ScreenAlignWidget(Text name, List<TooltipComponent> tooltip, Supplier<String> search, Mutator<ScreenAlign> mutator) {
 		super(name, tooltip, search, 20);
 		this.mutator = mutator;
 

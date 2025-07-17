@@ -1,38 +1,54 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.List;
+import java.util.Random;
+
 import com.google.common.collect.Lists;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.runtime.EmiDrawContext;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.text.Style;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
-import java.util.List;
-import java.util.Random;
 
 public class EmiNameWidget implements Drawable {
 	private static Minecraft client = Minecraft.getMinecraft();
-	private List<String[]> NAMES =
-			Lists.<String[]>newArrayList("Emi Memy Imi".split(" "), "Exhaustively Many Ingredients".split(" "), "Explicitly Mandated Items".split(" "),
-					"Endless Material Information".split(" "), "Evolving Manufacturing Index".split(" "), "Evidently, Many Ingredients".split(" "),
-					"Earnestly Made Imitation".split(" "), "Even More Items".split(" "), "Eminence, My Inception".split(" "), "Explore My Inventory".split(" "),
-					"Expounded Minutia Introspection".split(" "), "Exciting Minecraft Information".split(" "), "Expropriated Matter Insights".split(" "),
-					"Efficiently Managed Inventory".split(" "), "Eerily Many Ingredients".split(" "), "Eventually Made Impressive".split(" "),
-					"Exceptionally Motionless Interface".split(" "), "Emi's Magic Inventory".split(" "), "Egad, My Items!".split(" "),
-					"Exploring Modified: Iridescent".split(" "), "E M I".split(" "));
+	private List<String[]> NAMES = Lists.<String[]>newArrayList(
+		"Emi Memy Imi".split(" "),
+		"Exhaustively Many Ingredients".split(" "),
+		"Explicitly Mandated Items".split(" "),
+		"Endless Material Information".split(" "),
+		"Evolving Manufacturing Index".split(" "),
+		"Evidently, Many Ingredients".split(" "),
+		"Earnestly Made Imitation".split(" "),
+		"Even More Items".split(" "),
+		"Eminence, My Inception".split(" "),
+		"Explore My Inventory".split(" "),
+		"Expounded Minutia Introspection".split(" "),
+		"Exciting Minecraft Information".split(" "),
+		"Expropriated Matter Insights".split(" "),
+		"Efficiently Managed Inventory".split(" "),
+		"Eerily Many Ingredients".split(" "),
+		"Eventually Made Impressive".split(" "),
+		"Exceptionally Motionless Interface".split(" "),
+		"Emi's Magic Inventory".split(" "),
+		"Egad, My Items!".split(" "),
+		"Exploring Modified: Iridescent".split(" "),
+		"E M I".split(" ")
+	);
 	public int x, y;
 
 	public EmiNameWidget(int x, int y) {
 		this.x = x;
 		this.y = y;
 
-		// 1.4 names (put here for no merge conflicts (hopefully))
+		// retroEMI names (put here for no merge conflicts (hopefully))
 		String[] memes = {"Etho Made Islands", "Exploding Machines: IC2", "Employing Many Insects", "Elp Mtrapped Inanamefactory",};
 		for (String m : memes) {
 			if (m != null) {
@@ -103,22 +119,24 @@ public class EmiNameWidget implements Drawable {
 			parts[0] = transformString(rand, interpolate(rand, orig[0], parts[0], p), 2);
 			parts[1] = transformString(rand, interpolate(rand, orig[1], parts[1], p), 2);
 			parts[2] = transformString(rand, interpolate(rand, orig[2], parts[2], p), 2);
-		}
-		else if (progress < 1_000) {
+		} else if (progress < 1_000) {
 			float p = 1f - ((progress - 500) / 500f);
 			parts[0] = transformString(rand, parts[0], p);
 			parts[1] = transformString(rand, parts[1], p);
 			parts[2] = transformString(rand, parts[2], p);
-		}
-		else if (progress >= 4_500) {
+		} else if (progress >= 4_500) {
 			float p = (progress - 4_500) / 500f;
 			parts[0] = transformString(rand, parts[0], p);
 			parts[1] = transformString(rand, parts[1], p);
 			parts[2] = transformString(rand, parts[2], p);
 		}
 
-		context.drawCenteredTextWithShadow(EmiPort.literal(parts[0], Style.EMPTY.withColor(0xeb7bfc)).append(EmiPort.literal("  "))
-				.append(EmiPort.literal(parts[1], Style.EMPTY.withColor(0x7bfca2))).append(EmiPort.literal("  "))
-				.append(EmiPort.literal(parts[2], Style.EMPTY.withColor(0x7bebfc))), x, y, -1);
+		context.drawCenteredTextWithShadow(
+			EmiPort.literal(parts[0], Style.EMPTY.withColor(0xeb7bfc))
+				.append(EmiPort.literal("  "))
+				.append(EmiPort.literal(parts[1], Style.EMPTY.withColor(0x7bfca2)))
+				.append(EmiPort.literal("  "))
+				.append(EmiPort.literal(parts[2], Style.EMPTY.withColor(0x7bebfc))),
+			x, y, -1);
 	}
 }

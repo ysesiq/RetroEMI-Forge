@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -40,16 +41,16 @@ public class EmiHidden {
 		pluginDisabledFilters.clear();
 	}
 
-//	public static void reload() {
-//		List<IndexStackData> isds = EmiData.stackData.stream().map(i -> i.get()).filter(i -> i.disable() && (!i.filters().isEmpty() || !i.removed().isEmpty())).toList();
-//		for (IndexStackData data : isds) {
-//			for (EmiIngredient stack : data.removed()) {
-//				disabledStacks.add(stack);
-//				disabledStacks.addAll(stack.getEmiStacks());
-//			}
-//			disabledFilters.addAll(data.filters());
-//		}
-//	}
+	public static void reload() {
+		List<IndexStackData> isds = EmiData.stackData.stream().map(i -> i.get()).filter(i -> i.disable() && (!i.filters().isEmpty() || !i.removed().isEmpty())).collect(Collectors.toList());
+		for (IndexStackData data : isds) {
+			for (EmiIngredient stack : data.removed()) {
+				disabledStacks.add(stack);
+				disabledStacks.addAll(stack.getEmiStacks());
+			}
+			disabledFilters.addAll(data.filters());
+		}
+	}
 
 	public static JsonArray save() {
 		JsonArray arr = new JsonArray();

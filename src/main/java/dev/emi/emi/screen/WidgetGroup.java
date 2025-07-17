@@ -58,7 +58,7 @@ public class WidgetGroup implements WidgetHolder {
 	public void decorateDevMode() {
 		EmiRecipeCategory category = recipe.getCategory();
 		ResourceLocation cid = category == null ? null : category.getId();
-        ResourceLocation id = recipe.getId();
+		ResourceLocation id = recipe.getId();
 		List<RecipeError> errors = Lists.newArrayList();
 		if (id == null) {
 			errors.add(new RecipeError(RecipeError.Severity.WARNING, EmiTooltip.splitTranslate("emi.dev.null_recipe_id")));

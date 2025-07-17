@@ -7,8 +7,6 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiInitRegistry;
 import dev.emi.emi.api.EmiRegistry;
@@ -173,7 +171,7 @@ public class EmiReloadManager {
 						}
 						EmiLog.info("Initialized plugin from " + container.id() + " in " + (System.currentTimeMillis() - start) + "ms");
 					}
-//					EmiHidden.reload();
+					EmiHidden.reload();
 
 					step(EmiPort.literal("Processing tags"));
 					EmiTags.reload();
@@ -206,8 +204,6 @@ public class EmiReloadManager {
 					if (restart) {
 						continue;
 					}
-                    //TODO
-//					EmiData.defaultCategoryOrder();
 					step(EmiPort.literal("Baking index"));
 					EmiStackList.bake();
 					step(EmiPort.literal("Registering late recipes"), 10_000);
@@ -224,14 +220,13 @@ public class EmiReloadManager {
 					}
 					step(EmiPort.literal("Baking recipes"), 15_000);
 					EmiRecipes.bake();
-					step(EmiPort.literal("Finishing up"));
 					BoM.reload();
 					EmiPersistentData.load();
-					if (!(FMLCommonHandler.instance().getSide().isServer())) {
-						EmiSearch.bake();
-						EmiScreenManager.search.update();
-						EmiScreenManager.forceRecalculate();
-					}
+					step(EmiPort.literal("Baking search"), 15_000);
+					EmiSearch.bake();
+					step(EmiPort.literal("Finishing up"));
+					EmiScreenManager.search.update();
+					EmiScreenManager.forceRecalculate();
 					EmiReloadLog.bake();
 					EmiLog.info("Reloaded EMI in " + (System.currentTimeMillis() - reloadStart) + "ms");
 					status = 2;

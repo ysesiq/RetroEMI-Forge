@@ -2,7 +2,7 @@ package dev.emi.emi.config;
 
 import java.util.List;
 
-import net.xylose.emi.REMIForge;
+import com.rewindmc.retroemi.RetroEMI;
 import org.lwjgl.glfw.GLFW;
 
 import dev.emi.emi.com.unascribed.qdcss.QDCSS;
@@ -41,7 +41,7 @@ public class ConfigPresets {
 		EmiConfig.leftSidebarHeader = HeaderType.VISIBLE;
 
 		Minecraft client = Minecraft.getMinecraft();
-		if (REMIForge.getScaledHeight(client) < 260) {
+		if (RetroEMI.getScaledHeight(client) < 260) {
 			EmiConfig.leftSidebarSize.values.set(0, 10);
 			EmiConfig.leftSidebarSize.values.set(1, 8);
 		} else {

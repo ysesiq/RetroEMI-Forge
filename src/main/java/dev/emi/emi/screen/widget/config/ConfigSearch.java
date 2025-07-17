@@ -1,9 +1,9 @@
 package dev.emi.emi.screen.widget.config;
 
+import com.rewindmc.retroemi.RetroEMI;
 import dev.emi.emi.EmiPort;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import com.rewindmc.retroemi.RetroEMI;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 
@@ -17,8 +17,7 @@ public class ConfigSearch {
 		field.setChangedListener(s -> {
 			if (s.length() > 0) {
 				field.setSuggestion("");
-			}
-			else {
+			} else {
 				field.setSuggestion(RetroEMI.translate("emi.search_config"));
 			}
 		});
@@ -35,8 +34,8 @@ public class ConfigSearch {
 
 	public class ConfigSearchWidgetField extends TextFieldWidget {
 
-		public ConfigSearchWidgetField(FontRenderer fontRenderer, int x, int y, int width, int height, Text text) {
-			super(fontRenderer, x, y, width, height, text);
+		public ConfigSearchWidgetField(FontRenderer textRenderer, int x, int y, int width, int height, Text text) {
+			super(textRenderer, x, y, width, height, text);
 		}
 
 		@Override

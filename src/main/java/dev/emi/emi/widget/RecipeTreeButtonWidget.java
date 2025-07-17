@@ -1,12 +1,12 @@
 package dev.emi.emi.widget;
 
+import java.util.List;
+
 import dev.emi.emi.EmiPort;
-import dev.emi.emi.bom.BoM;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.bom.BoM;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-
-import java.util.List;
 
 public class RecipeTreeButtonWidget extends RecipeButtonWidget {
 

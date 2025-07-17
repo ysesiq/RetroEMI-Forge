@@ -1,5 +1,14 @@
 package dev.emi.emi;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
@@ -24,13 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-
 public class EmiUtil {
 	public static final Random RANDOM = new Random();
 
@@ -39,37 +41,37 @@ public class EmiUtil {
 	}
 
 	public static String subId(Block block) {
-        return subId(new ResourceLocation(GameRegistry.findUniqueIdentifierFor(block).toString()));
+		return subId(EmiPort.id(GameRegistry.findUniqueIdentifierFor(block).toString()));
 	}
 
 	public static String subId(Item item) {
-        return subId(new ResourceLocation(GameRegistry.findUniqueIdentifierFor(item).toString()));
+		return subId(EmiPort.id(GameRegistry.findUniqueIdentifierFor(item).toString()));
 	}
 
-    public static String subId(Fluid fluid) {
-        return subId(new ResourceLocation(fluid.getName()));
-    }
+	public static String subId(Fluid fluid) {
+		return subId(EmiPort.id(fluid.getName()));
+	}
 
-    public static String subId(ItemStack stack) {
-        return subId(new ResourceLocation(stack.getDisplayName()));
-    }
+	public static String subId(ItemStack stack) {
+		return subId(EmiPort.id(stack.getDisplayName()));
+	}
 
-//    public static <T> Stream<TagKey.Type> values(TagKey<T> key) {
-//        MinecraftClient client = MinecraftClient.getInstance();
-//        Registry<T> registry = client.world.getRegistryManager().get(key.registry());
-//        Optional<Named<T>> opt = registry.getEntryList(key);
-//        if (opt.isEmpty()) {
-//            return Stream.of();
-//        } else {
-//            if (registry == EmiPort.getFluidRegistry()) {
-//                return opt.get().stream().filter(o -> {
-//                    Fluid f = (Fluid) o.value();
-//                    return f.isStill(f.getDefaultState());
-//                });
-//            }
-//            return opt.get().stream();
-//        }
-//    }
+//	public static <T> Stream<RegistryEntry<T>> values(TagKey<T> key) {
+//		MinecraftClient client = MinecraftClient.getInstance();
+//		Registry<T> registry = client.world.getRegistryManager().get(key.registry());
+//		Optional<Named<T>> opt = registry.getEntryList(key);
+//		if (opt.isEmpty()) {
+//			return Stream.of();
+//		} else {
+//			if (registry == EmiPort.getFluidRegistry()) {
+//				return opt.get().stream().filter(o -> {
+//					Fluid f = (Fluid) o.value();
+//					return f.isStill(f.getDefaultState());
+//				});
+//			}
+//			return opt.get().stream();
+//		}
+//	}
 
 	public static boolean showAdvancedTooltips() {
 		Minecraft client = Minecraft.getMinecraft();
@@ -148,11 +150,9 @@ public class EmiUtil {
 			EmiRecipeHandler handler = EmiRecipeFiller.getFirstValidHandler(recipe, hs);
 			if (handler != null && handler.canCraft(recipe, context)) {
 				weight += 16;
-			}
-			else if (requireCraftable) {
+			} else if (requireCraftable) {
 				continue;
-			}
-			else if (inventory.canCraft(recipe)) {
+			} else if (inventory.canCraft(recipe)) {
 				weight += 8;
 			}
 			if (BoM.isRecipeEnabled(recipe)) {
@@ -164,8 +164,7 @@ public class EmiUtil {
 			if (weight > preferredWeight) {
 				preferredWeight = weight;
 				preferred = recipe;
-			}
-			else if (weight == preferredWeight) {
+			} else if (weight == preferredWeight) {
 				if (EmiRecipeCategoryProperties.getOrder(recipe.getCategory()) < EmiRecipeCategoryProperties.getOrder(preferred.getCategory())) {
 					preferredWeight = weight;
 					preferred = recipe;

@@ -1,24 +1,26 @@
 package dev.emi.emi.screen.widget.config;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.google.common.collect.Lists;
-import dev.emi.emi.config.EmiConfig;
+
+import dev.emi.emi.config.EmiConfig.ConfigGroup;
 import dev.emi.emi.runtime.EmiDrawContext;
+import dev.emi.emi.screen.widget.config.ListWidget.Entry;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.text.Text;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
-public abstract class ConfigEntryWidget extends ListWidget.Entry {
+public abstract class ConfigEntryWidget extends Entry {
 	private final Text name;
 	private final List<TooltipComponent> tooltip;
 	protected final Supplier<String> search;
 	private final int height;
-	public EmiConfig.ConfigGroup group;
+	public ConfigGroup group;
 	public boolean endGroup = false;
 	private List<? extends Element> children = Collections.emptyList();
 	public List<GroupNameWidget> parentGroups = Lists.newArrayList();
@@ -38,14 +40,14 @@ public abstract class ConfigEntryWidget extends ListWidget.Entry {
 	}
 
 	@Override
-	public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
+	public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY,
+			boolean hovered, float delta) {
 		EmiDrawContext context = EmiDrawContext.wrap(raw);
 		if (group != null) {
 			context.fill(x + 4, y + height / 2 - 1, 6, 2, 0xffffffff);
 			if (endGroup) {
 				context.fill(x + 2, y - 4, 2, height / 2 + 5, 0xffffffff);
-			}
-			else {
+			} else {
 				context.fill(x + 2, y - 4, 2, height + 4, 0xffffffff);
 			}
 			x += 10;

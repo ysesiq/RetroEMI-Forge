@@ -1,19 +1,23 @@
 package dev.emi.emi.runtime;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import dev.emi.emi.chess.EmiChess;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.SidebarType;
 import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.screen.EmiScreenManager;
-import dev.emi.emi.api.EmiApi;
-import dev.emi.emi.api.recipe.EmiRecipe;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.JsonHelper;
 
@@ -31,6 +35,7 @@ public class EmiSidebars {
 			case FAVORITES -> EmiFavorites.favoriteSidebar;
 			case LOOKUP_HISTORY -> lookupHistory;
 			case CRAFT_HISTORY -> craftHistory;
+			case EMPTY -> com.rewindmc.retroemi.shim.java.List.of();
 			case CHESS -> EmiChess.SIDEBAR;
 			default -> com.rewindmc.retroemi.shim.java.List.of();
 		};
@@ -106,7 +111,7 @@ public class EmiSidebars {
 				if (JsonHelper.isString(el)) {
 					String s = el.getAsString();
 					if (/*Identifier.isValid(s)*/ true) { //The identifier class from retroEMI doesn't even check, just passes true so...
-						ResourceLocation id = new ResourceLocation(s);
+						ResourceLocation id = EmiPort.id(s);
 						EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
 						if (recipe != null) {
 							craftHistory.add(new EmiFavorite.Craftable(recipe));

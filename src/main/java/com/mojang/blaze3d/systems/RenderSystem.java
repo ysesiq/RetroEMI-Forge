@@ -70,6 +70,7 @@ public class RenderSystem {
 
     public static void colorMask(boolean r, boolean g, boolean b, boolean a) {
         glColorMask(r, g, b, a);
+        glDepthMask(a);
     }
 
 }

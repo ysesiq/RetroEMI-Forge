@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,7 +35,7 @@ public class ButtonWidget extends ClickableWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+	public void renderWidget(DrawContext raw, int mouseX, int mouseY, float tickDelta) {
 		delegate.xPosition = getX();
 		delegate.yPosition = getY();
 		delegate.width = width;

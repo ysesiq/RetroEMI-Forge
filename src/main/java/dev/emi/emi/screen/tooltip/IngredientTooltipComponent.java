@@ -1,14 +1,16 @@
 package dev.emi.emi.screen.tooltip;
 
+import java.util.List;
+
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.api.stack.EmiIngredient;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.List;
-
 public class IngredientTooltipComponent implements EmiTooltipComponent {
-	private static final ResourceLocation TEXTURE = new ResourceLocation("emi", "textures/gui/widgets.png");
+	private static final ResourceLocation TEXTURE = EmiPort.id("emi", "textures/gui/widgets.png");
 	private static final int MAX_DISPLAYED = 63;
 	private final List<? extends EmiIngredient> ingredients;
 
@@ -19,11 +21,9 @@ public class IngredientTooltipComponent implements EmiTooltipComponent {
 	public int getStackWidth() {
 		if (ingredients.size() < 4) {
 			return ingredients.size();
-		}
-		else if (ingredients.size() > 16) {
+		} else if (ingredients.size() > 16) {
 			return 8;
-		}
-		else {
+		} else {
 			return 4;
 		}
 	}

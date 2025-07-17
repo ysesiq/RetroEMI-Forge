@@ -1,6 +1,7 @@
 package net.minecraft.registry.tag;
 
 import com.google.common.collect.BiMap;
+import com.rewindmc.retroemi.RetroEMI;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import dev.emi.emi.mixin.accessor.ItemBlockAccessor;
@@ -12,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import net.xylose.emi.REMIForge;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class TagKey<T> {
         String result = tag;
         while (result.contains("/")) {
             int nextChar = result.indexOf("/") + 1;
-            result = REMIForge.replaceCharAt(result, nextChar, Character.toUpperCase(result.charAt(nextChar)));
+            result = RetroEMI.replaceCharAt(result, nextChar, Character.toUpperCase(result.charAt(nextChar)));
             result = result.replaceFirst("/", "");
         }
         return result;

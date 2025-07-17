@@ -1,8 +1,12 @@
 package dev.emi.emi.stack.serializer;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -11,9 +15,6 @@ import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TagEmiIngredientSerializer implements EmiIngredientSerializer<TagEmiIngredient> {
 	static final Pattern STACK_REGEX = Pattern.compile("^#([\\w_\\-.:]+):([\\w_\\-.]+):([\\w_\\-./]+)(\\{.*\\})?$");
@@ -29,17 +30,17 @@ public class TagEmiIngredientSerializer implements EmiIngredientSerializer<TagEm
 			String s = element.getAsString();
 			Matcher m = STACK_REGEX.matcher(s);
 			if (m.matches()) {
-                TagKey.Type registry = TagKey.Type.valueOf(m.group(1));
-                ResourceLocation id = EmiPort.id(m.group(2), m.group(3));
-                return EmiIngredient.of(new TagKey<>(id, registry), 1);
+				TagKey.Type registry = TagKey.Type.valueOf(m.group(1));
+				ResourceLocation id = EmiPort.id(m.group(2), m.group(3));
+				return EmiIngredient.of(new TagKey<>(id, registry), 1);
 			}
 		} else if (element.isJsonObject()) {
 			JsonObject json = element.getAsJsonObject();
-            TagKey.Type registry = TagKey.Type.valueOf(json.get("registry").getAsString());
-            ResourceLocation id = EmiPort.id(json.get("id").getAsString());
+			TagKey.Type registry = TagKey.Type.valueOf(json.get("registry").getAsString());
+			ResourceLocation id = EmiPort.id(json.get("id").getAsString());
 			long amount = JsonHelper.getLong(json, "amount", 1);
 			float chance = JsonHelper.getFloat(json, "chance", 1);
-            EmiIngredient stack = EmiIngredient.of(new TagKey<>(id, registry), amount);
+			EmiIngredient stack = EmiIngredient.of(new TagKey<>(id, registry), amount);
 			if (chance != 1) {
 				stack.setChance(chance);
 			}
@@ -50,13 +51,13 @@ public class TagEmiIngredientSerializer implements EmiIngredientSerializer<TagEm
 
 	@Override
 	public JsonElement serialize(TagEmiIngredient stack) {
-        if (stack.getAmount() == 1 && stack.getChance() == 1) {
-            String type = switch(stack.key.getType().toString()) {
-                case "minecraft:item" -> "item";
-                case "minecraft:fluid" -> "fluid";
-                default -> null;
-            };
-            return new JsonPrimitive("#" + type + ":" + stack.key.id());
+		if (stack.getAmount() == 1 && stack.getChance() == 1) {
+			String type = switch(stack.key.getType().toString()) {
+				case "minecraft:item" -> "item";
+				case "minecraft:fluid" -> "fluid";
+				default -> null;
+			};
+			return new JsonPrimitive("#" + type + ":" + stack.key.id());
 		} else {
 			JsonObject json = new JsonObject();
 			json.addProperty("type", "tag");

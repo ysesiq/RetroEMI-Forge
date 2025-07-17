@@ -1,14 +1,15 @@
 package dev.emi.emi.runtime;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import dev.emi.emi.bom.BoM;
-import net.minecraft.util.JsonHelper;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import dev.emi.emi.bom.BoM;
+import net.minecraft.util.JsonHelper;
 
 public class EmiPersistentData {
 	public static final File FILE = new File("emi.json");

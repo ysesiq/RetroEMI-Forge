@@ -1,14 +1,22 @@
 package dev.emi.emi.search;
 
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.registry.GameData;
+
+import com.rewindmc.retroemi.RetroEMI;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
-import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.ItemEmiStack;
-import dev.emi.emi.bom.BoM;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.EmiAlias;
 import dev.emi.emi.data.EmiData;
@@ -16,29 +24,15 @@ import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiReloadLog;
 import dev.emi.emi.screen.EmiScreenManager;
-import dev.emi.emi.api.stack.Comparison;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.search.SuffixArray;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringTranslate;
-import com.rewindmc.retroemi.RetroEMI;
-import net.minecraft.client.search.SuffixArray;
 import net.minecraft.text.Text;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class EmiSearch {
 	public static final Pattern TOKENS = Pattern.compile(
@@ -93,14 +87,28 @@ public class EmiSearch {
 					mods.add(searchStack, id.getResourceDomain().toLowerCase());
 					names.add(searchStack, id.getResourcePath().toLowerCase());
 				}
-                if (stack instanceof ItemEmiStack && stack.getItemStack().getItem() == Items.enchanted_book) {
-                    for (var eid : (Iterable<Integer>) EnchantmentHelper.getEnchantments(stack.getItemStack()).keySet()) {
-                        var e = Enchantment.enchantmentsList[eid];
-                        switch (eid) {
-                            case 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 32, 33, 34, 35, 48, 49, 50, 51 -> {
-                                // vanilla enchant. ignore
+				if (stack instanceof ItemEmiStack && stack.getItemStack().getItem() == Items.enchanted_book) {
+                    NBTTagList enchantments = stack.getNbt() != null ?
+                        stack.getNbt().getTagList("StoredEnchantments", 10) : null;
+
+                    if (enchantments != null) {
+                        for (int i = 0; i < enchantments.tagCount(); i++) {
+                            NBTTagCompound enchantmentTag = enchantments.getCompoundTagAt(i);
+                            int enchantmentId = enchantmentTag.getShort("id");
+                            Enchantment enchantment = Enchantment.enchantmentsList[enchantmentId];
+
+                            if (enchantment != null) {
+                                String enchantmentName = enchantment.getName();
+                                String modId = "minecraft";
+
+                                if (enchantmentName.startsWith("enchantment.")) {
+                                    modId = enchantmentName.split("\\.")[1];
+                                }
+
+                                if (!modId.equals("minecraft")) {
+                                    mods.add(searchStack, modId.toLowerCase());
+                                }
                             }
-                            default -> mods.add(searchStack, EmiUtil.getModName(e.getName()));
                         }
                     }
                 }

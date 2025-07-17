@@ -13,7 +13,8 @@ public class SubGroupNameWidget extends GroupNameWidget {
 	}
 
 	@Override
-	public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
+	public void render(DrawContext raw, int index, int y, int x, int width, int height, int mouseX, int mouseY,
+			boolean hovered, float delta) {
 		EmiDrawContext context = EmiDrawContext.wrap(raw);
 		context.drawTextWithShadow(text, x + 20, y + 3);
 		if (hovered || collapsed) {

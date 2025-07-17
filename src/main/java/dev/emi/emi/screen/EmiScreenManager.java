@@ -4,23 +4,21 @@ import java.awt.*;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.rewindmc.retroemi.RetroEMI;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import com.rewindmc.retroemi.ItemStacks;
-import com.rewindmc.retroemi.RetroEMI;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
@@ -28,8 +26,6 @@ import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
-import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
-import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -39,10 +35,8 @@ import dev.emi.emi.bom.BoM;
 import dev.emi.emi.chess.EmiChess;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.config.HeaderType;
-import dev.emi.emi.config.HelpLevel;
 import dev.emi.emi.config.Margins;
 import dev.emi.emi.config.ScreenAlign;
-import dev.emi.emi.config.ScreenAlign.Horizontal;
 import dev.emi.emi.config.SidebarPages;
 import dev.emi.emi.config.SidebarSettings;
 import dev.emi.emi.config.SidebarSide;
@@ -94,7 +88,6 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.xylose.emi.REMIForge;
 
 public class EmiScreenManager {
 	private static final int PADDING_SIZE = 1;
@@ -106,10 +99,10 @@ public class EmiScreenManager {
 	private static List<Bounds> lastExclusion;
 	//	private static StackBatcher.ClaimedCollection batchers = new StackBatcher.ClaimedCollection();
 	private static List<SidebarPanel> panels =  com.rewindmc.retroemi.shim.java.List.of(
-            new SidebarPanel(SidebarSide.LEFT, EmiConfig.leftSidebarPages),
-            new SidebarPanel(SidebarSide.RIGHT, EmiConfig.rightSidebarPages),
+			new SidebarPanel(SidebarSide.LEFT, EmiConfig.leftSidebarPages),
+			new SidebarPanel(SidebarSide.RIGHT, EmiConfig.rightSidebarPages),
 			new SidebarPanel(SidebarSide.TOP, EmiConfig.topSidebarPages),
-            new SidebarPanel(SidebarSide.BOTTOM, EmiConfig.bottomSidebarPages));
+			new SidebarPanel(SidebarSide.BOTTOM, EmiConfig.bottomSidebarPages));
 	// The last stack that was used to draw a tooltip, cleared each frame
 	public static ItemStack lastStackTooltipRendered;
 	private static long lastPlayerInventorySync = 0;
@@ -607,12 +600,9 @@ public class EmiScreenManager {
 	public static void drawBackground(EmiDrawContext context, int mouseX, int mouseY, float delta) {
 		updateMouse(mouseX, mouseY);
 		recalculate();
-		GuiScreen screen = client.currentScreen;
-		if (screen == null) {
-			return;
-		}
-		if (RetroEMI.emify(screen) instanceof EmiScreen emi) {
-			client.mcProfiler.startSection("sidebar");
+		EmiScreenBase base = EmiScreenBase.getCurrent();
+		if (!base.isEmpty()) {
+			EmiProfiler.push("sidebar");
 			for (SidebarPanel panel : panels) {
 				panel.drawBackground(context, mouseX, mouseY, delta);
 			}
@@ -705,7 +695,7 @@ public class EmiScreenManager {
 				ScreenSpace space = getHoveredSpace(mouseX, mouseY);
 				if (space != null && (space.getType() == SidebarType.CRAFTABLES || space.getType() == SidebarType.CRAFT_HISTORY)) {
 					MatrixStack view = MatrixStack.INSTANCE;
-					view.push();
+					view.pushMatrix();
 					view.translate(0, 0, 200);
 					EmiPort.applyModelViewMatrix();
 					int lhx = space.getRawX(lastHoveredCraftableOffset);
@@ -713,7 +703,7 @@ public class EmiScreenManager {
 					context.fill(lhx, lhy, 18, 18, 0x44AA00FF);
 					lastHoveredCraftable.getStack().render(context.raw(), lhx + 1, lhy + 1, delta,
 							EmiIngredient.RENDER_ICON);
-					view.pop();
+					view.popMatrix();
 					EmiPort.applyModelViewMatrix();
 				}
 			}
@@ -757,7 +747,7 @@ public class EmiScreenManager {
 		try {
 			ItemStack cursor = null;
 			if (client.currentScreen instanceof GuiContainer) {
-                cursor = client.thePlayer.inventory.getItemStack();;
+				cursor = client.thePlayer.inventory.getItemStack();;
 			}
 			ScreenSpace space = getHoveredSpace(mouseX, mouseY);
 			if (EmiConfig.cheatMode && !ItemStacks.isEmpty(cursor) && space != null && space.getType() == SidebarType.INDEX && EmiConfig.deleteCursorStack.isBound()) {
@@ -1338,8 +1328,8 @@ public class EmiScreenManager {
 					amount = Math.min(amount, batches);
 				}
 				if (EmiRecipeFiller.performFill(context, EmiApi.getHandledScreen(), EmiCraftContext.Type.CRAFTABLE, destination, amount)) {
-                    Minecraft.getMinecraft().getSoundHandler()
-                        .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+					Minecraft.getMinecraft().getSoundHandler()
+							.playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
 					return true;
 				}
 			}
@@ -1388,16 +1378,16 @@ public class EmiScreenManager {
 		} else {
 			if (!ItemStacks.isEmpty(is)) {
 				String id = Item.itemRegistry.getNameForObject(is.getItem());
-                String command = "/give @p " + id;
-                command += " " + amount + " " + is.getItemDamage();
-                if (is.hasTagCompound()) {
-                    String nbt = REMIForge.sanitizeNBT(is.getTagCompound().toString());
-                    command += nbt;
+				String command = "/give @p " + id;
+				command += " " + amount + " " + is.getItemDamage();
+				if (is.hasTagCompound()) {
+					String nbt = RetroEMI.sanitizeNBT(is.getTagCompound().toString());
+					command += nbt;
 				}
-                if (command.length() < 256) {
-                    ((PlayerControllerMPAccessor) client.playerController).getNetClientHandler().addToSendQueue(new C01PacketChatMessage(command));
-                    return true;
-                }
+				if (command.length() < 256) {
+					((PlayerControllerMPAccessor) client.playerController).getNetClientHandler().addToSendQueue(new C01PacketChatMessage(command));
+					return true;
+				}
 			}
 			return false;
 		}
@@ -1409,9 +1399,9 @@ public class EmiScreenManager {
 			ScreenSpace space = getHoveredSpace(mx, my);
 			if (!ItemStacks.isEmpty(cursor) && space != null && space.getType() == SidebarType.INDEX) {
 				client.thePlayer.inventory.setItemStack(null);
-                if (FMLCommonHandler.instance().getSide().isServer()) {
+				if (FMLCommonHandler.instance().getSide().isServer()) {
                     EmiNetwork.sendToServer(new CreateItemC2SPacket(1, null));
-                }
+				}
 				return true;
 			}
 		}
