@@ -15,7 +15,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import com.rewindmc.retroemi.integ.MiscPlugin;
 
-public class REMIPlugin implements EmiMultiPlugin, Runnable{
+public class REMIPlugin implements EmiMultiPlugin, Runnable {
 
     private final Map<String, Class<? extends EmiPlugin>> children = com.rewindmc.retroemi.shim.java.Map.of(
             null, VanillaPlugin.class,

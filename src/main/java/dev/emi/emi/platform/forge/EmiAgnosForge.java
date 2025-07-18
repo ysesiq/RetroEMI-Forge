@@ -63,10 +63,6 @@ public class EmiAgnosForge extends EmiAgnos {
 		return true;
 	}
 
-
-	public static void poke() {
-	}
-
     @Override
     protected String getModNameAgnos(String namespace) {
         if (namespace.equals("c")) {

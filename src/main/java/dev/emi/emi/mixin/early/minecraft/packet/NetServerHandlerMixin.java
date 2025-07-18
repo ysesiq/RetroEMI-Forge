@@ -28,5 +28,4 @@ public abstract class NetServerHandlerMixin {
             epkt.apply(playerEntity);
         }
     }
-
 }

@@ -2,8 +2,12 @@ plugins {
     id 'com.gtnewhorizons.gtnhconvention'
 }
 
-group = "dev.emi.emi"
-version = "1.1.23-earlybeta1"
+group = modGroup
+version = modVersion
+
+base {
+    archivesName = project.modId
+}
 
 minecraft {
     injectedTags.put("VERSION", project.version)
@@ -27,4 +31,14 @@ repositories {
         name = "GTNH Maven"
         url = uri("https://nexus.gtnewhorizons.com/repository/public/")
     }
+}
+
+allprojects {
+    base.archivesName = project.modId
+    ext.mavenVersion = "${rootProject.version}"
+//	if (System.getenv("RELEASE") == null) {
+//		ext.mavenVersion += "-SNAPSHOT"
+//	}
+    ext.mavenVersion += "+${rootProject.minecraftVersion}"
+    version = "${project.ext.mavenVersion}+${project.enabled_platforms}"
 }

@@ -1,17 +1,12 @@
 package dev.emi.emi.api.recipe;
 
 import java.util.Comparator;
-import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.ApiStatus;
 
 import dev.emi.emi.registry.EmiRecipeSorter;
-import dev.emi.emi.registry.EmiStackList;
-import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiStack;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.xylose.emi.inject_interface.EmiResourceLocation;
+import dev.emi.emi.mixinsupport.inject_interface.EmiResourceLocation;
 import net.minecraft.util.ResourceLocation;
 
 @ApiStatus.Experimental

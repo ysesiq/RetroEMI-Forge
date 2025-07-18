@@ -1,10 +1,22 @@
 package com.rewindmc.retroemi;
 
+import static org.lwjgl.opengl.GL11.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.input.EmiInput;
-import dev.emi.emi.mixin.accessor.GuiContainerAccessor;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreenManager;
@@ -14,10 +26,12 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -28,17 +42,6 @@ import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.math.Vec2i;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class RetroEMI {
 	public static final RetroEMI instance = new RetroEMI();
@@ -54,15 +57,13 @@ public class RetroEMI {
 		}
 	}
 
-	public static boolean isSideLit(ItemStack item) {
-		if (Item.itemRegistry.getIDForObject(item) < 4096) {
-			Block b = (Block) Block.blockRegistry.getObjectById(Item.itemRegistry.getIDForObject(item));
-			if (b != null) {
-				return RetroEMI.doesRenderIDRenderItemIn3D(b.getRenderType());
-			}
-		}
-		return false;
-	}
+    public static boolean isSideLit(ItemStack item) {
+        if (item.getItem() instanceof ItemBlock) {
+            Block b = ((ItemBlock) item.getItem()).field_150939_a;
+            return RenderBlocks.renderItemIn3d(b.getRenderType());
+        }
+        return false;
+    }
 
 	public static void executeOnMainThread(Runnable r) {
 		synchronized (tickQueue) {
@@ -82,8 +83,7 @@ public class RetroEMI {
 	}
 
 	public static Collection<PotionEffect> getEffects(EmiStack stack) {
-		if (stack.getItemStack().getItem() instanceof ItemPotion) {
-			ItemPotion p = (ItemPotion) stack.getItemStack().getItem();
+		if (stack.getItemStack().getItem() instanceof ItemPotion p) {
 			return p.getEffects(stack.getItemStack());
 		}
 		return Collections.emptyList();
@@ -100,9 +100,7 @@ public class RetroEMI {
 					buf.setLength(0);
 					w = 0;
 				} else {
-					if (w != -1) {
-						buf.append(" ");
-					}
+					if (w != -1) buf.append(" ");
 					w++;
 				}
 				while (word.length() > cols) {
@@ -126,8 +124,7 @@ public class RetroEMI {
 		for (String s : strs) {
 			if (first) {
 				first = false;
-			}
-			else {
+			} else {
 				sb.append(delim);
 			}
 			sb.append(s);
@@ -170,9 +167,9 @@ public class RetroEMI {
 		int p = 400;
 		Tessellator tess = Tessellator.instance;
 		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		RenderSystem.enableDepthTest();
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
 		EmiDrawContext.instance().context.zLevel += 300;
 		TooltipBackgroundRenderer.render(
 				(builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> EmiDrawContext.instance().context.drawGradientRect(startX, startY, endX, endY,
@@ -233,8 +230,7 @@ public class RetroEMI {
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			EmiLog.error("Error while handling mouse event", e);
 		}
 		return false;
@@ -255,11 +251,10 @@ public class RetroEMI {
 					if (EmiScreenManager.keyPressed(Keyboard.getEventKey() , 0, EmiInput.getCurrentModifiers())) {
 						return true;
 					}
-				}
-				else {
-					//					if (EmiScreenManager.keyReleased(Keyboard.getEventKey(), 0, EmiInput.getCurrentModifiers())) {
-					//						return true;
-					//					}
+				} else {
+//					if (EmiScreenManager.keyReleased(Keyboard.getEventKey(), 0, EmiInput.getCurrentModifiers())) {
+//						return true;
+//					}
 				}
 			}
 		} catch (Exception e) {
@@ -306,10 +301,6 @@ public class RetroEMI {
 
 	public static String translate(String s, Object... arg) {
 		return StringTranslate.getInstance().translateKeyFormat(s, arg);
-	}
-
-	public static boolean doesRenderIDRenderItemIn3D(int par0) {
-		return par0 == 0 || (par0 == 31 || (par0 == 39 || (par0 == 13 || (par0 == 10 || (par0 == 11 || (par0 == 27 || (par0 == 22 || (par0 == 21 || (par0 == 16 || (par0 == 26 || (par0 == 32 || (par0 == 34 || par0 == 35))))))))))));
 	}
 
     public static String sanitizeNBT(String nbt) {

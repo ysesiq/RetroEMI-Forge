@@ -679,7 +679,7 @@ public class EmiScreenManager {
 
 	private static void renderWidgets(EmiDrawContext context, int mouseX, int mouseY, float delta, EmiScreenBase base) {
 		context.resetColor(); // hijacked screen may leak state
-		GL11.glDisable(GL11.GL_LIGHTING); // weather rendering leaks state
+		RenderSystem.disableLighting(); // weather rendering leaks state
 		context.push();
 		context.matrices().translate(0, 0, 100);
 		emi.render(context.raw(), mouseX, mouseY, delta);

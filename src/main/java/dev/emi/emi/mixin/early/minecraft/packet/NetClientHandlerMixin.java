@@ -29,11 +29,4 @@ public class NetClientHandlerMixin {
             epkt.apply(Minecraft.getMinecraft().thePlayer);
         }
     }
-
-    @Inject(method = "handleDisconnect", at = @At("TAIL"))
-    public void disconnect(CallbackInfo ci) {
-        EmiLog.info("Disconnecting from server, EMI data cleared");
-        EmiReloadManager.clear();
-        EmiClient.onServer = false;
-    }
 }

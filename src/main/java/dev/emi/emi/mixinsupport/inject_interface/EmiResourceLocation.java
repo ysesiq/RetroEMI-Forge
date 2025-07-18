@@ -1,4 +1,4 @@
-package net.xylose.emi.inject_interface;
+package dev.emi.emi.mixinsupport.inject_interface;
 
 import net.minecraft.util.ResourceLocation;
 

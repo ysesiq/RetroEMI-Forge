@@ -82,8 +82,8 @@ public abstract class InventoryEffectRendererMixin extends GuiContainer {
         int num_effects = activePotionEffects.size();
 
         if (num_effects > 0 && EmiConfig.effectLocation != EffectLocation.HIDDEN) {
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_LIGHTING);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.disableLighting();
             RenderSystem.enableBlend();
             int spacing = 33;
 
@@ -95,7 +95,7 @@ public abstract class InventoryEffectRendererMixin extends GuiContainer {
 
             for (Iterator<PotionEffect> iterator = activePotionEffects.iterator(); iterator.hasNext(); debuffY += spacing) {
                 PotionEffect potionEffect = iterator.next();
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 this.mc.getTextureManager().bindTexture(field_147001_a);
                 drawStatusEffectBackgrounds(debuffX, debuffY, wide);
 
@@ -145,7 +145,7 @@ public abstract class InventoryEffectRendererMixin extends GuiContainer {
                 int ew = wide ? 120 : 32;
                 context.push();
                 context.resetColor();
-                GL11.glDisable(GL11.GL_LIGHTING);
+                RenderSystem.disableLighting();
                 RenderSystem.enableBlend();
                 this.mc.getTextureManager().bindTexture(field_147001_a);
                 drawStatusEffectBackgrounds(x, y, wide);
@@ -200,7 +200,6 @@ public abstract class InventoryEffectRendererMixin extends GuiContainer {
     private void drawStatusEffectDescriptions(int x, int y, PotionEffect potionEffect, boolean wide) {
         if (wide) {
             String potionName = RetroEMI.translate(potionEffect.getEffectName()) + getPotionAmplifier(potionEffect);
-
             this.fontRendererObj.drawStringWithShadow(potionName, x + 10 + 18, y + 6, 16777215);
             String durationString = Potion.getDurationString(potionEffect);
             this.fontRendererObj.drawStringWithShadow(durationString, x + 10 + 18, y + 16, 8355711);

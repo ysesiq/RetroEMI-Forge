@@ -1,5 +1,7 @@
 package com.rewindmc.retroemi;
 
+import java.util.List;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -21,36 +23,9 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.util.SyntheticIdentifier;
-
-import java.util.List;
 
 public class REMIMixinHooks {
 	static Minecraft client = Minecraft.getMinecraft();
-
-	//GuiContainer
-	public static void renderBackground(int par1, int par2) {
-		EmiDrawContext context = EmiDrawContext.instance();
-		EmiScreenManager.drawBackground(context, par1, par2, client.timer.renderPartialTicks);
-	}
-
-	public static void renderForegroundPre(int par1, int par2, Minecraft mc) {
-		GuiContainer screen = (GuiContainer) mc.currentScreen;
-		EmiDrawContext context = EmiDrawContext.instance();
-		context.push();
-		context.matrices().translate(-((GuiContainerAccessor) screen).getGuiLeft(), -((GuiContainerAccessor) screen).getGuiTop(), 0.0);
-		EmiScreenManager.render(context, par1, par2, mc.timer.renderPartialTicks);
-		context.pop();
-	}
-
-	public static void renderForegroundPost(int par1, int par2, Minecraft mc) {
-		GuiContainer screen = (GuiContainer) mc.currentScreen;
-		EmiDrawContext context = EmiDrawContext.instance();
-		context.push();
-		context.matrices().translate(-((GuiContainerAccessor) screen).getGuiLeft(), -((GuiContainerAccessor) screen).getGuiTop(), 0.0);
-		EmiScreenManager.drawForeground(context, par1, par2, mc.timer.renderPartialTicks);
-		context.pop();
-	}
 
 	public static void drawSlot(Slot slot) {
 		EmiDrawContext context = EmiDrawContext.instance();

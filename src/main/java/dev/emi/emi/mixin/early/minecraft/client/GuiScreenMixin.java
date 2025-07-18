@@ -1,11 +1,13 @@
 package dev.emi.emi.mixin.early.minecraft.client;
 
-import net.xylose.emi.inject_interface.EmiSearchInput;
+import dev.emi.emi.mixinsupport.inject_interface.EmiSearchInput;
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.rewindmc.retroemi.RetroEMI;
 
@@ -29,6 +31,13 @@ public class GuiScreenMixin implements EmiSearchInput {
     )
     public void handleKeyboardInputEMI(CallbackInfo ci) {
         this.emiSearchInput = RetroEMI.handleKeyboardInput();
+    }
+
+    @Redirect(method = "handleKeyboardInput", at = @At(value = "INVOKE",target = "Lorg/lwjgl/input/Keyboard;getEventKeyState()Z", remap = false))
+    private boolean redirectAllowCharInput(){
+        int k = Keyboard.getEventKey();
+        char c = Keyboard.getEventCharacter();
+        return Keyboard.getEventKeyState() || k == 0 && Character.isDefined(c);
     }
 
     @Override

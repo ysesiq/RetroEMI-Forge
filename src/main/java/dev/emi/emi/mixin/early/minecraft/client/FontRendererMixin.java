@@ -25,7 +25,7 @@ public abstract class FontRendererMixin {
             shift = At.Shift.AFTER,
             remap = false
         ),
-        ordinal = 0 /*i*/
+        ordinal = 0 // i
     )
     private int customFontColor(int original, String text, boolean shadow) {
         return REMIMixinHooks.applyCustomFormatCodes((FontRenderer) (Object) this, text, shadow, original);

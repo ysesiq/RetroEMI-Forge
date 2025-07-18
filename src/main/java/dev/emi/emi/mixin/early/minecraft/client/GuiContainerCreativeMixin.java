@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.early.minecraft.client;
 
-import net.xylose.emi.inject_interface.EmiSearchInput;
+import dev.emi.emi.mixinsupport.inject_interface.EmiSearchInput;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

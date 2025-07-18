@@ -7,8 +7,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessor.CraftingManagerAccessor",
-    "accessor.GuiContainerAccessor",
-    "accessor.GuiTextFieldAccessor",
     "accessor.InventoryCraftingAccessor",
     "accessor.ItemBlockAccessor",
     "accessor.PlayerControllerMPAccessor",
@@ -18,21 +16,18 @@
     "accessor.SlotAccessor",
     "accessor.SlotCraftingAccessor",
     "early.forge.FluidMixin",
-    "early.minecraft.block.BlockMixin",
     "early.minecraft.item.ItemMixin",
     "early.minecraft.item.ItemStackMixin",
-    "early.minecraft.packet.NetServerHandlerMixin",
-    "early.minecraft.recipe.IRecipeMixin",
-    "early.minecraft.server.ServerConfigurationManagerMixin",
-    "early.minecraft.world.WorldMixin"
+    "early.minecraft.packet.NetServerHandlerMixin"
   ],
   "client": [
+    "accessor.GuiContainerAccessor",
+    "accessor.GuiTextFieldAccessor",
     "early.minecraft.client.FontRendererMixin",
     "early.minecraft.client.GuiContainerCreativeMixin",
     "early.minecraft.client.GuiContainerMixin",
     "early.minecraft.client.GuiScreenMixin",
     "early.minecraft.client.InventoryEffectRendererMixin",
-    "early.minecraft.client.MinecraftMixin",
     "early.minecraft.client.RenderBlockMixin",
     "early.minecraft.client.ResourceLocationMixin",
     "early.minecraft.client.SlotCraftingMixin",

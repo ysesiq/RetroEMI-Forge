@@ -421,11 +421,11 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			this.textRenderer.drawStringWithShadow(this.placeholder.asString(), n, m, color);
 		}
 		if (!bl3 && this.suggestion != null) {
-			this.textRenderer.drawStringWithShadow(this.suggestion, (o - 1), m, 0xFFD0D0D0);
+			this.textRenderer.drawStringWithShadow(this.suggestion, (o - 1), m, 0xFF808080);
 		}
 		if (bl2) {
 			if (bl3) {
-				drawRect(o, m - 1, o + 1, m + 1 + this.textRenderer.FONT_HEIGHT, 0xFF808080);
+				drawRect(o, m - 1, o + 1, m + 1 + this.textRenderer.FONT_HEIGHT, 0xFFD0D0D0);
 			} else {
 				this.textRenderer.drawStringWithShadow(HORIZONTAL_CURSOR, o, m, color);
 			}

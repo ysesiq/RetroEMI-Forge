@@ -196,7 +196,7 @@ public class EmiRenderHelper {
 			}
 		}
 		RenderSystem.enableDepthTest();
-		GL11.glDisable(GL11.GL_LIGHTING);
+		RenderSystem.disableLighting();
 		EmiPort.setPositionTexShader();
 		context.resetColor();
 		RetroEMI.renderModernTooltip(screen, mutable, x, y, maxWidth, positioner);

@@ -21,6 +21,14 @@ public class RenderSystem {
         glDisable(GL_DEPTH_TEST);
     }
 
+    public static void enableLighting() {
+        glEnable(GL_LIGHTING);
+    }
+
+    public static void disableLighting() {
+        glDisable(GL_LIGHTING);
+    }
+
     public static void enableBlend() {
         glEnable(GL_BLEND);
     }

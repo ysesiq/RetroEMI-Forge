@@ -1,6 +1,6 @@
 package dev.emi.emi.mixin.early.minecraft.client;
 
-import net.xylose.emi.inject_interface.EmiResourceLocation;
+import dev.emi.emi.mixinsupport.inject_interface.EmiResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

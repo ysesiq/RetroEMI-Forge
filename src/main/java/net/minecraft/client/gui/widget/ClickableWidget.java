@@ -36,7 +36,9 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 @SideOnly(Side.CLIENT)
 public abstract class ClickableWidget extends Gui implements Drawable, Element {
 	public enum SelectionType {
-		NONE, HOVERED, FOCUSED
+		NONE,
+        HOVERED,
+        FOCUSED
 	}
 
 	public static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation("textures/gui/widgets.png");

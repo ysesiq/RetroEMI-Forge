@@ -1,6 +1,17 @@
 package com.rewindmc.retroemi;
 
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
+
+import java.util.List;
+
 import com.google.common.collect.Lists;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import dev.emi.emi.input.EmiInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,16 +20,6 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import java.util.List;
-
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 public class REMIScreen extends GuiScreen implements ParentElement {
 
@@ -78,30 +79,30 @@ public class REMIScreen extends GuiScreen implements ParentElement {
 	}
 
 	@Override
-	public final void keyTyped(char var1, int var2) {
-		if (var2 == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()) {
+	public final void keyTyped(char c, int k) {
+		if (k == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()) {
 			close();
 			return;
 		}
 		int mod = EmiInput.getCurrentModifiers();
-		keyPressed(var2, 0, mod);
-		if (var1 != 0 && !Character.isISOControl(var1)) {
-			charTyped(var1, mod);
+		keyPressed(k, 0, mod);
+		if (c != 0 && !Character.isISOControl(c)) {
+			charTyped(c, mod);
 		}
 	}
 
 	@Override
-	public void mouseClicked(int var1, int var2, int var3) {
-		mouseClicked((double) var1, (double) var2, var3);
-		lastMouseX = var1;
-		lastMouseY = var2;
-		mouseDown = var3;
+	public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+		mouseClicked((double) mouseX, (double) mouseY, mouseButton);
+		lastMouseX = mouseX;
+		lastMouseY = mouseY;
+		mouseDown = mouseButton;
 	}
 
 	@Override
-	public final void mouseMovedOrUp(int var1, int var2, int var3) {
-		mouseReleased((double) var1, (double) var2, var3);
-		if (var3 == mouseDown) {
+	public final void mouseMovedOrUp(int mouseX, int mouseY, int mouseButton) {
+		mouseReleased((double) mouseX, (double) mouseY, mouseButton);
+		if (mouseButton == mouseDown) {
 			mouseDown = -1;
 		}
 	}
