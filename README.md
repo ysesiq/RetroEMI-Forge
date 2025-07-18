@@ -1,4 +1,4 @@
-# retroEMI
+# retroEMI Forge
 EMI is a featureful and accessible item and recipe viewer for Minecraft.
 
 * Fork form [Rewind/retroEMI](https://git.sleeping.town/Rewind/retroEMI)
@@ -15,5 +15,7 @@ compiling to Java 8, as 1.7 Forge won't run on anything newer.
 Because I'm not good at Gradle, I changed the project structure to the traditional form and used GTNHGradle at the cost of manually syncing changes from the original branch.
 
 Mixin is provided by [UniMixins](https://github.com/LegacyModdingMC/UniMixins).
+
+Part of the code refers to [Bommels05's EMI 1.7.10 port](https://github.com/Bommels05/emi), such as tag, data, etc
 
 NEI-Unofficial compatibility Stay tuned, it's not something that will happen for a while, and I've been under a lot of pressure to study lately.

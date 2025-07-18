@@ -33,6 +33,10 @@ import java.io.DataOutputStream;
 
 @Mod(
     modid = "emi",
+    dependencies = """
+            required-after:gtnhlib@[0.6.0,);\
+            before:unimixins@[0.1,);\
+            """,
     guiFactory = "dev.emi.emi.compat.EmiGuiFactory"
 )
 public class EmiForge {

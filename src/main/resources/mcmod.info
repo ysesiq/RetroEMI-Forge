@@ -6,9 +6,13 @@
 		"description": "A featureful and accessible item and recipe viewer",
 		"version": "${modVersion}",
 		"mcversion": "1.7.10",
-		"url": "",
+		"url": "https://github.com/ysesiq/retroEMI-Forge/",
 		"updateUrl": "",
-		"authorList": ["Emi", "unascribed", "Xy_Lose"],
+		"authorList": [
+      "Emi",
+      "unascribed",
+      "Xy_Lose"
+    ],
 		"credits": "",
 		"logoFile": "emi.png",
 		"screenshots": [],
