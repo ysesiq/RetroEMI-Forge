@@ -61,7 +61,10 @@ public class SyntheticIdentifier {
         } else if (o instanceof EmiIngredient ei) {
             return ei.getEmiStacks().stream().map(SyntheticIdentifier::describe).collect(Collectors.joining("/", "[", "]"));
         } else if (o instanceof ItemStack is) {
-            return is.getUnlocalizedName() + "." + is.getItemDamage() + (is.hasTagCompound() ? is.getTagCompound().toString() : "");
+            if (is.getItem() == null)
+                return "null";
+            else
+                return is.getUnlocalizedName() + "." + is.getItemDamage() + (is.hasTagCompound() ? is.getTagCompound().toString() : "");
         } else if (o instanceof Block) {
             return describe(new ItemStack((Block) o));
         } else if (o instanceof String) {
